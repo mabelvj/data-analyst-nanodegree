@@ -6,7 +6,14 @@ Lesson 3
 ### What to Do First?
 Notes:
 
-***
+
+```{r}
+setwd('~/Git/data-analyst-nanodegree/P4/eda-course-materials/lesson3/')
+getwd()
+
+list.files()
+pf <- read.csv('pseudo_facebook.tsv',sep = '\t')
+```
 
 ### Pseudo-Facebook User Data
 Notes:
@@ -21,8 +28,20 @@ Notes:
 Notes:
 
 ```{r Histogram of Users\' Birthdays}
-install.packages('ggplot2')
+#install.packages('ggplot2')
 library(ggplot2)
+names(pf)
+
+# Does not work in mac OSx
+#qplot(x = dob_day, data = pf) +
+#  scale_x_discrete(breaks = 1:31)
+
+#install.packages('ggthemes', dependencies = TRUE) 
+library(ggthemes) 
+
+ggplot(aes(x = dob_day), data = pf ) +
+  geom_histogram(binwidth = 1) +
+  scale_x_continuous(breaks = 1:31)
 ```
 
 ***
@@ -39,6 +58,12 @@ Notes:
 
 ### Estimating Your Audience Size
 Notes:
+```{r}
+ggplot(data = pf, aes(x = dob_day)) + 
+  geom_histogram(binwidth = 1) + 
+   scale_x_continuous(breaks = 1:31) + 
+   facet_wrap(~dob_month)
+```
 
 ***
 
@@ -87,7 +112,7 @@ Notes:
 #### What code would you enter to create a histogram of friend counts?
 
 ```{r Friend Count}
-
+qplot(x = friend_count, data = pf, xlim = c(0,1000))
 ```
 
 #### How is this plot similar to Moira's first plot?
@@ -108,6 +133,10 @@ Notes:
 ***
 
 ### Adjusting the Bin Width
+```{r}
+qplot(x = friend_count, data = pf, xlim = c(0,1000), binwidth = 25)
+```
+
 Notes:
 
 ### Faceting Friend Count
@@ -115,8 +144,23 @@ Notes:
 # What code would you add to create a facet the histogram by gender?
 # Add it to the code below.
 qplot(x = friend_count, data = pf, binwidth = 10) +
+  scale_x_continuous(limits = c(0, 750), breaks = seq(0, 750, 50))+ 
+# Correct solution
+  facet_wrap(~gender)
+
+#My solution
+qplot(x = friend_count, data = subset(pf, pf$gender =='female'), binwidth = 10) +
   scale_x_continuous(limits = c(0, 1000),
                      breaks = seq(0, 1000, 50))
+                      title("females")
+                      
+qplot(x = friend_count, data = subset(pf, pf$gender =='male'), binwidth = 10) +
+  scale_x_continuous(limits = c(0, 1000),
+                     breaks = seq(0, 1000, 50))
+                      title("females")
+                      
+
+                      
 ```
 
 ***
@@ -134,7 +178,12 @@ Notes:
 Notes:
 
 ```{r Statistics \'by\' Gender}
-
+qplot(x = friend_count, data = subset(pf, !is.na(pf$gender)), binwidth = 10) +
+  scale_x_continuous(limits = c(0, 750), breaks = seq(0, 750, 50))+ 
+# Correct solution
+  facet_wrap(~gender)
+table(pf$gender)
+by(pf$friend_count, pf$gender, summary )
 ```
 
 #### Who on average has more friends: men or women?
@@ -152,7 +201,7 @@ Response:
 Notes:
 
 ```{r Tenure}
-
+qplot(x=tenure, data = pf, color = I('black'), fill = I('#099DD9'), binwidth = 30)
 ```
 
 ***
@@ -160,7 +209,8 @@ Notes:
 #### How would you create a histogram of tenure by year?
 
 ```{r Tenure Histogram by Year}
-
+qplot(x=tenure/365, data = pf, color = I('black'), fill = I('#F79420'), binwidth = .5) +
+  scale_x_continuous(breaks = seq(1,7,1), limits = c(0,7))
 ```
 
 ***
@@ -169,7 +219,9 @@ Notes:
 Notes:
 
 ```{r Labeling Plots}
-
+qplot(x=tenure/365, data = pf, color = I('black'), fill = I('#F79420'), binwidth = .5,
+      xlab = 'Number of years using Facebook', ylab= 'Number of users in sample')+
+  scale_x_continuous(breaks = seq(0,7,1), limits = c(0,7))
 ```
 
 ***
@@ -178,8 +230,11 @@ Notes:
 Notes:
 
 ```{r User Ages}
-
-```
+qplot(x=age, data = subset(pf, !is.na(pf$gender)), color = I('black'), fill = I('#5760AB'), binwidth = 2,
+      xlab = 'Age', ylab= 'Number of users in sample')+
+  scale_x_continuous(breaks = seq(13,113,10), limits = c(13,113))+
+  facet_wrap(~gender)
+summary(pf$age)
 
 #### What do you notice?
 Response:
