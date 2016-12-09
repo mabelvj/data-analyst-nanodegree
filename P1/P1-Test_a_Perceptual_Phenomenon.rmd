@@ -1,24 +1,38 @@
 ---
-title: "The science of decisions"
-author: "Mabel Villalba Jiménez"
+title: 'Project 1 : Test a Perceptual Phenomenon'
+author: "Isabel María Villalba Jiménez"
 date: "6 de diciembre de 2016"
 output:
-  html_document: default
-  pdf_document: default
+  pdf_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r global_options, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(message=FALSE, warning=FALSE,
+                      echo= TRUE , results="hide")
+opts_chunk$set(tidy.opts=list(width.cutoff=55),tidy=TRUE)  #prevent overloading
+#fig.path="Figs/"
+#fig.width=10
+
 ```
 
-# <span style="color:black">Statistics: The Science of Decisions Project Instructions</span>
----------------------------------------------------
 
-##Background Information
-In a Stroop task, participants are presented with a list of words, with each word displayed in a color of ink. The participant’s task is to say out loud the color of the ink in which the word is printed. The task has two conditions: a congruent words condition, and an incongruent words condition. In the congruent words condition, the words being displayed are color words whose names match the colors in which they are printed: for example <span style="color:red">RED </span>, <span style="color:blue">BLUE </span>. In the incongruent words condition, the words displayed are color words whose names do not match the colors in which they are printed: for example <span style="color:green">PURPLE</span>, <span style="color:purple"> ORANGE</span>. In each case, we measure the time it takes to name the ink colors in equally-sized lists. Each participant will go through and record a time from each condition.
+
+#Project Instructions
+
+
+## Background Information
+  In a Stroop task, participants are presented with a list of words, with each word displayed in a color of ink. The participant’s task is to say out loud the color of the ink in which the word is printed. The task has two conditions: a congruent words condition, and an incongruent words condition. In the congruent words condition, the words being displayed are color words whose names match the colors in which they are printed: for example <span style="color:red">RED </span>, <span style="color:blue">BLUE </span>. In the incongruent words condition, the words displayed are color words whose names do not match the colors in which they are printed: for example <span style="color:green">PURPLE</span>, <span style="color:purple"> ORANGE</span>. In each case, we measure the time it takes to name the ink colors in equally-sized lists. Each participant will go through and record a time from each condition.
 
 ##Questions For Investigation
-As a general note, be sure to keep a record of any resources that you use or refer to in the creation of your project. You will need to report your sources as part of the project submission.
+  As a general note, be sure to keep a record of any resources that you use or refer to in the creation of your project. You will need to report your sources as part of the project submission.
 
 1. What is our independent variable? What is our dependent variable?
 
@@ -40,7 +54,7 @@ Now it’s your chance to try out the Stroop task for yourself. Go to this [link
 3. Report some descriptive statistics regarding this dataset. Include at least one measure of central tendency and at least one measure of variability.
 
 
-```{r read csv , echo=FALSE, cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE} 
+    ```{r read csv} 
 library(reshape2)
 df <- read.csv('~/Git/data-analyst-nanodegree/P1/stroopdata.csv', sep=",", header = TRUE)
 
@@ -59,33 +73,97 @@ s_i <- sd(df$Incongruent)
 sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 ```
 
-> The mean for the **both conditions** is 18.034 s with a standard deviation of 5.802 s.
+> The mean for the **both conditions** is `r round(mu_total, digits=3)` s with a standard deviation of `r round(s_total, digits=3)` s.
 
-> The mean for the **congruent condition** is 14.501 s with a standard deviation of 3.559 s.
+> The mean for the **congruent condition** is `r round(mu_c, digits=3)` s with a standard deviation of `r round(s_c, digits=3)` s.
 
-> The mean for the **incongruent condition** is 22.016 s with a standard deviation of 4.797 s.
+> The mean for the **incongruent condition** is `r round(mu_i, digits=3)` s with a standard deviation of `r round(s_i, digits=3)` s.
 
 
 4. Provide one or two visualizations that show the distribution of the sample data. Write one or two sentences noting what you observe about the plot or plots.
 
-```{r visualization, echo=FALSE, cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE} 
-library(ggplot2)
-library(reshape2)
+    ```{r visualization, fig.cap = " Figure 1: Data distribution \\label{fig1_normal}"} 
+    library(ggplot2)
+    library(reshape2)
+    
+    library(plyr)
+    mu <- ddply(melt(df), "variable", summarise, grp.mean=mean(value));
+    
+    p <- ggplot(melt(df), aes(x=value, fill=variable))+ geom_histogram(aes(y=..density..),  alpha=0.3) +geom_density(aes(x = value, color = variable), alpha=.6, linetype= "dashed")
+    
+    #Add mean lines
+    p+ geom_vline(data=mu, aes(xintercept=grp.mean, color=variable),
+                 linetype="dashed", alpha=1)
+    
+    ```
 
-library(plyr)
-mu <- ddply(melt(df), "variable", summarise, grp.mean=mean(value))
-head(mu)
 
-p <- ggplot(melt(df), aes(x=value, fill=variable))+ geom_histogram(aes(y=..density..), color="grey30", alpha=0.4) +geom_density(aes(x = value, color = variable), alpha=.6, linetype= "dashed")
+<!-- > The graphic including all the data has a normal shape, with mean XX and standard deviation XX. Outliers are present in the upper side of the distribution. -->
 
-p
+> Both the *congruent* and the *incongruent* group are normal distributions with different mean values (bigger mean time for the *incongruent* case) and similar standard deviations.
 
-#Add mean lines
-p+ geom_vline(data=mu, aes(xintercept=grp.mean, color=variable),
-             linetype="dashed", alpha=1)
-```
-```{r, echo=FALSE, cache=FALSE, results=FALSE, warning=FALSE, comment=FALSE} 
-p2 <- ggplot(melt(df), aes(x=value, color= "black")) + geom_histogram(aes(y=..density..),fill="grey") + geom_density(aes(x = value), alpha=.2, linetype= "dashed") +geom_vline(data=melt(df), aes(xintercept=mean(value)),
+
+5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
+
+    ```{r}
+        n1 <- length(df$Congruent)  
+        n2 <- length(df$Incongruent)
+        df <- n1+n2-2
+        SEM <- sqrt((s_c)**2/n1+(s_i)**2/n2)
+        diff <- mu_i - mu_c
+        t <-  diff / SEM
+    ```
+### **Hypothesis**
+
+> - $H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0$
+> - $H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0$
+
+### **Differential test**
+
+> For the case of a diffrential test, the resultant gaussian can be expressed as  $$N(\mu_1, \sigma_1) - N(\mu_2, \sigma_2) = N(\mu_1-\mu_2, \sqrt{\sigma_1^2-\sigma_2^2})$$
+
+### **Standard error**
+
+> It can be considered that this test is performend on independent samples, as *congruent* and *incongruent* cases have different independent parameters. the **standard error** will be
+
+> $$SE = \frac{S}{\sqrt{n}}= \frac{\sqrt{S_1^2+S_2^2}}{\sqrt{n}} =\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}$$
+
+> for $n_1$ and $n_2$ the size of each sample group.
+
+> The SE will be in this case `r round(SEM, digits = 3) `.
+
+### **Degrees of freedom**
+
+> The dregrees of freedom for two independen group of samples can be expressed as : $df= n_1 + n_2 - 2=$ `r df`.
+
+### **Type of test**
+
+>  Figure 1 shows that $\mu_i>\mu_c$, so a single-tailed test  for the upper side will be performed ($\mu_i- \mu_c$), with a $\alpha$ = 0.05, $t_{critical}|_{df=50} < p < t_{critical}|_{df=40} \rightarrow 1.676< t_critical < 1.684$ `r t_critical <- 1.676`. In this case I will stick to the more restrictive condition, this is $t_{critical}=$ `r t_critical`.
+
+### **t**
+
+> $t = \frac{\mu_i - \mu_c }{SEM}=$ `r t` $>t_{critical}=$ `r t_critical `
+
+> **t lies in the critical region in the upper side.**
+
+> **<span style="color:red"> Results are statistically significant: NULL is REJECTED <span>**
+
+### **Margin of error**
+### **Cohen's d**
+
+### **$r^2$**
+
+
+#https://s3.amazonaws.com/udacity-hosted-downloads/t-table.jpg
+6. Optional: What do you think is responsible for the effects observed? Can you think of an alternative or similar task that would result in a similar effect? Some research about the problem will be helpful for thinking about these two questions!
+
+
+
+
+
+```{r} 
+
+p2 <- ggplot(melt(df), aes(x=value)) + geom_histogram(aes(y=..density..),fill="grey") + geom_density(aes(x = value), alpha=.2, linetype= "dashed") +geom_vline(data=melt(df), aes(xintercept=mean(value)),
              linetype="dashed", color="red")
 
 # Use grey scale
@@ -93,50 +171,3 @@ p2 + scale_color_grey() + theme_classic() +
   theme(legend.position="top")
 
 ```
-
-> The graphic including all the data has a normal shape, with mean XX and standard deviation XX. Outliers are present in the upper side of the distribution.
-
-> Both the *congruent* and the *incongruent* group are normal distributions with different mean values (bigger mean time for the *incongruent* case) and similar standard deviations.
-
-
-5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
- 
-> - $H_0 : \mu_{c} = \mu_{i}$
-> - $H_a : \mu_{c} \neq \mu_{i}$
-
-```{r}
-n <- 24
-df <- n-1
-SEM <- s_c / sqrt(df)
-diff <- mu_i - mu_c
-t <-  diff - SEM
-```
-
-
-Considering reference curve to be the one of the congruent case:
-
-
-> n = 24, df = n-1 = `r df`
-
-> Two-tailed test and $\alpha = 0.05, $t_{critical}$= \pm 2.056$
-
-> S= S_c = `r s_i` , $SEM = \frac{S}{\sqrt{n}}==`r SEM`
-
-> $\bar{X} = 22.016$ , hence $\bar{X} - \mu  = 22.016 - 14.501 =$ `r diff`
-
-> $t = \frac{\bar{X} - \mu }{SEM}= $ `r t`
-
-t lies in the critical region in the upper side.
-
-> p-value(t) < 0.0005
-
-> Results are statistically significant: NULL is REJECTED
-
-> Cohen's d
-
->r²
-
->margin of error
-
-#https://s3.amazonaws.com/udacity-hosted-downloads/t-table.jpg
-6. Optional: What do you think is responsible for the effects observed? Can you think of an alternative or similar task that would result in a similar effect? Some research about the problem will be helpful for thinking about these two questions!
