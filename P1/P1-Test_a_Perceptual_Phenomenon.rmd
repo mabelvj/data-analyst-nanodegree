@@ -73,7 +73,7 @@ sprintf('Total mean is %.3f s, standard deviation is %.3f s', mu_total, s_total)
 df.diff <- df$Incongruent-df$Congruent
 
 mu_diff <-  mean(df.diff)
-s_diff <- sd(df.diff)
+s_diff <- sqrt(sum((df.diff-mu_diff)**2)/(length(df.diff)-1))
 sprintf('Mean of differences is %.3f s, standard deviation is %.3f s', mu_diff, s_diff)
 
 #Congruent
@@ -142,7 +142,9 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 >2. Calculate the mean of the difference $\bar{d}=$ `r round(mu_diff, 3)` 
 >3. Calculate the standard error $SE(\bar{d})= \frac{s_d}{\sqrt{n}}$, for $s_d$ the standard deviation of the differences. $SE(\bar{d})= \frac{s_d}{\sqrt{n}}=$ `r round(SE, digits = 3)`
 >4. Calculate the t-statistic: $t=\frac{\bar{d}}{SE(\bar{d})}=$ `r round(t,digits=3)`. Under the null distribution this statistic follows a t-distribution with n-1 degrees of freedom.
->5.  See where t falls in the $t_{n-1}$ distribution Get the value fron the table: this will give the p-value for the paired t-test.
+>5.  See where t falls in the $t_{n-1}$ distribution Get the value fron the table: this will give the p-value for the paired t-test. $t_{critical}=1.714$
+
+Is not significant!!!!!!
 
 ### **Standard error**
 
@@ -186,7 +188,7 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 ```{r} 
 #df_diff <- subset(data.frame(df.diff), abs(df.diff)<3.*s_diff)
 
-p2 <- ggplot(df_diff, aes(x=df.diff)) + geom_histogram(aes(y=..density..),fill="grey", binwidth = 0.5) + geom_density(aes(x=df_diff$df.diff), alpha=.2, linetype= "dashed") +geom_vline(xintercept=mean(df_diff$df.diff),linetype="dashed", color="red")+ xlim(0,16)
+p2 <- ggplot(df_diff, aes(x=df.diff)) + geom_histogram(aes(y=..density..),fill="grey", binwidth = 0.5) + geom_density(aes(x=df_diff$df.diff), alpha=.2, linetype= "dashed") +geom_vline(xintercept=mean(df_diff$df.diff),linetype="dashed", color="red")#+ xlim(0,16)
 
 # Use grey scale
 p2 + scale_color_grey() + theme_classic() +
