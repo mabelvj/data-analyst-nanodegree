@@ -152,12 +152,12 @@ qplot(x = friend_count, data = pf, binwidth = 10) +
 qplot(x = friend_count, data = subset(pf, pf$gender =='female'), binwidth = 10) +
   scale_x_continuous(limits = c(0, 1000),
                      breaks = seq(0, 1000, 50))
-                      title("females")
+#title("females")
                       
 qplot(x = friend_count, data = subset(pf, pf$gender =='male'), binwidth = 10) +
   scale_x_continuous(limits = c(0, 1000),
-                     breaks = seq(0, 1000, 50))
-                      title("females")
+                     breaks = seq(0, 1000, 50))+
+#title("males")
                       
 
                       
@@ -235,6 +235,7 @@ qplot(x=age, data = subset(pf, !is.na(pf$gender)), color = I('black'), fill = I(
   scale_x_continuous(breaks = seq(13,113,10), limits = c(13,113))+
   facet_wrap(~gender)
 summary(pf$age)
+```
 
 #### What do you notice?
 Response:
@@ -260,16 +261,57 @@ Notes:
 Notes:
 
 ```{r Add a Scaling Layer}
+#install.packages('gridExtra')
+library('gridExtra')
+
+# define individual plots
+p1 <- qplot(x=friend_count, data = pf, color = I('black'), fill = I('#5760AB'), binwidth = 50,
+      xlab = ' Number of friends', ylab= 'Number of users in sample')
+
+p2 <- qplot(x=log10(friend_count+1), data = pf, color = I('black'), fill = I('#5760AB'), binwidth = 0.1,
+      xlab = ' Number of friends', ylab= 'Number of users in sample') + scale_x_log10()
+p3 <- qplot(x=sqrt(friend_count), data = pf, color = I('black'), fill = I('#5760AB'), binwidth = 2,
+      xlab = ' Number of friends',  ylab= 'Number of users in sample')
+
+# arrange plots in grid
+grid.arrange(p1, p2, p3, ncol=1)
 
 ```
 
+```{r Add a Scaling Layer: ggplot}
+#install.packages('gridExtra')
+library('gridExtra')
+
+# define individual plots
+p1 <- ggplot(aes(x = friend_count), data = pf, color = I('black'), fill = I('#5760AB'), binwidth = 50,
+      xlab = ' Number of friends', ylab= 'Number of users in sample') +  geom_histogram()
+
+p2 <- p1 + scale_x_log10()
+p3 <- p1 + scale_x_sqrt()
+
+# arrange plots in grid
+grid.arrange(p1, p2, p3, ncol=1)
+
+```
 ***
 
 
 ### Frequency Polygons
 
 ```{r Frequency Polygons}
+qplot(x = friend_count, data = subset(pf, !is.na(pf$gender)), binwidth = 10, geom ='freqpoly', color = gender) +
+  scale_x_continuous(limits = c(0, 750), breaks = seq(0, 750, 50))
 
+ggplot(aes(x = friend_count, y = ..count../sum(..count..)), data = subset(pf, !is.na(gender))) + 
+  geom_freqpoly(aes(color = gender), binwidth=10) + 
+  scale_x_continuous(limits = c(0, 1000), breaks = seq(0, 1000, 50)) + 
+  xlab('Friend Count') + 
+  ylab('Percentage of users with that friend count')
+       
+       
+ggplot(aes(x = www_likes, y = ..count../sum(..count..)), data = subset(pf, !is.na(gender))) + 
+  geom_freqpoly(aes(color = gender)) + 
+  scale_x_continuous() + scale_x_log10() + xlab('Friend Count') +  ylab('Percentage of users with that friend count')       
 ```
 
 ***
@@ -278,7 +320,16 @@ Notes:
 Notes:
 
 ```{r Likes on the Web}
+# likes received by males
+sum(subset(pf$www_likes,pf$gender=="male"))
 
+# likes received by females
+sum(subset(pf$www_likes,pf$gender=="female"))
+
+
+# SOLUTION
+
+by(pf$www_likes,pf$gender,sum)
 ```
 
 
@@ -288,13 +339,23 @@ Notes:
 Notes:
 
 ```{r Box Plots}
-
+qplot( x= gender, y= friend_count,
+       data= subset(pf, !is.na(gender) & pf$friend_count<=1000),
+       geom = 'boxplot'
+)
+# another option coord_cartesian(ylim= c(0,1000))
 ```
 
 #### Adjust the code to focus on users who have friend counts between 0 and 1000.
 
 ```{r}
+qplot( x= gender, y= friendships_initiated,
+       data= subset(pf, !is.na(gender) & pf$friend_count<=1000),
+       geom = 'boxplot'
+)+
+  coord_cartesian(ylim = c(0,1000))
 
+by(pf$friendships_initiated,pf$gender, summary)
 ```
 
 ***
@@ -303,7 +364,18 @@ Notes:
 Notes:
 
 ```{r Box Plots, Quartiles, and Friendships}
+summary(pf$mobile_likes)
 
+summary(pf$mobile_likes > 0)
+
+pf$mobile_check_in <- NA
+pf$mobile_check_in <- ifelse(pf$mobile_likes>0,1,0)
+pf$mobile_check_in <- factor(pf$mobile_check_in)
+
+summary(pf$mobile_check_in)
+
+#return percentage
+sum( pf$mobile_check_in==1)/length(pf$mobile_check_in)
 ```
 
 #### On average, who initiated more friendships in our sample: men or women?
