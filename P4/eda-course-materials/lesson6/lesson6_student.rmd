@@ -9,9 +9,36 @@ Notes:
 ### Scatterplot Review
 
 ```{r Scatterplot Review}
+# Let's start by examining two variables in the data set.
+# The scatterplot is a powerful tool to help you understand
+# the relationship between two continuous variables.
 
+# We can quickly see if the relationship is linear or not.
+# In this case, we can use a variety of diamond
+# characteristics to help us figure out whether
+# the price advertised for any given diamond is 
+# reasonable or a rip-off.
+
+# Let's consider the price of a diamond and it's carat weight.
+# Create a scatterplot of price (y) vs carat weight (x).
+
+# Limit the x-axis and y-axis to omit the top 1% of values.
+
+# ENTER YOUR CODE BELOW THIS LINE
+# ================================================================
+
+diamonds <- read.csv('diamondsbig.csv')
+
+library(ggplot2)
+
+p1 <-ggplot(aes(x = carat, y= price), data = diamonds)+ geom_jitter(alpha = 1/20) + 
+  xlim(0, quantile(diamonds$carat, 0.99, na.rm = TRUE)) + ylim(0, quantile(diamonds$price, 0.99, na.rm = TRUE))
+
+p1 + stat_smooth(method = 'lm')
 ```
 
+Non linear relation, variance increases with price. Central linear misses keypoints.
+  
 ***
 
 ### Price and Carat Relationship
@@ -37,14 +64,14 @@ Notes:
 
 ```{r ggpairs Function}
 # install these if necessary
-install.packages('GGally')
-install.packages('scales')
-install.packages('memisc')
-install.packages('lattice')
-install.packages('MASS')
-install.packages('car')
-install.packages('reshape')
-install.packages('plyr')
+#install.packages('GGally')
+#install.packages('scales')
+#install.packages('memisc')
+#install.packages('lattice')
+#install.packages('MASS')
+#install.packages('car')
+#install.packages('reshape')
+#install.packages('plyr')
 
 # load the ggplot graphics package and the others
 library(ggplot2)
@@ -55,7 +82,9 @@ library(memisc)
 # sample 10,000 diamonds from the data set
 set.seed(20022012)
 diamond_samp <- diamonds[sample(1:length(diamonds$price), 10000), ]
-ggpairs(diamond_samp, params = c(shape = I('.'), outlier.shape = I('.')))
+#ggpairs(diamond_samp, params = c(shape = I('.'), outlier.shape = I('.')))
+
+ggpairs(diamond_samp,lower = list(continuous = wrap("points", shape = I('.'))), upper = list(combo = wrap("box", outlier.shape = I('.'))))
 ```
 
 What are some things you notice in the ggpairs output?
