@@ -1,0 +1,34 @@
+% This file was created with JabRef 2.10b2.
+% Encoding: UTF-8
+
+
+@Electronic{slides_t_test,
+  Author                   = {Department of Cognitive Science},
+  Organization             = {BME Faculty of Natural Sciences of Budapest},
+  Url                      = {http://www.cogsci.bme.hu/~ktkuser/KURZUSOK/BMETE47MC38/2015_2016_1/7_The%},
+
+  Owner                    = {mabelvj},
+  Timestamp                = {2016.12.20}
+}
+
+@Electronic{stanford_t_test,
+  Title                    = {Paired t-tests},
+  Author                   = {Shier, Rosoe},
+  HowPublished             = {online},
+  Language                 = {http://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf},
+  Url                      = {http://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf},
+  Year                     = {2014},
+
+  Owner                    = {mabelvj},
+  Timestamp                = {2016.12.20}
+}
+
+@Electronic{t-table,
+  Title                    = {t-table},
+  Author                   = {Udacity},
+  Url                      = {https://s3.amazonaws.com/udacity-hosted-downloads/t-table.jpg},
+
+  Owner                    = {mabelvj},
+  Timestamp                = {2016.12.20}
+}
+

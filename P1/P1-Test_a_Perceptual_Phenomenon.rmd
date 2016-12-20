@@ -3,28 +3,22 @@ title: 'Project 1 : Test a Perceptual Phenomenon'
 author: "Isabel María Villalba Jiménez"
 date: "6 de diciembre de 2016"
 output:
-  pdf_document:
-    citation_package: natbib
-    fig_caption: yes
-    fig_height: 6
-    fig_width: 7
-    keep_tex: yes
-    latex_engine: pdflatex
-    toc: no
-#    depth: 3  # upto three depths of headings (specified by #, ## and ###)
-#    number_sections: true  ## if you want number sections at each table header
-#    theme: united  # many options for theme, this one is my favorite.
-    highlight: tango  # specifies the syntax highlighting style
-#    css: my.css   # you can add your custom css, should be in same folder
   html_document:
     fig_caption: yes
     fig_height: 6
     fig_width: 7
-    toc: yes
-biblio-style: apsr
+  pdf_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    highlight: tango
+    keep_tex: yes
+    toc: no
+bibliography: P1.bib
 ---
 
 ```{r global_options, echo=FALSE}
+
 library(knitr)
 knitr::opts_chunk$set(message=FALSE, warning=FALSE,
                       echo= TRUE , results="hide", fig.width=6, fig.height=4)
@@ -32,6 +26,13 @@ opts_chunk$set(tidy.opts=list(width.cutoff=55),tidy=TRUE)  #prevent overloading
 #fig.path="Figs/"
 #fig.width=10
 
+#knitcitations
+library(devtools)
+#install_github("cboettig/knitcitations")
+library("knitcitations")
+cleanbib()
+#pandoc style as default
+#options(citation_format = pandoc)
 ```
 
 
@@ -47,18 +48,20 @@ opts_chunk$set(tidy.opts=list(width.cutoff=55),tidy=TRUE)  #prevent overloading
 
 ### 1. What is our independent variable? What is our dependent variable?
 
-> The **independent variable** are the conditions (congruent and incongruent), and the **dependent variable** is the time to name the ink color in equally-sized lits.
+> The **independent variabled** are the conditions (congruent and incongruent), and the **dependent variable** is the time to name the ink color in equally-sized lits.
 
 ### 2. What is an appropriate set of hypotheses for this task? What kind of statistical test do you expect to perform? Justify your choices.
 
-> The null hypothesis will be that congruent and incongruent conditions' times will be the same, that people identify equally fast the color in both conditions. The alternative hypothesis will be that the mean is changed.
+> The null hypothesis will be that congruent's and incongruent's condition times will be the same, that people will identify equally fast the color in both conditions. The alternative hypothesis will be that the mean is changed.
 
->  I expect to perform a **single-tailed test** , since I think the time for the *incongruent* case will be higher than the one for the *congruent* case. Details of the means will be reviewed in the next section. One option can be to perform the test on differential measures to check the variations.
+>  I expect to perform a **single-tailed test** , since I think the time for the *incongruent* case will be higher than the one for the *congruent* case. Details of the means will be reviewed in the next section. One option can be to perform the test on **differential measures** to check the variations. 
+
+> Hence, the hypotheses will be:
 
 > - $H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0$
 > - $H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0$
 
-> for *c* and *i* standing for *congruent* and *incongruent*, respectively.
+> for *c* and *i* standing, respectively, for *congruent* and *incongruent*.
 
 Now it’s your chance to try out the Stroop task for yourself. Go to this [link](https://faculty.washington.edu/chudler/java/ready.html), which has a Java-based applet for performing the Stroop task. Record the times that you received on the task (you do not need to submit your times to the site.) Now, download this [dataset](https://drive.google.com/file/d/0B9Yf01UaIbUgQXpYb2NhZ29yX1U/view?usp=sharing) which contains results from a number of participants in the task. Each row of the dataset contains the performance for one participant, with the first number their results on the congruent task and the second number their performance on the incongruent task.
 
@@ -120,7 +123,7 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 
 <!-- > The graphic including all the data has a normal shape, with mean XX and standard deviation XX. Outliers are present in the upper side of the distribution. -->
 
-> Both the *congruent* and the *incongruent* group are normal distributions with different mean values (bigger mean time for the *incongruent* case) and similar standard deviations.
+> Both the *congruent* and the *incongruent* group are normal distributions with different mean values (bigger mean time for the *incongruent* case) and similar standard deviations. In the case of the incongruent condition there is a significant presence of outlieres in the upper side of the distribution.
 
 
 ### 5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
@@ -133,20 +136,20 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
         t <-  mu_diff / SE
 ```
     
-#### **Hypothesis**
+#### **Hypotheses**
 
 > - $H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0$
 > - $H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0$
 
 #### **Difference test**
 
->  The test used is the difference test, which is used to evaluate the performance on a group of subjects after changing the conditions, as it is done in the Stroop experiment. The steps are the following @stanford_t_test:
+>  The test used is the difference test, which is used to evaluate the performance on a group of subjects after changing the conditions, as it is done in the Stroop experiment. The steps are the following [@stanford_t_test, @slides_t_test]:
 
 >1. Calculate the difference $d= t_i-t_c$
->2. Calculate the mean of the difference $\bar{d}=$ `r round(mu_diff, 3)` 
->3. Calculate the standard error $SE(\bar{d})= \frac{s_d}{\sqrt{n}}$, for $s_d$ the standard deviation of the differences. $SE(\bar{d})= \frac{s_d}{\sqrt{n}}=$ `r round(SE, digits = 3)`
->4. Calculate the t-statistic: $t=\frac{\bar{d}}{SE(\bar{d})}=$ `r round(t,digits=3)`. Under the null distribution this statistic follows a t-distribution with n-1 degrees of freedom.
->5.  See where t falls in the $t_{n-1}$ distribution Get the value fron the table: this will give the p-value for the paired t-test.`r t_critical=qt(0.95,dfr)` $t_{critical}=$ `r round(t_critical,3)`
+>2. Calculate the mean of the difference $\bar{d}=$ `r round(mu_diff, 3)` s
+>3. Calculate the standard error $SE(\bar{d})= \frac{s_d}{\sqrt{n}}$, for $s_d$ the standard deviation of the differences. $SE(\bar{d})= \frac{s_d}{\sqrt{n}}=$ `r round(SE, digits = 3)` s
+>4. Calculate the t-statistic: $t=\frac{\bar{d}}{SE(\bar{d})}=$ `r round(t,digits=3)`. Under the null distribution this statistic follows a t-distribution with n-1 (`r dfr`) degrees of freedom.
+>5.  See where t falls in the $t_{n-1}$ distribution Get the value fron the table: this will give the p-value for the paired t-test [@t-table].`r t_critical=qt(0.95,dfr)` $t_{critical}=$ `r round(t_critical,3)`
 
 > $t> t_{critical} \rightarrow$ t lies in the critical region
 
@@ -154,17 +157,17 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 
 #### **Margin of error**
 
-> $\bar{d} \pm t^* \frac{s_d}{\sqrt{n}}=$ [`r round(mu_diff+ qt(0.025,dfr)*SE,3)`, `r round(mu_diff- qt(0.025,dfr)*SE,3)`] 
+> $\bar{d} \pm t^* \frac{s_d}{\sqrt{n}}=$ [`r round(mu_diff+ qt(0.025,dfr)*SE,3)`s, `r round(mu_diff- qt(0.025,dfr)*SE,3)`s] 
 > for $t^*$ the value for 2.5% fot a t-distribution for n-1 degrees of freedom. 
 
 
 #### **Cohen's d**
 
-> For the case of the paired test Cohen's d is defined as the difference of means between the post-test and pre-test treatments divided by the standard deviation of the pre-test condition.
+> For the case of the paired test, Cohen's d is defined as the difference of means between the post-test and pre-test treatments divided by the standard deviation of the pre-test condition.
 
 > $Cohen's\; d= \frac{\mu_i-\mu_c}{SD_c}=$ `r c_d <- (mu_i-mu_c)/s_c ; round(c_d,3)`
 
-### **$r^2$**
+#### **Coefficient of determination $r^2$**
 
 > $r^2= \frac{t^2}{t^2+df}=$ `r r_2<-t**2/(t**2+dfr); round(r_2,3)`
 
@@ -174,53 +177,6 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 
 # References
 
----
-references:
-- id: stanford_t_test
-  title: Paired t-tests
-  author:
-  - family: Shier
-    given: Rosoe
-  URL: 'http://www.statstutor.ac.uk/resources/uploaded/paired-t-test.pdf'
-  issued:
-    year: 2014
-
----
-https://s3.amazonaws.com/udacity-hosted-downloads/t-table.jpg
-
-http://www.cogsci.bme.hu/~ktkuser/KURZUSOK/BMETE47MC38/2015_2016_1/7_The%20t-test.pdf  
-
-<!-- >
-Independent samples!
-### **Standard error**
-
-> It can be considered that this test is performed on independent samples, as *congruent* and *incongruent* cases have different independent parameters. the **standard error** will be
-
-> $$SE = \frac{S}{\sqrt{n}}= \frac{\sqrt{S_1^2+S_2^2}}{\sqrt{n}} =\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}$$
-
-> for $n_1$ and $n_2$ the size of each sample group.
-
-> The SE will be in this case `r round(SE, digits = 3) `.
-
-### **Degrees of freedom**
-
-> The dregrees of freedom for two independen group of samples can be expressed as : $df= n_1 + n_2 - 2=$ `r dfr`.
-
-### **Type of test**
-
->  Figure 1 shows that $\mu_i>\mu_c$, so a single-tailed test  for the upper side will be performed ($\mu_i- \mu_c$), with a $\alpha$ = 0.05, $t_{critical}|_{df=50} < p < t_{critical}|_{df=40} \rightarrow 1.676< t_critical < 1.684$ `r t_critical <- 1.676`. In this case I will stick to the more restrictive condition, this is $t_{critical}=$ `r t_critical`.
-
-### **t**
-
-
-> $t = \frac{\mu_i - \mu_c }{SE}=$ `r t` $>t_{critical}=$ `r t_critical `
-
-```{r} 
-#df_diff <- subset(data.frame(df.diff), abs(df.diff)<3.*s_diff)
-
-p2 <- ggplot(df_diff, aes(x=df.diff)) + geom_histogram(aes(y=..density..),fill="grey", binwidth = 0.5) + geom_density(aes(x=df_diff$df.diff), alpha=.2, linetype= "dashed") +geom_vline(xintercept=mean(df_diff$df.diff),linetype="dashed", color="red")#+ xlim(0,16)
-
-# Use grey scale
-p2 + scale_color_grey() + theme_classic() +
-  theme(legend.position="top")
+```{r Print_refs, echo=FALSE, message=FALSE}
+#write.bibtex(file="P1.bib")
 ```

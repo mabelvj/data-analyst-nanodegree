@@ -7,8 +7,10 @@ In a Stroop task, participants are presented with a list of words, with each wor
 As a general note, be sure to keep a record of any resources that you use or refer to in the creation of your project. You will need to report your sources as part of the project submission.
 
 1. What is our independent variable? What is our dependent variable?
+> The **independent variable** are the conditions (congruent and incongruent), and the **dependent variable** is the tame to name the ink color in equally-sized lits.
 2. What is an appropriate set of hypotheses for this task? What kind of statistical test do you expect to perform? Justify your choices.
-
+> - $ H_0 : \mu_{c} = \mu_{i}$
+> - $ H_a : \mu_{c} \neq \mu_{i}$
 	Now it’s your chance to try out the Stroop task for yourself. Go to this [link](https://faculty.washington.edu/chudler/java/ready.html), which has a Java-based applet for performing the Stroop task. Record the times that you received on the task (you do not need to submit your times to the site.) Now, download this [dataset](https://drive.google.com/file/d/0B9Yf01UaIbUgQXpYb2NhZ29yX1U/view?usp=sharing) which contains results from a number of participants in the task. Each row of the dataset contains the performance for one participant, with the first number their results on the congruent task and the second number their performance on the incongruent task.
 
 3. Report some descriptive statistics regarding this dataset. Include at least one measure of central tendency and at least one measure of variability.

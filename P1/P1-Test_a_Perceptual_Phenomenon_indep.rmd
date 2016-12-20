@@ -1,0 +1,182 @@
+---
+title: 'Project 1 : Test a Perceptual Phenomenon'
+author: "Isabel María Villalba Jiménez"
+date: "6 de diciembre de 2016"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+  pdf_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+---
+
+```{r global_options, echo=FALSE}
+library(knitr)
+knitr::opts_chunk$set(message=FALSE, warning=FALSE,
+                      echo= TRUE , results="hide")
+opts_chunk$set(tidy.opts=list(width.cutoff=55),tidy=TRUE)  #prevent overloading
+#fig.path="Figs/"
+#fig.width=10
+
+```
+
+
+
+#Project Instructions
+
+
+## Background Information
+  In a Stroop task, participants are presented with a list of words, with each word displayed in a color of ink. The participant’s task is to say out loud the color of the ink in which the word is printed. The task has two conditions: a congruent words condition, and an incongruent words condition. In the congruent words condition, the words being displayed are color words whose names match the colors in which they are printed: for example <span style="color:red">RED </span>, <span style="color:blue">BLUE </span>. In the incongruent words condition, the words displayed are color words whose names do not match the colors in which they are printed: for example <span style="color:green">PURPLE</span>, <span style="color:purple"> ORANGE</span>. In each case, we measure the time it takes to name the ink colors in equally-sized lists. Each participant will go through and record a time from each condition.
+
+##Questions For Investigation
+  As a general note, be sure to keep a record of any resources that you use or refer to in the creation of your project. You will need to report your sources as part of the project submission.
+
+1. What is our independent variable? What is our dependent variable?
+
+> The **independent variable** are the conditions (congruent and incongruent), and the **dependent variable** is the time to name the ink color in equally-sized lits.
+
+2. What is an appropriate set of hypotheses for this task? What kind of statistical test do you expect to perform? Justify your choices.
+
+> The null hypothesis will be that congruent and incongruent conditions' times will be the same, that people identify equally fast the color in both conditions. The alternative hypothesis will be that the mean is changed.
+
+>  I expect to perform a **single-tailed test** , since I think the time for the *incongruent* case will be higher than the one for the *congruent* case. Details of the means will be reviewed in the next section. One option can be to perform the test on differential measures to check the variations.
+
+> - $H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0$
+> - $H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0$
+
+> for *c* and *i* standing for *congruent* and *incongruent*, respectively.
+
+Now it’s your chance to try out the Stroop task for yourself. Go to this [link](https://faculty.washington.edu/chudler/java/ready.html), which has a Java-based applet for performing the Stroop task. Record the times that you received on the task (you do not need to submit your times to the site.) Now, download this [dataset](https://drive.google.com/file/d/0B9Yf01UaIbUgQXpYb2NhZ29yX1U/view?usp=sharing) which contains results from a number of participants in the task. Each row of the dataset contains the performance for one participant, with the first number their results on the congruent task and the second number their performance on the incongruent task.
+
+3. Report some descriptive statistics regarding this dataset. Include at least one measure of central tendency and at least one measure of variability.
+
+
+    ```{r read csv} 
+library(reshape2)
+df <- read.csv('~/Git/data-analyst-nanodegree/P1/stroopdata.csv', sep=",", header = TRUE)
+
+#Total population 
+mu_total <-  mean(melt(df)$value)
+s_total <- sd(melt(df)$value)
+sprintf('Total mean is %.3f s, standard deviation is %.3f s', mu_total, s_total)
+
+# Differential case
+df.diff <- df$Incongruent-df$Congruent
+
+mu_diff <-  mean(df.diff)
+s_diff <- sd(df.diff)
+sprintf('Mean of differences is %.3f s, standard deviation is %.3f s', mu_diff, s_diff)
+
+#Congruent
+mu_c <- mean(df$Congruent)
+s_c <- sd(df$Congruent)
+
+sprintf('Congruent mean is %.3f s, standard deviation is %.3f s', mu_c, s_c )
+
+#Inconruent
+mu_i <- mean(df$Incongruent)
+s_i <- sd(df$Incongruent)
+
+sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
+```
+
+> The mean for the **both conditions** is `r round(mu_total, digits=3)` s with a standard deviation of `r round(s_total, digits=3)` s.
+
+> The mean for the **congruent condition** is `r round(mu_c, digits=3)` s with a standard deviation of `r round(s_c, digits=3)` s.
+
+> The mean for the **incongruent condition** is `r round(mu_i, digits=3)` s with a standard deviation of `r round(s_i, digits=3)` s.
+
+
+4. Provide one or two visualizations that show the distribution of the sample data. Write one or two sentences noting what you observe about the plot or plots.
+
+    ```{r visualization, fig.cap = " Figure 1: Data distribution \\label{fig1_normal}"} 
+    library(ggplot2)
+    library(reshape2)
+    
+    library(plyr)
+    mu <- ddply(melt(df), "variable", summarise, grp.mean=mean(value));
+    
+    p <- ggplot(melt(df), aes(x=value, fill=variable))+ geom_histogram(aes(y=..density..),  alpha=0.3) +geom_density(aes(x = value, color = variable), alpha=.6, linetype= "dashed")
+    
+    #Add mean lines
+    p+ geom_vline(data=mu, aes(xintercept=grp.mean, color=variable),
+                 linetype="dashed", alpha=1)
+    
+    ```
+
+
+<!-- > The graphic including all the data has a normal shape, with mean XX and standard deviation XX. Outliers are present in the upper side of the distribution. -->
+
+> Both the *congruent* and the *incongruent* group are normal distributions with different mean values (bigger mean time for the *incongruent* case) and similar standard deviations.
+
+
+5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
+
+    ```{r}
+        df_diff <- data.frame(df.diff)
+        n <- length(df_diff)  
+        df <- n-1
+        SE <- s_diff/sqrt(n)
+        t <-  mu_diff / SE
+    ```
+### **Hypothesis**
+
+> - $H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0$
+> - $H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0$
+
+### **Differential test**
+
+> For the case of a diffrential test, the resultant gaussian can be expressed as  $$N(\mu_1, \sigma_1) - N(\mu_2, \sigma_2) = N(\mu_1-\mu_2, \sqrt{\sigma_1^2-\sigma_2^2})$$
+
+### **Standard error**
+
+> It can be considered that this test is performend on independent samples, as *congruent* and *incongruent* cases have different independent parameters. the **standard error** will be
+
+> $$SE = \frac{S}{\sqrt{n}}= \frac{\sqrt{S_1^2+S_2^2}}{\sqrt{n}} =\sqrt{\frac{S_1^2}{n_1}+\frac{S_2^2}{n_2}}$$
+
+> for $n_1$ and $n_2$ the size of each sample group.
+
+> The SE will be in this case `r round(SE, digits = 3) `.
+
+### **Degrees of freedom**
+
+> The dregrees of freedom for two independen group of samples can be expressed as : $df= n_1 + n_2 - 2=$ `r df`.
+
+### **Type of test**
+
+>  Figure 1 shows that $\mu_i>\mu_c$, so a single-tailed test  for the upper side will be performed ($\mu_i- \mu_c$), with a $\alpha$ = 0.05, $t_{critical}|_{df=50} < p < t_{critical}|_{df=40} \rightarrow 1.676< t_critical < 1.684$ `r t_critical <- 1.676`. In this case I will stick to the more restrictive condition, this is $t_{critical}=$ `r t_critical`.
+
+### **t**
+
+> $t = \frac{\mu_i - \mu_c }{SE}=$ `r t` $>t_{critical}=$ `r t_critical `
+
+> **t lies in the critical region in the upper side.**
+
+> **<span style="color:red"> Results are statistically significant: NULL is REJECTED <span>**
+
+### **Margin of error**
+### **Cohen's d**
+
+### **$r^2$**
+
+
+#https://s3.amazonaws.com/udacity-hosted-downloads/t-table.jpg
+6. Optional: What do you think is responsible for the effects observed? Can you think of an alternative or similar task that would result in a similar effect? Some research about the problem will be helpful for thinking about these two questions!
+
+
+
+
+
+```{r} 
+#df_diff <- subset(data.frame(df.diff), abs(df.diff)<3.*s_diff)
+
+p2 <- ggplot(df_diff, aes(x=df.diff)) + geom_histogram(aes(y=..density..),fill="grey", binwidth = 0.5) + geom_density(aes(x=df_diff$df.diff), alpha=.2, linetype= "dashed") +geom_vline(xintercept=mean(df_diff$df.diff),linetype="dashed", color="red")+ xlim(0,16)
+
+# Use grey scale
+p2 + scale_color_grey() + theme_classic() +
+  theme(legend.position="top")
+
+```
