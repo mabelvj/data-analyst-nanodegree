@@ -1,7 +1,7 @@
 ---
 title: 'Project 1 : Test a Perceptual Phenomenon'
 author: "Isabel María Villalba Jiménez"
-date: "6 de diciembre de 2016"
+date: "December 6th, 2016"
 output:
   html_document:
     fig_caption: yes
@@ -17,12 +17,12 @@ output:
 bibliography: P1.bib
 ---
 
-```{r global_options, echo=FALSE}
+```{r global_options, echo=FALSE, message=FALSE}
 
 library(knitr)
 knitr::opts_chunk$set(message=FALSE, warning=FALSE,
                       echo= TRUE , results="hide", fig.width=6, fig.height=4)
-opts_chunk$set(tidy.opts=list(width.cutoff=55),tidy=TRUE)  #prevent overloading
+opts_chunk$set(tidy.opts=list(width.cutoff=50),tidy=TRUE)  #prevent overloading
 #fig.path="Figs/"
 #fig.width=10
 
@@ -54,14 +54,18 @@ cleanbib()
 
 > The null hypothesis will be that congruent's and incongruent's condition times will be the same, that people will identify equally fast the color in both conditions. The alternative hypothesis will be that the mean is changed.
 
->  I expect to perform a **single-tailed test** , since I think the time for the *incongruent* case will be higher than the one for the *congruent* case. Details of the means will be reviewed in the next section. One option can be to perform the test on **differential measures** to check the variations. 
+>  I expect to perform a **single-tailed test** , since I think the time for the *incongruent* case will be higher than the one for the *congruent* case. Details of the means will be reviewed in the next section. One option can be to perform the test on **differential measures** to check the variations.
+
+> As the population in each sample is limited, it is better to use a **t-test**. This type of test is used in limited samples sizes, where the mean and variance are not known and it cannot be assumed a normal distirbution, using an estimation of it instead.
+
+> The test is performed chencking who different the means (denoted by $\mu$) are. In this specific case, $\mu$ will stand for the time spent to name the correct ink colors.
 
 > Hence, the hypotheses will be:
 
 > - $H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0$
-> - $H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0$
+> - $H_a : \mu_{i}  > \mu_{c} \rightarrow \mu_D = \mu_{i} - \mu_{c} > 0$
 
-> for *c* and *i* standing, respectively, for *congruent* and *incongruent*.
+> where for *c*, *i* and *D* standing, respectively, for *congruent*, *incongruent* and *difference*, and $\mu$ the mean time spent in each condition.
 
 Now it’s your chance to try out the Stroop task for yourself. Go to this [link](https://faculty.washington.edu/chudler/java/ready.html), which has a Java-based applet for performing the Stroop task. Record the times that you received on the task (you do not need to submit your times to the site.) Now, download this [dataset](https://drive.google.com/file/d/0B9Yf01UaIbUgQXpYb2NhZ29yX1U/view?usp=sharing) which contains results from a number of participants in the task. Each row of the dataset contains the performance for one participant, with the first number their results on the congruent task and the second number their performance on the incongruent task.
 
@@ -105,19 +109,28 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 
 ### 4. Provide one or two visualizations that show the distribution of the sample data. Write one or two sentences noting what you observe about the plot or plots.
 
-```{r visualization, fig.cap = "Data distribution \\label{fig1_normal}"}
+```{r visualization, fig.cap = "Data distribution \\label{fig1_normal}", fig.width=6, fig.height=8, tidy=TRUE, , tidy.opts=list(width.cutoff=40)}
     library(ggplot2)
-    library(reshape2)
-    
     library(plyr)
-    mu <- ddply(melt(df), "variable", summarise, grp.mean=mean(value));
+
+    mu <- ddply(melt(df), "variable", summarise, grp.mean=mean(value)); # silence
     
-    p <- ggplot(melt(df), aes(x=value, fill=variable))+ geom_histogram(aes(y=..density..),  alpha=0.3) +geom_density(aes(x = value, color = variable), alpha=.6, linetype= "dashed")
+    p <- ggplot(melt(df), aes(x=value, fill=variable))+ 
+      geom_histogram(aes(y=..density..),  alpha=0.3) +
+      geom_density(aes(x = value, color = variable), alpha=.6, linetype= "dashed")
     
     #Add mean lines
-    p+ geom_vline(data=mu, aes(xintercept=grp.mean, color=variable),
+    p1<-p + geom_vline(data=mu, aes(xintercept=grp.mean, color=variable),
                  linetype="dashed", alpha=1)
     
+    p2 <- ggplot(melt(df), aes(y=value,  x= variable, color = variable, 
+                               fill= variable, shape= variable)) +  
+      geom_boxplot(alpha=1/3, fill="white", outlier.alpha= 0) + 
+      geom_dotplot(binaxis = 'y', binwidth = 1, method = "histodot")
+    
+    library(gridExtra)
+    
+    grid.arrange(p1, p2, ncol = 1)
     ```
 
 
@@ -128,7 +141,7 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 
 ### 5. Now, perform the statistical test and report your results. What is your confidence level and your critical statistic value? Do you reject the null hypothesis or fail to reject it? Come to a conclusion in terms of the experiment task. Did the results match up with your expectations?
 
-```{r}
+```{r calculations}
         df_diff <- data.frame(df.diff)
         n <- nrow(df_diff)  
         dfr <- n-1
@@ -154,6 +167,8 @@ sprintf('Incogruent mean is %.3f s, standard deviation is %.3f s', mu_i, s_i)
 > $t> t_{critical} \rightarrow$ t lies in the critical region
 
 > **<span style="color:red"> Results are statistically significant: NULL is REJECTED <span>**
+
+> From the data dsitribution and the mean values it could be already seen that the case where text name and ink color is incongruent produced people to take longer to identify the ink color. After performing the single tailed test, the t-statistic has lied in the critical region, way beyond the t-critical, what confirms that not only the null hypothesis is rejected, but the time taken to identify the proper ink color is signinficantly higher for the incongruent case.  
 
 #### **Margin of error**
 

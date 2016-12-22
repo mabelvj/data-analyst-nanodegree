@@ -121,7 +121,7 @@
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{6 de diciembre de 2016}
+  \date{December 6th, 2016}
 
 
 \begin{document}
@@ -182,6 +182,19 @@ measures} to check the variations.
 \end{quote}
 
 \begin{quote}
+As the population in each sample is limited, it is better to use a
+\textbf{t-test}. This type of test is used in limited samples sizes,
+where the mean and variance are not known and it cannot be assumed a
+normal distirbution, using an estimation of it instead.
+\end{quote}
+
+\begin{quote}
+The test is performed chencking who different the means (denoted by
+\(\mu\)) are. In this specific case, \(\mu\) will stand for the time
+spent to name the correct ink colors.
+\end{quote}
+
+\begin{quote}
 Hence, the hypotheses will be:
 \end{quote}
 
@@ -191,13 +204,14 @@ Hence, the hypotheses will be:
 \item
   \(H_0 : \mu_{c} = \mu_{i} \rightarrow \mu_D =0\)
 \item
-  \(H_a : \mu_{c} \neq \mu_{i} \rightarrow \mu_D \neq 0\)
+  \(H_a : \mu_{i} > \mu_{c} \rightarrow \mu_D = \mu_{i} - \mu_{c} > 0\)
 \end{itemize}
 \end{quote}
 
 \begin{quote}
-for \emph{c} and \emph{i} standing, respectively, for \emph{congruent}
-and \emph{incongruent}.
+where for \emph{c}, \emph{i} and \emph{D} standing, respectively, for
+\emph{congruent}, \emph{incongruent} and \emph{difference}, and \(\mu\)
+the mean time spent in each condition.
 \end{quote}
 
 Now it's your chance to try out the Stroop task for yourself. Go to this
@@ -275,20 +289,27 @@ plots.}\label{provide-one-or-two-visualizations-that-show-the-distribution-of-th
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(ggplot2)}
-\KeywordTok{library}\NormalTok{(reshape2)}
+    \KeywordTok{library}\NormalTok{(ggplot2)}
+    \KeywordTok{library}\NormalTok{(plyr)}
 
-\KeywordTok{library}\NormalTok{(plyr)}
-\NormalTok{mu <-}\StringTok{ }\KeywordTok{ddply}\NormalTok{(}\KeywordTok{melt}\NormalTok{(df), }\StringTok{"variable"}\NormalTok{, summarise, }\DataTypeTok{grp.mean =} \KeywordTok{mean}\NormalTok{(value))}
-
-\NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{melt}\NormalTok{(df), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \NormalTok{value, }\DataTypeTok{fill =} \NormalTok{variable)) +}\StringTok{ }
-\StringTok{    }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =} \NormalTok{..density..), }\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{) +}\StringTok{ }
-\StringTok{    }\KeywordTok{geom_density}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \NormalTok{value, }\DataTypeTok{color =} \NormalTok{variable), }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{, }
-        \DataTypeTok{linetype =} \StringTok{"dashed"}\NormalTok{)}
-
-\CommentTok{# Add mean lines}
-\NormalTok{p +}\StringTok{ }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{data =} \NormalTok{mu, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{xintercept =} \NormalTok{grp.mean, }\DataTypeTok{color =} \NormalTok{variable), }
-    \DataTypeTok{linetype =} \StringTok{"dashed"}\NormalTok{, }\DataTypeTok{alpha =} \DecValTok{1}\NormalTok{)}
+    \NormalTok{mu <-}\StringTok{ }\KeywordTok{ddply}\NormalTok{(}\KeywordTok{melt}\NormalTok{(df), }\StringTok{"variable"}\NormalTok{, summarise, }\DataTypeTok{grp.mean=}\KeywordTok{mean}\NormalTok{(value)); }\CommentTok{# silence}
+    
+    \NormalTok{p <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{melt}\NormalTok{(df), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{value, }\DataTypeTok{fill=}\NormalTok{variable))+}\StringTok{ }
+\StringTok{      }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{..density..),  }\DataTypeTok{alpha=}\FloatTok{0.3}\NormalTok{) +}
+\StringTok{      }\KeywordTok{geom_density}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \NormalTok{value, }\DataTypeTok{color =} \NormalTok{variable), }\DataTypeTok{alpha=}\NormalTok{.}\DecValTok{6}\NormalTok{, }\DataTypeTok{linetype=} \StringTok{"dashed"}\NormalTok{)}
+    
+    \CommentTok{#Add mean lines}
+    \NormalTok{p1<-p +}\StringTok{ }\KeywordTok{geom_vline}\NormalTok{(}\DataTypeTok{data=}\NormalTok{mu, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{xintercept=}\NormalTok{grp.mean, }\DataTypeTok{color=}\NormalTok{variable),}
+                 \DataTypeTok{linetype=}\StringTok{"dashed"}\NormalTok{, }\DataTypeTok{alpha=}\DecValTok{1}\NormalTok{)}
+    
+    \NormalTok{p2 <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{melt}\NormalTok{(df), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y=}\NormalTok{value,  }\DataTypeTok{x=} \NormalTok{variable, }\DataTypeTok{color =} \NormalTok{variable, }
+                               \DataTypeTok{fill=} \NormalTok{variable, }\DataTypeTok{shape=} \NormalTok{variable)) +}\StringTok{  }
+\StringTok{      }\KeywordTok{geom_boxplot}\NormalTok{(}\DataTypeTok{alpha=}\DecValTok{1}\NormalTok{/}\DecValTok{3}\NormalTok{, }\DataTypeTok{fill=}\StringTok{"white"}\NormalTok{, }\DataTypeTok{outlier.alpha=} \DecValTok{0}\NormalTok{) +}\StringTok{ }
+\StringTok{      }\KeywordTok{geom_dotplot}\NormalTok{(}\DataTypeTok{binaxis =} \StringTok{'y'}\NormalTok{, }\DataTypeTok{binwidth =} \DecValTok{1}\NormalTok{, }\DataTypeTok{method =} \StringTok{"histodot"}\NormalTok{)}
+    
+    \KeywordTok{library}\NormalTok{(gridExtra)}
+    
+    \KeywordTok{grid.arrange}\NormalTok{(p1, p2, }\DataTypeTok{ncol =} \DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -374,6 +395,16 @@ is done in the Stroop experiment. The steps are the following (Shier
 
 \begin{quote}
 \textbf{ Results are statistically significant: NULL is REJECTED }
+\end{quote}
+
+\begin{quote}
+From the data dsitribution and the mean values it could be already seen
+that the case where text name and ink color is incongruent produced
+people to take longer to identify the ink color. After performing the
+single tailed test, the t-statistic has lied in the critical region, way
+beyond the t-critical, what confirms that not only the null hypothesis
+is rejected, but the time taken to identify the proper ink color is
+signinficantly higher for the incongruent case.
 \end{quote}
 
 \paragraph{\texorpdfstring{\textbf{Margin of
