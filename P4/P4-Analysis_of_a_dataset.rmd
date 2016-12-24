@@ -30,8 +30,9 @@ biblio-style: apsr
 # Notice that the parameter "echo" was set to FALSE for this code chunk.
 # This prevents the code from displaying in the knitted HTML output.
 # You should set echo=FALSE for all code chunks in your file.
-
+#setwd('Git/data-analyst-nanodegree/P4/')
 library(ggplot2)
+
 ```
 
 ```{r echo=FALSE, Load_the_Data}
