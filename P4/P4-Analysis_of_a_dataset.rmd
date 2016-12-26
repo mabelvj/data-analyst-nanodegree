@@ -16,8 +16,6 @@ output:
     fig_width: 7
     highlight: tango
     keep_tex: yes
-    latex_engine: pdflatex
-    toc: no
 bibliography: P4.bib
 biblio-style: apsr
 ---
@@ -86,6 +84,8 @@ p3_b <-ggplot(aes(y = citric.acid, x= quality.cat, color= quality.cat), data = r
 
 grid.arrange(p1_a, p1_b,p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
 ```
+> The quality is directly proportional to fixed acidity and inverselly proportional to volatile acidity. High citric acid levels are indicative of good quality. 
+
 ```{r echo=FALSE, Univariate_Plots_residual_sugar}
 #Residual sugar
 p4_a <- ggplot(aes(x = residual.sugar, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() #+ theme_light(base_size = 10)
@@ -93,6 +93,7 @@ p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, color= quality.cat), data 
 
 grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
 ```
+> The better the wine the higher the residual sugar levels. 
 ```{r echo=FALSE, Univariate_Plots_chlorides}
 #Chlorides
 p5_a <- ggplot(aes(x = chlorides, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() #+ theme_light(base_size = 10)
