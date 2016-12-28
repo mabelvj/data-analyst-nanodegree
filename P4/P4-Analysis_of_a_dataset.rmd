@@ -84,7 +84,7 @@ p3_b <-ggplot(aes(y = citric.acid, x= quality.cat, color= quality.cat), data = r
 
 grid.arrange(p1_a, p1_b,p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
 ```
-> The quality is directly proportional to fixed acidity and inverselly proportional to volatile acidity. High citric acid levels are indicative of good quality. 
+> The quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
 ```{r echo=FALSE, Univariate_Plots_residual_sugar}
 #Residual sugar
@@ -94,6 +94,7 @@ p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, color= quality.cat), data 
 grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
 ```
 > The better the wine the higher the residual sugar levels. 
+
 ```{r echo=FALSE, Univariate_Plots_chlorides}
 #Chlorides
 p5_a <- ggplot(aes(x = chlorides, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() #+ theme_light(base_size = 10)
@@ -110,6 +111,11 @@ p7_b <-ggplot(aes(y = total.sulfur.dioxide, x= quality.cat, color= quality.cat),
 
 grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10)
 ```
+
+
+> In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
+
+
 ```{r echo=FALSE, Univariate_Plots_density}
 #Density
 p8_a <- ggplot(aes(x = density, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.0005) +  scale_x_log10() #+ theme_light(base_size = 10)
