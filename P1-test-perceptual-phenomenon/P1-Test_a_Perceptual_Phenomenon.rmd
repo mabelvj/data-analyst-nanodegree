@@ -3,10 +3,6 @@ title: 'Project 1 : Test a Perceptual Phenomenon'
 author: "Isabel María Villalba Jiménez"
 date: "December 6th, 2016"
 output:
-  html_document:
-    fig_caption: yes
-    fig_height: 6
-    fig_width: 7
   pdf_document:
     fig_caption: yes
     fig_height: 6
@@ -14,6 +10,10 @@ output:
     highlight: tango
     keep_tex: yes
     toc: no
+  html_document:
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
 bibliography: P1.bib
 ---
 
@@ -48,7 +48,7 @@ cleanbib()
 
 ### 1. What is our independent variable? What is our dependent variable?
 
-> The **independent variabled** are the conditions (congruent and incongruent), and the **dependent variable** is the time to name the ink color in equally-sized lits.
+> The **independent variables** are the conditions (congruent and incongruent), and the **dependent variable** is the time to name the ink color in equally-sized lits.
 
 ### 2. What is an appropriate set of hypotheses for this task? What kind of statistical test do you expect to perform? Justify your choices.
 
@@ -74,7 +74,7 @@ Now it’s your chance to try out the Stroop task for yourself. Go to this [link
 
 ```{r read csv} 
 library(reshape2)
-df <- read.csv('~/Git/data-analyst-nanodegree/P1/stroopdata.csv', sep=",", header = TRUE)
+df <- read.csv('~/Git/data-analyst-nanodegree/P1-test-perceptual-phenomenon/stroopdata.csv', sep=",", header = TRUE)
 
 #Total population 
 mu_total <-  mean(melt(df)$value)
