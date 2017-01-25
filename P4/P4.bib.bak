@@ -1,0 +1,16 @@
+% This file was created with JabRef 2.10b2.
+% Encoding: UTF-8
+
+
+@Article{cortez2009modeling,
+  Title                    = {Modeling wine preferences by data mining from physicochemical properties},
+  Author                   = {Cortez, Paulo and Cerdeira, Ant{\'o}nio and Almeida, Fernando and Matos, Telmo and Reis, Jos{\'e}},
+  Journal                  = {Decision Support Systems},
+  Year                     = {2009},
+  Number                   = {4},
+  Pages                    = {547--553},
+  Volume                   = {47},
+
+  Publisher                = {Elsevier}
+}
+

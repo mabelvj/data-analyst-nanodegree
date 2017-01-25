@@ -9,8 +9,8 @@
 # so the returned list should have 10 entries!
 import os
 
-DATADIR = ""
-DATAFILE = "../../data_analyst_data/P3/beatles-diskography.csv"
+DATADIR = "./"
+DATAFILE = "beatles-diskography.csv"
 
 
 def parse_file(datafile):
@@ -22,14 +22,12 @@ def parse_file(datafile):
         	if counter ==10:
         		break
         	fields = line.split(",")
-        	entry = {}
-        	print line
-        	print fields
-        	for i, value in enumerate(fields):
-        		print i,value
-        		entry[header[i].strip()] = value.strip()
-			data.append(entry)
-			counter+=1
+            entry = {}
+            for i, value in enumerate(fields):
+                print i,value
+                entry[header[i].strip()] = value.strip()
+                data.append(entry)
+                counter+=1
 
     return data
 
@@ -44,5 +42,5 @@ def test():
     assert d[0] == firstline
     assert d[9] == tenthline
 
-    
+
 test()
