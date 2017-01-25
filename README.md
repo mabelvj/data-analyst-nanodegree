@@ -1,8 +1,6 @@
-# data-analyst-nanodegree
+# Projects for Udacity **Data Analyst Nanodegree**
+
 author: mabelvj
-Projects for Udacity Data Analyst Nanodegree
-
-
 
 ##[P0: Analyze Chopstick Length](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P0-analyze-chopstick-length)
 
