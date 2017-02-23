@@ -38,6 +38,7 @@ library(ggplot2)
 library(gridExtra)
 ```
 
+
 #Analysis
 
 In this work it will be analyzed the impact in quality of several parameters describing red wine. The dataset is curated by Udacity and comes from UCI repository [https://archive.ics.uci.edu/ml/datasets/Wine+Quality](https://archive.ics.uci.edu/ml/datasets/Wine+Quality) and consists of 1599 sample data for Red wine [https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true](https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true).
@@ -81,8 +82,8 @@ str(redwines) #summary of values for each variable
 
 > The distribution of wine shows that most of wines have a quality between 5-6 points.
 
-```{r echo=FALSE, Univariate_Plots,fig.width=4, fig.height=2}
-ggplot(aes(x = quality), data = redwines) + geom_histogram(binwidth = 1, fill = "brown") + ggtitle('Quality')
+```{r echo=FALSE, Univariate_Plots,fig.width=3, fig.height=3}
+ggplot(aes(x = quality), data = redwines) + geom_histogram(binwidth = 1, fill = "brown", color= "black") + ggtitle('Quality') +theme_light(base_size = 10)
  
 #ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth = .02) + scale_x_log10() + ggtitle('Sulphates')
 
@@ -94,55 +95,47 @@ library(GGally)
 
 > In the next plot it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
-```{r echo=FALSE, Univariate_Plots_acidity,fig.width=8, fig.height=6}
+```{r echo=FALSE, Univariate_Plots_acidity,fig.width=9, fig.height=3}
 library(gridExtra)
 #Fixed
-p1_a <- ggplot(aes(x = fixed.acidity, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.5) + ggtitle('Fixed acidity') # +  scale_x_log10() #+ theme_light(base_size = 10)
-p1_b <-ggplot(aes(y = fixed.acidity, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + ggtitle('Fixed acidity')
-
+p1 <- ggplot(aes(x = fixed.acidity), data = redwines) + geom_histogram(binwidth=.5, color = "black") + ggtitle('Fixed acidity') +  theme_light(base_size = 10) # +  scale_x_log10() #+
 
 # Volatile
-p2_a <-ggplot(aes(x = volatile.acidity, fill= quality.cat ), data = redwines) + geom_histogram(binwidth = .05)+  scale_x_log10() + ggtitle('Volatile acidity')  #+ theme_light(base_size = 10)
-p2_b <-ggplot(aes(y = volatile.acidity, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + ggtitle('Volatile acidity') +  scale_y_log10() 
+p2 <-ggplot(aes(x = volatile.acidity), data = redwines) + geom_histogram(binwidth = .05,  color = "black")+  scale_x_log10() + ggtitle('Volatile acidity')  + theme_light(base_size = 10)
 
 # Citric acid
-p3_a <-ggplot(aes(x = citric.acid, fill= quality.cat ), data = redwines) + geom_histogram(binwidth = .05) + ggtitle('Citric acidity') #+ theme_light(base_size = 10)
-p3_b <-ggplot(aes(y = citric.acid, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + ggtitle('Citric acidity')
+p3 <-ggplot(aes(x = citric.acid), data = redwines) + geom_histogram(binwidth = .05,  color = "black") + ggtitle('Citric acidity') + theme_light(base_size = 10)
 
 
-grid.arrange(p1_a, p1_b,p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
+grid.arrange(p1,p2, p3, ncol=3) + theme_light(base_size = 10)
 ```
 
 ### Residual sugar
 
 > The plot of residual suggar shows that the better the wine the higher the residual sugar levels. 
 
-```{r echo=FALSE, Univariate_Plots_residual_sugar,fig.width=8, fig.height=2}
+```{r echo=FALSE, Univariate_Plots_residual_sugar,fig.width=3, fig.height=3}
 #Residual sugar
-p4_a <- ggplot(aes(x = residual.sugar, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() + ggtitle('Residual sugar')  #+ theme_light(base_size = 10)
-p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Residual sugar') #transformed y
+p4 <- ggplot(aes(x = residual.sugar), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Residual sugar')  + theme_light(base_size = 10)
 
-grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
+p4
 ```
 
 ### Chlorides and sulfur dioxide
 
 > In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
 
-```{r echo=FALSE, Univariate_Plots_chlorides,fig.width=8, fig.height=6}
+```{r echo=FALSE, Univariate_Plots_chlorides,fig.width=9, fig.height=3}
 #Chlorides
-p5_a <- ggplot(aes(x = chlorides, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() + ggtitle('Chlorides')#+ theme_light(base_size = 10)
-p5_b <-ggplot(aes(y = chlorides, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Chlorides') #transformed y
+p5 <- ggplot(aes(x = chlorides), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
 
 #Free sulfur dioxide
-p6_a <- ggplot(aes(x = free.sulfur.dioxide, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() + ggtitle('Free sulfur dioxide') #+ theme_light(base_size = 10)
-p6_b <-ggplot(aes(y = free.sulfur.dioxide, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Free sulfur dioxide') #transformed y
+p6 <- ggplot(aes(x = free.sulfur.dioxide), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Free sulfur dioxide') + theme_light(base_size = 10)
 
 #Total sulfur dioxide
-p7_a <- ggplot(aes(x = total.sulfur.dioxide, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1) +  scale_x_log10() + ggtitle('Total sulfur dioxide') #+ theme_light(base_size = 10)
-p7_b <-ggplot(aes(y = total.sulfur.dioxide, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Total sulfur dioxide') #transformed y
+p7 <- ggplot(aes(x = total.sulfur.dioxide), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Total sulfur dioxide') + theme_light(base_size = 10)
 
-grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10)
+grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
 ```
 
 
@@ -150,24 +143,20 @@ grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10
 
 > The next plot shows that, generally, the lower the density, the better the quality of the wine. ALso, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
 
-```{r echo=FALSE, Univariate_Plots_density, fig.width=8, fig.height=8}
+```{r echo=FALSE, Univariate_Plots_density, fig.width=6, fig.height=6}
 #Density
-p8_a <- ggplot(aes(x = density, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.0005) +  scale_x_log10() + ggtitle('Density')#+ theme_light(base_size = 10)
-p8_b <-ggplot(aes(y = density, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Density')#transformed y
+p8 <- ggplot(aes(x = density), data = redwines) + geom_histogram(binwidth=.0005,  color = "black") +  scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
 
 #pH
-p9_a <- ggplot(aes(x = pH, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.01) +  scale_x_log10() + ggtitle('pH') #+ theme_light(base_size = 10)
-p9_b <-ggplot(aes(y = pH, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('pH')  #transformed y
+p9 <- ggplot(aes(x = pH), data = redwines) + geom_histogram(binwidth=.01, color = "black") +  scale_x_log10() + ggtitle('pH') + theme_light(base_size = 10)
 
 #Sulphates
-p10_a <- ggplot(aes(x = sulphates, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.05) +  scale_x_log10() + ggtitle('Sulphates')#+ theme_light(base_size = 10)
-p10_b <-ggplot(aes(y = sulphates, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Sulphates')#transformed y
+p10 <- ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth=.05,  color = "black") +  scale_x_log10() + ggtitle('Sulphates')+ theme_light(base_size = 10) 
 
 #Alcohol
-p11_a <- ggplot(aes(x = alcohol, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.01) +  scale_x_log10() + ggtitle('Alcohol')#+ theme_light(base_size = 10)
-p11_b <-ggplot(aes(y = alcohol, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Alcohol')#transformed y
+p11 <- ggplot(aes(x = alcohol), data = redwines) + geom_histogram(binwidth=.01, color = "black") +  scale_x_log10() + ggtitle('Alcohol')+ theme_light(base_size = 10)
 
-grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(base_size = 10);
+grid.arrange(p8, p9, p10, p11, ncol=2) + theme_light(base_size = 10);
 ```
 
 
@@ -189,6 +178,85 @@ grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(
 # Bivariate Plots Section
 ```{r echo=FALSE, Bivariate_Plots}
 
+```
+### Fixed and volatile acidity
+
+> In the next plot it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
+
+```{r echo=FALSE, Bivariate_Plots_acidity,fig.width=8, fig.height=6}
+library(gridExtra)
+#Fixed
+p1_a <- ggplot(aes(x = fixed.acidity, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.5, color = "black", size= 0.25) + ggtitle('Fixed acidity') + theme_light(base_size = 10) # +  scale_x_log10() #+ theme_light(base_size = 10)
+p1_b <-ggplot(aes(y = fixed.acidity, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + ggtitle('Fixed acidity') +  theme_light(base_size = 10)
+
+
+# Volatile
+p2_a <-ggplot(aes(x = volatile.acidity, fill= quality.cat ), data = redwines) + geom_histogram(binwidth = .05, color = "black", size= 0.25)+  scale_x_log10() + ggtitle('Volatile acidity')  + theme_light(base_size = 10)
+p2_b <-ggplot(aes(y = volatile.acidity, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + ggtitle('Volatile acidity') +  scale_y_log10() +  theme_light(base_size = 10)
+
+# Citric acid
+p3_a <-ggplot(aes(x = citric.acid, fill= quality.cat ), data = redwines) + geom_histogram(binwidth = .05, color = "black", size= 0.25) + ggtitle('Citric acidity') + theme_light(base_size = 10)
+p3_b <-ggplot(aes(y = citric.acid, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + ggtitle('Citric acidity') +  theme_light(base_size = 10)
+
+
+grid.arrange(p1_a, p1_b,p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
+```
+
+### Residual sugar
+
+> The plot of residual suggar shows that the better the wine the higher the residual sugar levels. 
+
+```{r echo=FALSE, Bivariate_Plots_residual_sugar,fig.width=8, fig.height=2}
+#Residual sugar
+p4_a <- ggplot(aes(x = residual.sugar, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Residual sugar')  + theme_light(base_size = 10)
+p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Residual sugar') +  theme_light(base_size = 10) #transformed y
+
+grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
+```
+
+### Chlorides and sulfur dioxide
+
+> In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
+
+```{r echo=FALSE, Bivariate_Plots_chlorides,fig.width=8, fig.height=6}
+#Chlorides
+p5_a <- ggplot(aes(x = chlorides, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
+p5_b <-ggplot(aes(y = chlorides, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Chlorides') + theme_light(base_size = 10)#transformed y
+
+#Free sulfur dioxide
+p6_a <- ggplot(aes(x = free.sulfur.dioxide, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Free sulfur dioxide') + theme_light(base_size = 10)
+p6_b <-ggplot(aes(y = free.sulfur.dioxide, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Free sulfur dioxide') +  theme_light(base_size = 10) #transformed y
+
+#Total sulfur dioxide
+p7_a <- ggplot(aes(x = total.sulfur.dioxide, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Total sulfur dioxide') + theme_light(base_size = 10)
+p7_b <-ggplot(aes(y = total.sulfur.dioxide, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Total sulfur dioxide') +  theme_light(base_size = 10)#transformed y
+
+grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10)
+```
+
+
+### Density, pH, sulphates and alcohol
+
+> The next plot shows that, generally, the lower the density, the better the quality of the wine. ALso, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
+
+```{r echo=FALSE, Bivariate_Plots_density, fig.width=8, fig.height=8}
+#Density
+p8_a <- ggplot(aes(x = density, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.0005, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
+p8_b <-ggplot(aes(y = density, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Density')+  theme_light(base_size = 10)#transformed y
+
+#pH
+p9_a <- ggplot(aes(x = pH, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.01, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('pH') + theme_light(base_size = 10)
+p9_b <-ggplot(aes(y = pH, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('pH')+ theme_light(base_size = 10)#transformed y
+
+#Sulphates
+p10_a <- ggplot(aes(x = sulphates, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.05, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Sulphates')+ theme_light(base_size = 10)
+p10_b <-ggplot(aes(y = sulphates, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Sulphates')+  theme_light(base_size = 10)#transformed y
+
+#Alcohol
+p11_a <- ggplot(aes(x = alcohol, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.01, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Alcohol')+ theme_light(base_size = 10)
+p11_b <-ggplot(aes(y = alcohol, x= quality.cat, color= quality.cat), data = redwines) + geom_boxplot() + scale_y_log10() + ggtitle('Alcohol') + theme_light(base_size = 10)#transformed y
+
+grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(base_size = 10);
 ```
 
 # Bivariate Analysis
