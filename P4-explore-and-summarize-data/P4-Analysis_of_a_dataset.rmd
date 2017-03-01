@@ -63,7 +63,7 @@ dim(redwines)
 summary(redwines)
 
 # New variables 
-redwines$quality.factor <- factor(redwines$quality)
+#redwines$quality.factor <- factor(redwines$quality)
 
 redwines$quality.cat <- NA
 redwines$quality.cat <- ifelse(redwines$quality>=7, 'good','medium')
@@ -77,6 +77,8 @@ str(redwines) #summary of values for each variable
 ```
 
 ## Univariate Plots Section
+
+In this section it will be analyzed each of the variables describing the wines.
 
 ###Quality
 
@@ -98,13 +100,13 @@ library(GGally)
 ```{r echo=FALSE, Univariate_Plots_acidity,fig.width=9, fig.height=3}
 library(gridExtra)
 #Fixed
-p1 <- ggplot(aes(x = fixed.acidity), data = redwines) + geom_histogram(binwidth=.5, color = "black") + ggtitle('Fixed acidity') +  theme_light(base_size = 10) # +  scale_x_log10() #+
+p1 <- ggplot(aes(x = fixed.acidity), data = redwines) + geom_histogram(binwidth=.5, color = "black", fill = "turquoise3") + ggtitle('Fixed acidity') +  theme_light(base_size = 10) # +  scale_x_log10() #+
 
 # Volatile
-p2 <-ggplot(aes(x = volatile.acidity), data = redwines) + geom_histogram(binwidth = .05,  color = "black")+  scale_x_log10() + ggtitle('Volatile acidity')  + theme_light(base_size = 10)
+p2 <-ggplot(aes(x = volatile.acidity), data = redwines) + geom_histogram(binwidth = .05,  color = "black", fill = "turquoise3")+  scale_x_log10() + ggtitle('Volatile acidity')  + theme_light(base_size = 10)
 
 # Citric acid
-p3 <-ggplot(aes(x = citric.acid), data = redwines) + geom_histogram(binwidth = .05,  color = "black") + ggtitle('Citric acidity') + theme_light(base_size = 10)
+p3 <-ggplot(aes(x = citric.acid), data = redwines) + geom_histogram(binwidth = .05,  color = "black", fill = "turquoise3") + ggtitle('Citric acidity') + theme_light(base_size = 10)
 
 
 grid.arrange(p1,p2, p3, ncol=3) + theme_light(base_size = 10)
@@ -116,7 +118,7 @@ grid.arrange(p1,p2, p3, ncol=3) + theme_light(base_size = 10)
 
 ```{r echo=FALSE, Univariate_Plots_residual_sugar,fig.width=3, fig.height=3}
 #Residual sugar
-p4 <- ggplot(aes(x = residual.sugar), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Residual sugar')  + theme_light(base_size = 10)
+p4 <- ggplot(aes(x = residual.sugar), data = redwines) + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Residual sugar')  + theme_light(base_size = 10)
 
 p4
 ```
@@ -127,13 +129,13 @@ p4
 
 ```{r echo=FALSE, Univariate_Plots_chlorides,fig.width=9, fig.height=3}
 #Chlorides
-p5 <- ggplot(aes(x = chlorides), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
+p5 <- ggplot(aes(x = chlorides), data = redwines) + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
 
 #Free sulfur dioxide
-p6 <- ggplot(aes(x = free.sulfur.dioxide), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Free sulfur dioxide') + theme_light(base_size = 10)
+p6 <- ggplot(aes(x = free.sulfur.dioxide), data = redwines) + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Free sulfur dioxide') + theme_light(base_size = 10)
 
 #Total sulfur dioxide
-p7 <- ggplot(aes(x = total.sulfur.dioxide), data = redwines) + geom_histogram(binwidth=.1,  color = "black") +  scale_x_log10() + ggtitle('Total sulfur dioxide') + theme_light(base_size = 10)
+p7 <- ggplot(aes(x = total.sulfur.dioxide), data = redwines) + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Total sulfur dioxide') + theme_light(base_size = 10)
 
 grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
 ```
@@ -145,16 +147,16 @@ grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
 
 ```{r echo=FALSE, Univariate_Plots_density, fig.width=6, fig.height=6}
 #Density
-p8 <- ggplot(aes(x = density), data = redwines) + geom_histogram(binwidth=.0005,  color = "black") +  scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
+p8 <- ggplot(aes(x = density), data = redwines) + geom_histogram(binwidth=.0005,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
 
 #pH
-p9 <- ggplot(aes(x = pH), data = redwines) + geom_histogram(binwidth=.01, color = "black") +  scale_x_log10() + ggtitle('pH') + theme_light(base_size = 10)
+p9 <- ggplot(aes(x = pH), data = redwines) + geom_histogram(binwidth=.01, color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('pH') + theme_light(base_size = 10)
 
 #Sulphates
-p10 <- ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth=.05,  color = "black") +  scale_x_log10() + ggtitle('Sulphates')+ theme_light(base_size = 10) 
+p10 <- ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth=.05,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Sulphates')+ theme_light(base_size = 10) 
 
 #Alcohol
-p11 <- ggplot(aes(x = alcohol), data = redwines) + geom_histogram(binwidth=.01, color = "black") +  scale_x_log10() + ggtitle('Alcohol')+ theme_light(base_size = 10)
+p11 <- ggplot(aes(x = alcohol), data = redwines) + geom_histogram(binwidth=.01, color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Alcohol')+ theme_light(base_size = 10)
 
 grid.arrange(p8, p9, p10, p11, ncol=2) + theme_light(base_size = 10);
 ```
@@ -164,6 +166,21 @@ grid.arrange(p8, p9, p10, p11, ncol=2) + theme_light(base_size = 10);
 # Univariate Analysis
 
 ### What is the structure of your dataset?
+```{r}
+summary(redwines)
+colnames(redwines)
+```
+
+There are 1599 red wines with 12 features (fixed.acidity, volatile.acidity, citric.acid, residual.sugar, chlorides, free.sulfur.dioxide, total.sulfur.dioxide, density, pH, sulphates, alcohol and quality). The variables quality is converted in a factor variable (adding a new variable named ```quality.cat```) with the following levels.
+
+(worst) —————-> (best)
+
+```quality.cat```: BAD (quality [0,4]), MEDIUM (quality (4,7)), GOOD (quality [7,10]),
+
+Other observations:
+
+The mean quality of the red wines is 5.636 and the median is 6. Q1 corresponds to 5 and Q3 to 6, hence, 50% of the data lays within 5-6 range of quality, this is the level MEDIUM.
+
 
 ### What is/are the main feature(s) of interest in your dataset?
 
