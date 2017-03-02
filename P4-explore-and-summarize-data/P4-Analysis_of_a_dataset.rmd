@@ -33,7 +33,10 @@ knitr::opts_chunk$set(fig.width=4, fig.height=4, fig.path='Figs/',
 # Notice that the parameter "echo" was set to FALSE for this code chunk.
 # This prevents the code from displaying in the knitted HTML output.
 # You should set echo=FALSE for all code chunks in your file.
-#setwd('Git/data-analyst-nanodegree/P4-explore-and-summarize-data/')
+this_dir <- 'Git/data-analyst-nanodegree/P4-explore-and-summarize-data/' 
+setwd("~")
+setwd(this_dir)
+
 library(ggplot2)
 library(gridExtra)
 ```
@@ -315,13 +318,129 @@ grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(
 # Multivariate Plots Section
 
 ```{r echo=FALSE, Multivariate_Plots}
-require(ggpairs)
+require(GGally)
 require(data.table)
-tmp <- data.table(redwines, keep.rownames=TRUE, keep.colnames= TRUE)
+tmp <- data.table(subset(redwines, quality.cat=="good"), keep.rownames=TRUE, keep.colnames= TRUE)
 
-ggpairs(data=tmp, diag=list(continuous="density"),
-        lower= list(continuous = wrap("points", alpha = 1/5)), columns=c("sulphates","pH","total.sulfur.dioxide"), mapping = ggplot2::aes(color = quality.cat), axisLabels="show")
+d <- ggpairs(data=tmp, 
+             
+             #diag=list(continuous="density"),
+             lower= list(continuous = wrap("points", alpha = 1/5)),
+             columns=c("sulphates","pH","total.sulfur.dioxide"),
+             mapping = ggplot2::aes(color = quality.cat), 
+             axisLabels="show") + 
+    theme_light(base_size = 10)
+d
+#d + facet_grid(~quality.cat)
 ```
+
+
+```{r echo=FALSE,include= TRUE, Multivariate_Plots_2, fig.width=6, fig.height=6}
+
+
+ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_avoid = c("X", "quality.cat")) {
+  require(ggplot2)
+
+  column_names = colnames(x)
+  cols_names = column_names[!(column_names %in% cols_to_avoid)]
+
+  po.nopanel <- list(theme(
+    panel.background = element_blank(), 
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank(),
+    axis.text.x = element_text(angle = -90)))
+  
+  corr <-ggcorr(data=subset(x, select = cols_names),
+         label = TRUE,
+         geom = "blank",
+         hjust = 1,
+         angle = -25,
+         nbreaks = 8,
+         name = ""
+         ) +
+    geom_point(aes(size=abs(coefficient), color = breaks, 
+                   alpha = round((abs(coefficient) > 0.29)*abs(coefficient), 1))) +
+    scale_color_brewer(palette = "RdBu")+
+    scale_alpha(range=c(0.,.7))+
+    scale_size(range=c(0,9))+
+    guides(fill= FALSE, color= FALSE, size = FALSE, alpha = FALSE)
+return(corr)
+}
+
+ggcorr_custom(redwines) + ggplot2::theme_light(base_size= 7)
+
+```
+```{r}
+
+
+ggcorr_custom(subset(redwines, quality.cat=="bad")) + ggplot2::theme_light(base_size= 8)
+
+ggcorr_custom(subset(redwines, quality.cat=="medium")) + ggplot2::theme_light(base_size= 8)
+
+ggcorr_custom(subset(redwines, quality.cat=="good")) + ggplot2::theme_light(base_size= 8)
+```
+
+
+
+
+corr1 <-  ggcorr(data=subset(redwines, quality.cat=="bad", select = cols_names),
+       label = TRUE,
+       geom = "blank",
+       hjust = 1,
+       angle = -45,
+       nbreaks = 4,
+       name = "") +
+  geom_point(size = 10, aes(color = coefficient > 0, alpha = abs(coefficient) > 0.25)) +
+  scale_alpha_manual(values = c("TRUE" = 0.5, "FALSE" = 0)) +
+  guides(color = FALSE, alpha = FALSE)
+  
+r2 <- ggplot2::ggcorr(data=subset(redwines, quality.cat=="medium"),
+       label = TRUE,
+       label_alpha = TRUE,
+       name = "") +
+  ggplot2::theme(legend.position = "bottom")
+
+r3 <- ggplot2::ggcorr(data=subset(redwines, quality.cat=="good"),
+       label = TRUE,
+       label_alpha = TRUE,
+       name = "") +
+  ggplot2::theme(legend.position = "bottom")
+{r echo=FALSE,include= FALSE, Multivariate_Plots_3}
+column_names = colnames(redwines)
+r1 <- ggpairs(data=subset(redwines, quality.cat=="bad"), 
+             
+             #diag=list(continuous="density"),
+             lower= list(continuous = wrap("points", alpha = 1/5)),
+             #we remove certain columns
+             columns= column_names[!(column_names %in% c("X", "quality", "quality.cat"))],
+             mapping = ggplot2::aes(color = quality.cat), 
+             axisLabels="show") + 
+    ggplot2::theme_light(base_size = 10)
+
+r2 <- ggpairs(data=subset(redwines, quality.cat=="medium"),
+             lower= list(continuous = wrap("points", alpha = 1/5)),
+             #we remove certain columns
+             columns= column_names[!(column_names %in% c("X", "quality", "quality.cat"))],
+             mapping = ggplot2::aes(color = quality.cat), 
+             axisLabels="show") + 
+    ggplot2::theme_light(base_size = 10)
+
+r3 <- ggpairs(data=subset(redwines, quality.cat=="good"),
+             lower= list(continuous = wrap("points", alpha = 1/5)),
+             #we remove certain columns
+             columns= column_names[!(column_names %in% c("X", "quality", "quality.cat"))],
+             mapping = ggplot2::aes(color = quality.cat), 
+             axisLabels="show") + 
+    ggplot2::theme_light(base_size = 10)
+
+#grid.arrange(r1, r2, r3, ncol=1)
+r1
+r2
+r3
+```
+
+
+
 
 # Multivariate Analysis
 
