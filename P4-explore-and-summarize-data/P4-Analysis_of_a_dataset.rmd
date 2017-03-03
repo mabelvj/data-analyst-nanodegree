@@ -1,5 +1,5 @@
 ---
-title: 'Project 2 : Explartion of Red Wine Quality'
+title: 'Project 4  : Explartion of Red Wine Quality'
 author: "Isabel María Villalba Jiménez"
 date: "December 6th, 2016"
 output:
@@ -317,29 +317,18 @@ grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(
 
 # Multivariate Plots Section
 
-```{r echo=FALSE, Multivariate_Plots}
-require(GGally)
-require(data.table)
-tmp <- data.table(subset(redwines, quality.cat=="good"), keep.rownames=TRUE, keep.colnames= TRUE)
-
-d <- ggpairs(data=tmp, 
-             
-             #diag=list(continuous="density"),
-             lower= list(continuous = wrap("points", alpha = 1/5)),
-             columns=c("sulphates","pH","total.sulfur.dioxide"),
-             mapping = ggplot2::aes(color = quality.cat), 
-             axisLabels="show") + 
-    theme_light(base_size = 10)
-d
-#d + facet_grid(~quality.cat)
-```
+## Correlation betweeen variables
 
 
-```{r echo=FALSE,include= TRUE, Multivariate_Plots_2, fig.width=6, fig.height=6}
+```{r echo=FALSE,include= TRUE, Multivariate_Plots_2, fig.width=5, fig.height=5, fig.align= 'center'}
 
 
-ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_avoid = c("X", "quality.cat")) {
+ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_avoid = c("X", "quality.cat"), layot_exp = 0) {
   require(ggplot2)
+  require(GGally)
+  require(grid)
+  require(gridBase)
+  require(gridExtra)
 
   column_names = colnames(x)
   cols_names = column_names[!(column_names %in% cols_to_avoid)]
@@ -357,10 +346,15 @@ ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_av
          angle = -25,
          digits = 2,
          nbreaks = 8,
-         name = ""
+         name = "",
+         label_round = 1,
+         label_size = 3,
+         legend.size = 7,
+         layout.exp = layot_exp,
+         size = 3 #argument of geom_text for the diagonals
          ) +
     geom_point(aes(size=abs(coefficient), color = breaks, 
-                   alpha = round((abs(coefficient) > 0.29)*abs(coefficient), 1))) +
+                   alpha = round((abs(coefficient) > 0.28)*abs(coefficient), 1))) +
     scale_color_brewer(palette = "RdBu")+
     scale_alpha(range=c(0.,.7))+
     scale_size(range=c(0,9))+
@@ -368,46 +362,36 @@ ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_av
 return(corr)
 }
 
-ggcorr_custom(redwines) + ggplot2::theme_light(base_size= 7)
-
-```
-```{r}
-
-
-ggcorr_custom(subset(redwines, quality.cat=="bad")) + ggplot2::theme_light(base_size= 8)
-
-ggcorr_custom(subset(redwines, quality.cat=="medium")) + ggplot2::theme_light(base_size= 8)
-
-ggcorr_custom(subset(redwines, quality.cat=="good")) + ggplot2::theme_light(base_size= 8)
-```
-
-```{r}
-
-
-ggcorr_custom(subset(redwines, select= c("quality.cat","quality","sulphates","pH","total.sulfur.dioxide")) ) + ggplot2::theme_light(base_size= 8)
-
-multi1 <- ggplot(aes(x = pH, y = sulphates, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
-
-
-
-multi2 <- ggplot(aes(x = pH, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
-
-
-
-multi3 <- ggplot(aes(x = sulphates, y = fixed.acidity, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
-
-
-grid.arrange(multi1,multi2,multi3, ncol=1) + theme_light(base_size = 10);
+ggcorr_custom(redwines, layot_exp = 2) + ggplot2::theme_light(base_size= 7)
 
 ```
 
+## Correlation by quality
+```{r, fig.width=12}
+
+corr_total_1 <- ggcorr_custom(subset(redwines, quality.cat=="bad"), layot_exp = 2) + ggplot2::theme_light(base_size= 8) + ggplot2:: ggtitle("Bad")
+
+corr_total_2 <- ggcorr_custom(subset(redwines, quality.cat=="medium"), layot_exp = 2) + ggplot2::theme_light(base_size= 8) + ggplot2:: ggtitle("Medium")
+
+corr_total_3 <- ggcorr_custom(subset(redwines, quality.cat=="good"), layot_exp = 2) + ggplot2::theme_light(base_size= 8)  + ggplot2:: ggtitle("Good")
 
 
 
-```{r}
+gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name = "Correlation vs Quality") + ggplot2:: theme_light(base_size = 6)
+#temp <- gridExtra::arrangeGrob(corr_total_1, corr_total_2, corr_total_3, nrow = 3, name = "Correlation vs Quality") + ggplot2:: theme_light(base_size = 10)
+
+#grid.newpage()
+#grid.draw(temp)
+
+```
+
+From the general correlation matrix it three main variables can be selected due to their high correlation with quality. In order to see if they are suitable to perform an analysis let us explore the correlation between them.
+
+```{r Correlations_comparative_from_table, fig.width=3, fig.align= 'center'}
 
 
-ggcorr_custom(subset(redwines, select= c("quality.cat","quality","sulphates","alcohol", "volatile.acidity")) ) + ggplot2::theme_light(base_size= 8)
+ggcorr_custom(subset(redwines, select= c("volatile.acidity", "alcohol", "sulphates")), layot_exp = 1 ) + ggplot2::theme_light(base_size= 8)
+#c("volatile.acidity", "alcohol", "sulphates", "quality.cat","quality"))
 
 multi1 <- ggplot(aes(x = sulphates, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
@@ -425,6 +409,49 @@ grid.arrange(multi1,multi2,multi3, ncol=1) + theme_light(base_size = 10)#+ ggplo
 ```
 
 
+```{r Correlations_comparative_from_article, fig.width=3, fig.align= 'center'}
+
+ggcorr_custom(subset(redwines, select= c("total.sulfur.dioxide","pH", "sulphates")) , layot_exp = 1) + ggplot2::theme_light(base_size= 8)
+#c("total.sulfur.dioxide","pH", "sulphates", "quality.cat","quality")
+
+multi1 <- ggplot(aes(x = pH, y = sulphates, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+
+
+
+multi2 <- ggplot(aes(x = pH, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+
+
+
+multi3 <- ggplot(aes(x = sulphates, y = fixed.acidity, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+
+
+grid.newpage()
+grid.arrange(multi1,multi2,multi3, ncol=1) + theme_light(base_size = 10);
+
+```
+
+
+
+
+
+
+##########################
+```{r echo=FALSE, include=FALSE, Multivariate_Plots}
+require(GGally)
+require(data.table)
+tmp <- data.table(subset(redwines, quality.cat=="good"), keep.rownames=TRUE, keep.colnames= TRUE)
+
+d <- ggpairs(data=tmp, 
+             
+             #diag=list(continuous="density"),
+             lower= list(continuous = wrap("points", alpha = 1/5)),
+             columns=c("sulphates","pH","total.sulfur.dioxide"),
+             mapping = ggplot2::aes(color = quality.cat), 
+             axisLabels="show") + 
+    theme_light(base_size = 10)
+d
+#d + facet_grid(~quality.cat)
+```
 
 
 # Multivariate Analysis
