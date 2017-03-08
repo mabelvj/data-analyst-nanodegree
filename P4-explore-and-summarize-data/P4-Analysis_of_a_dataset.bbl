@@ -1,0 +1,10 @@
+\begin{thebibliography}{xx}
+
+\harvarditem[Cortez et~al.]{Cortez, Cerdeira, Almeida, Matos \harvardand\
+  Reis}{2009}{cortez2009modeling}
+Cortez, Paulo, Ant{\'o}nio Cerdeira, Fernando Almeida, Telmo Matos \harvardand\
+  Jos{\'e} Reis. 2009.
+\newblock ``Modeling wine preferences by data mining from physicochemical
+  properties.'' {\em Decision Support Systems} 47(4):547--553.
+
+\end{thebibliography}

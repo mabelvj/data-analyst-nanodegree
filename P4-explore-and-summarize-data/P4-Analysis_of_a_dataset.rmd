@@ -3,12 +3,18 @@ title: 'Project 4  : Explartion of Red Wine Quality'
 author: "Isabel María Villalba Jiménez"
 date: "December 6th, 2016"
 output:
+  bookdown::html_document2: 
+    fig_caption: yes
+  github_document:
+    depth: 1
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 8
   html_document:
     depth: 1
     fig_caption: yes
     fig_height: 6
     fig_width: 8
-    #toc: yes
   pdf_document:
     citation_package: natbib
     fig_caption: yes
@@ -16,16 +22,18 @@ output:
     fig_width: 7
     highlight: tango
     keep_tex: yes
+link-citations: yes
 bibliography: P4.bib
 biblio-style: apsr
 ---
 
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(fig.width=4, fig.height=4, fig.path='Figs/',
+knitr::opts_chunk$set(fig.cap = NULL, fig.width=4, fig.height=4, fig.path='Figs/', 
+                      fig.align = 'center',
                       echo=FALSE, warning=FALSE, message=FALSE, include = TRUE, results= 'hide')
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 # Load all of the packages that you end up using
 # in your analysis in this code chunk.
 
@@ -39,6 +47,19 @@ setwd(this_dir)
 
 library(ggplot2)
 library(gridExtra)
+# stable version on CRAN
+#install.packages("bookdown")
+library(bookdown)
+
+
+# Captioner
+# Now included in bookdown
+#captioner is an R package for generating figure numbers and captions
+#https://github.com/adletaw/captioner
+
+#install.packages("devtools")
+#devtools::install_github("adletaw/captioner")
+#library(captioner)
 ```
 
 
@@ -87,7 +108,7 @@ In this section it will be analyzed each of the variables describing the wines.
 
 > The distribution of wine shows that most of wines have a quality between 5-6 points.
 
-```{r echo=FALSE, Univariate_Plots,fig.width=3, fig.height=3}
+```{r echo=FALSE, UnivariatePlots,fig.width=3, fig.height=3,  fig.cap = "Quality distribution"}
 ggplot(aes(x = quality), data = redwines) + geom_histogram(binwidth = 1, fill = "brown", color= "black") + ggtitle('Quality') +theme_light(base_size = 10)
  
 #ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth = .02) + scale_x_log10() + ggtitle('Sulphates')
@@ -100,7 +121,7 @@ library(GGally)
 
 > In the next plot it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
-```{r echo=FALSE, Univariate_Plots_acidity,fig.width=9, fig.height=3}
+```{r echo=FALSE, UnivariatePlotsacidity,fig.width=9, fig.height=3, fig.cap="Fixed and volatile acidity distributions"}
 library(gridExtra)
 #Fixed
 p1 <- ggplot(aes(x = fixed.acidity), data = redwines) + geom_histogram(binwidth=.5, color = "black", fill = "turquoise3") + ggtitle('Fixed acidity') +  theme_light(base_size = 10) # +  scale_x_log10() #+
@@ -119,7 +140,7 @@ grid.arrange(p1,p2, p3, ncol=3) + theme_light(base_size = 10)
 
 > The plot of residual suggar shows that the better the wine the higher the residual sugar levels. 
 
-```{r echo=FALSE, Univariate_Plots_residual_sugar,fig.width=3, fig.height=3}
+```{r echo=FALSE, UnivariatePlotsresidualsugar,fig.width=3, fig.height=3, fig.cap="Residual sugar distribution"}
 #Residual sugar
 p4 <- ggplot(aes(x = residual.sugar), data = redwines) + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Residual sugar')  + theme_light(base_size = 10)
 
@@ -130,7 +151,7 @@ p4
 
 > In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
 
-```{r echo=FALSE, Univariate_Plots_chlorides,fig.width=9, fig.height=3}
+```{r echo=FALSE, UnivariatePlotschlorides,fig.width=9, fig.height=3, fig.cap="Chlorides and sulfur dioxide distributions"}
 #Chlorides
 p5 <- ggplot(aes(x = chlorides), data = redwines) + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
 
@@ -148,7 +169,7 @@ grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
 
 > The next plot shows that, generally, the lower the density, the better the quality of the wine. ALso, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
 
-```{r echo=FALSE, Univariate_Plots_density, fig.width=6, fig.height=6}
+```{r echo=FALSE, UnivariatePlotsdensity, fig.width=6, fig.height=6, fig.cap="Density, pH, sulphates and alcohol distributions"}
 #Density
 p8 <- ggplot(aes(x = density), data = redwines) + geom_histogram(binwidth=.0005,  color = "black", fill = "turquoise3") +  scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
 
@@ -168,7 +189,7 @@ grid.arrange(p8, p9, p10, p11, ncol=2) + theme_light(base_size = 10);
 
 # Univariate Analysis
 
-### What is the structure of your dataset?
+## What is the structure of your dataset?
 ```{r}
 summary(redwines)
 colnames(redwines)
@@ -185,23 +206,23 @@ Other observations:
 The mean quality of the red wines is 5.636 and the median is 6. Q1 corresponds to 5 and Q3 to 6, hence, 50% of the data lays within 5-6 range of quality, this is the level MEDIUM.
 
 
-### What is/are the main feature(s) of interest in your dataset?
+## What is/are the main feature(s) of interest in your dataset?
 
 The main feature of interest in this dataset is the **quality** of the wine.
 
-### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+## What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
 
 In @cortez2009modeling it is shown that the most imporant features for assessing Red Wine quality are: **sulphates**, **pH** and **total sulfur dioxide**.
 
-### Did you create any new variables from existing variables in the dataset?
+## Did you create any new variables from existing variables in the dataset?
 
-The amount of information available is enough to assess the quality of the wine and I did not create any new variables to support the analysis.
+I did not create any new variables to support the analysis since he amount of information available is enough to assess the quality of the wine.
 
-### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+## Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 
-Most of the features had a normal distribution. Some of the features had quite skewed distributions and  many oultiers and I performed a log10 tranformation in order to have a better view.
+Most of the features had a normal distribution. Some of the features had quite skewed distributions and  many oultiers and I performed a log10 tranformation in order to have a better view. This can be observed in figure \@ref(fig:univariatetranformation), where charateristics of plots in the left side are seen better with a transformation of the x axis. 
 
-```{r univariate_tranformation, fig.width=6, fig.height=6}
+```{r univariatetranformation, fig.width=6, fig.height=6, fig.cap="Residual sugar and Chlorides distributions with original and log10() transformed axis"}
 #Residual sugar
 p4_base <- ggplot(aes(x = residual.sugar), data = redwines) 
 p4_log <- p4_base + geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +  scale_x_log10(breaks = c(1, 2, 5, 10)) + ggtitle('Residual sugar: log10 scaled')+ theme_light(base_size = 10)
@@ -223,12 +244,12 @@ grid.arrange(p4_normal, p4_log, p5_normal, p5_log, ncol=2) + theme_light(base_si
 ```{r echo=FALSE, Bivariate_Plots}
 
 ```
-### Fixed and volatile acidity
+## Fixed and volatile acidity
 
-> In the next plot it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
+> In the next plot (fig.\@ref(fig:bivariateplotsacidity)) it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
 
-```{r echo=FALSE, message= FALSE, Bivariate_Plots_acidity,fig.width=8, fig.height=6}
+```{r bivariateplotsacidity, echo=FALSE, message= FALSE,fig.width=8, fig.height=6, fig.cap= " Fixed and volatile acidity distributions per quality segment"}
 #Fixed acidity
 p1_a <- ggplot(aes(x = fixed.acidity, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.5, color = "black", size= 0.25) + ggtitle('Fixed acidity') + theme_light(base_size = 10) # +  scale_x_log10() #+ theme_light(base_size = 10)
 p1_b <-ggplot(aes(y = fixed.acidity, x= quality.cat, fill= quality.cat), data = redwines) + geom_boxplot(outlier.alpha = 1/10) + geom_boxplot() + ggtitle('Fixed acidity') +  theme_light(base_size = 10)
@@ -246,11 +267,11 @@ p3_b <-ggplot(aes(y = citric.acid, x= quality.cat, fill= quality.cat), data = re
 grid.arrange(p1_a, p1_b, p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
 ```
 
-### Residual sugar
+## Residual sugar
 
-> The plot of residual suggar shows that the better the wine the higher the residual sugar levels. 
+> The plot of residual suggar (\@ref(fig:bivariateplotresidualsugar)) shows that the better the wine the higher the residual sugar levels. 
 
-```{r echo=FALSE, Bivariate_Plots_residual_sugar,fig.width=8, fig.height=2}
+```{r echo=FALSE, bivariateplotresidualsugar,fig.width=8, fig.height=2, fig.cap="Residual sugar distribution per quality segment"}
 #Residual sugar
 p4_a <- ggplot(aes(x = residual.sugar, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Residual sugar')  + theme_light(base_size = 10)
 p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, fill= quality.cat), data = redwines) + geom_boxplot(outlier.alpha = 1/10) + scale_y_log10() + ggtitle('Residual sugar') +  theme_light(base_size = 10) #transformed y
@@ -258,11 +279,11 @@ p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, fill= quality.cat), data =
 grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
 ```
 
-### Chlorides and sulfur dioxide
+## Chlorides and sulfur dioxide
 
 > In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
 
-```{r echo=FALSE, Bivariate_Plots_chlorides,fig.width=8, fig.height=6}
+```{r echo=FALSE,  bivarateplotschloridessulfur,fig.width=8, fig.height=6, fig.cap="Chlorides and sulfur dioxide distributions per quality segment"}
 #Chlorides
 p5_a <- ggplot(aes(x = chlorides, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.1, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
 p5_b <-ggplot(aes(y = chlorides, x= quality.cat, fill= quality.cat), data = redwines) + geom_boxplot(outlier.alpha = 1/10) + scale_y_log10() + ggtitle('Chlorides') + theme_light(base_size = 10)#transformed y
@@ -279,11 +300,11 @@ grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10
 ```
 
 
-### Density, pH, sulphates and alcohol
+## Density, pH, sulphates and alcohol
 
-> The next plot shows that, generally, the lower the density, the better the quality of the wine. ALso, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
+> The next plot shows that, generally, the lower the density, the better the quality of the wine. Also, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
 
-```{r echo=FALSE, Bivariate_Plots_density, fig.width=8, fig.height=8}
+```{r echo=FALSE, bivariateplotsdensity, fig.width=8, fig.height=8, fig.cap="Density, pH, suplhates and alcohol distributions per quality segment"}
 
 #Density
 p8_a <- ggplot(aes(x = density, fill= quality.cat), data = redwines) + geom_histogram(binwidth=.0005, color = "black", size= 0.25) +  scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
@@ -306,24 +327,27 @@ grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(
 
 # Bivariate Analysis
 
-### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+## Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+## Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
-### What was the strongest relationship you found?
+## What was the strongest relationship you found?
 
 
 
 
 # Multivariate Plots Section
 
-## Correlation betweeen variables
+##Correlation
+### Correlation betweeen variables
 
+In the next figure (fig.\@ref(fig:MultivariateCorrelation)) it is shown the correlation factor between the different variables in the Red Wines dataset. Significant correlation values ($|R|>0.3$) are highigtjed with stronger color density the higher the correlation value.
 
-```{r echo=FALSE,include= TRUE, Multivariate_Plots_2, fig.width=5, fig.height=5, fig.align= 'center'}
+For the purpose of this analysis, the focus will be placed in the relationship between quality and other variables.
 
+```{r echo=FALSE,include= TRUE, MultivariateCorrelation, fig.width=5, fig.asp=1, fig.align= 'center', fig.cap="Correlation bewteen Red Wine's dataset features"}
 
-ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_avoid = c("X", "quality.cat"), layot_exp = 0) {
+ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_avoid = c("X", "quality.cat"), layout_exp = 0, base_size_font=7) {
   require(ggplot2)
   require(GGally)
   require(grid)
@@ -350,7 +374,7 @@ ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_av
          label_round = 1,
          label_size = 3,
          legend.size = 7,
-         layout.exp = layot_exp,
+         layout.exp = layout_exp,
          size = 3 #argument of geom_text for the diagonals
          ) +
     geom_point(aes(size=abs(coefficient), color = breaks, 
@@ -358,26 +382,34 @@ ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_av
     scale_color_brewer(palette = "RdBu")+
     scale_alpha(range=c(0.,.7))+
     scale_size(range=c(0,9))+
-    guides(fill= FALSE, color= FALSE, size = FALSE, alpha = FALSE)
+    guides(fill= FALSE, color= FALSE, size = FALSE, alpha = FALSE) + 
+    ggplot2::theme_minimal(base_size = base_size_font)+
+    ggplot2::theme(axis.line = element_line(colour = "black"),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank()) 
 return(corr)
 }
 
-ggcorr_custom(redwines, layot_exp = 2) + ggplot2::theme_light(base_size= 7)
+ggcorr_custom(redwines, layout_exp = 2) #+ ggplot2::theme_light(base_size= 7)
 
 ```
 
-## Correlation by quality
-```{r, fig.width=12}
+### Correlation between variables by quality range
+Let us now analyze the correlation between the variables for each quality range in figure \@ref(fig:multivariatecorrquality). It can be seen that features are more correlated between them for *lower* quality wine. Some strong relationships between variables are kept for all quality ranges, as pH-density, pH-citric acid and ph-fixed acidity, or fixed acid-volatile acidity and fixed acid-fixed acidity. 
+```{r multivariatecorrquality, fig.width=12, fig.asp=0.33, fig.cap="Correlation vs Quality"}
 
-corr_total_1 <- ggcorr_custom(subset(redwines, quality.cat=="bad"), layot_exp = 2) + ggplot2::theme_light(base_size= 8) + ggplot2:: ggtitle("Bad")
+corr_total_1 <- ggcorr_custom(subset(redwines, quality.cat=="bad"), layout_exp = 2, base_size_font = 8)  + ggplot2:: ggtitle("Bad")
 
-corr_total_2 <- ggcorr_custom(subset(redwines, quality.cat=="medium"), layot_exp = 2) + ggplot2::theme_light(base_size= 8) + ggplot2:: ggtitle("Medium")
+corr_total_2 <- ggcorr_custom(subset(redwines, quality.cat=="medium"), layout_exp = 2, base_size_font = 8) + ggplot2:: ggtitle("Medium")
 
-corr_total_3 <- ggcorr_custom(subset(redwines, quality.cat=="good"), layot_exp = 2) + ggplot2::theme_light(base_size= 8)  + ggplot2:: ggtitle("Good")
+corr_total_3 <- ggcorr_custom(subset(redwines, quality.cat=="good"), layout_exp = 2, base_size_font = 8) + ggplot2:: ggtitle("Good")
 
 
 
-gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name = "Correlation vs Quality") + ggplot2:: theme_light(base_size = 6)
+gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name = "Correlation vs Quality")  +  theme(plot.title = element_text(size = 12))
+# + ggplot2:: theme_light(base_size = 6)
 #temp <- gridExtra::arrangeGrob(corr_total_1, corr_total_2, corr_total_3, nrow = 3, name = "Correlation vs Quality") + ggplot2:: theme_light(base_size = 10)
 
 #grid.newpage()
@@ -385,12 +417,14 @@ gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name
 
 ```
 
-From the general correlation matrix it three main variables can be selected due to their high correlation with quality. In order to see if they are suitable to perform an analysis let us explore the correlation between them.
+From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** (R=0.5), **volatile.acidity** (R=0.4) and  **sulphates** (R=0.3). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
 
-```{r Correlations_comparative_from_table, fig.width=3, fig.align= 'center'}
+```{r corrreport, fig.width=8, fig.height=4, fig.align= 'center', fig.cap= "Correlation between alcohol, volatile acidity and sulphates"}
+
+#fig.cap="Correlation between alcohol, volatile acidity and sulphates \\label{Correlations_comparative_from_table}"}
 
 
-ggcorr_custom(subset(redwines, select= c("volatile.acidity", "alcohol", "sulphates")), layot_exp = 1 ) + ggplot2::theme_light(base_size= 8)
+corr_report <- ggcorr_custom(subset(redwines, select= c("volatile.acidity", "alcohol", "sulphates")), layout_exp = 1, base_size_font = 8 ) 
 #c("volatile.acidity", "alcohol", "sulphates", "quality.cat","quality"))
 
 multi1 <- ggplot(aes(x = sulphates, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
@@ -404,39 +438,47 @@ multi2 <- ggplot(aes(x = sulphates, y = volatile.acidity, fill= quality.cat), da
 multi3 <- ggplot(aes(x = volatile.acidity, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
-grid.arrange(multi1,multi2,multi3, ncol=1) + theme_light(base_size = 10)#+ ggplot2::guides(color= FALSE, fill=FALSE);
+grid.arrange(corr_report, multi1,multi2,multi3,ncol=2, 
+             layout_matrix = cbind(c(1,1,1), c(2,3,4))) + theme_light(base_size = 8);#+ ggplot2::guides(color= FALSE, fill=FALSE);
 
 ```
+From plot \@ref(fig:corrreport) it is observed that there is a strong relationship between the sulphates and volatile acidity, and less strong between alcohol and volatile acidity.
+
+Let us now explore the three variables suggested in @cortez2009modeling as the most imporant features for assessing Red Wine quality are: **sulphates**, **pH** and **total sulfur dioxide**.
+
+```{r corrarticle, fig.width=8, fig.height=4, fig.align= 'center', fig.cap=  "Correlation between total sulfur dioxide, pH and sulphates"}
 
 
-```{r Correlations_comparative_from_article, fig.width=3, fig.align= 'center'}
-
-ggcorr_custom(subset(redwines, select= c("total.sulfur.dioxide","pH", "sulphates")) , layot_exp = 1) + ggplot2::theme_light(base_size= 8)
+corr_article <- ggcorr_custom(subset(redwines, select= c("total.sulfur.dioxide","pH", "sulphates")) , layout_exp = 1, base_size_font = 8)# + ggplot2::theme_light(base_size= 8)
 #c("total.sulfur.dioxide","pH", "sulphates", "quality.cat","quality")
 
-multi1 <- ggplot(aes(x = pH, y = sulphates, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi1 <- ggplot(aes(x = sulphates, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 
-multi2 <- ggplot(aes(x = pH, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi2 <- ggplot(aes(x = sulphates, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
+multi3 <- ggplot(aes(x = total.sulfur.dioxide, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
-multi3 <- ggplot(aes(x = sulphates, y = fixed.acidity, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 grid.newpage()
-grid.arrange(multi1,multi2,multi3, ncol=1) + theme_light(base_size = 10);
-
+grid.arrange(corr_article, multi1,multi2,multi3,ncol=2, 
+             layout_matrix = cbind(c(1,1,1), c(2,3,4)))
+#http://www.sthda.com/english/wiki/ggplot2-easy-way-to-mix-multiple-graphs-on-the-same-page-r-software-and-data-visualization
+#grid.arrange(bp, arrangeGrob(dp, sc), ncol = 2)
 ```
 
 
+Figure \@ref(fig:corrreport) shows that the strongest relationship is between sulphates and pH (R=-0.2) followed by pH-total sulfur dioxide.  
+
+From figure \@ref(fig:corrarticle) and \@ref(fig:corrreport) it can be concluded the varibles in the second figure (**sulphates**, **pH** and **total sulfur dioxide**), the ones suggested by @cortez2009modeling  are less correlated between them and lead to a more accurate analysis. 
 
 
 
-
-##########################
 ```{r echo=FALSE, include=FALSE, Multivariate_Plots}
+#NOT INCLUDED
 require(GGally)
 require(data.table)
 tmp <- data.table(subset(redwines, quality.cat=="good"), keep.rownames=TRUE, keep.colnames= TRUE)
@@ -527,7 +569,7 @@ p8 <-ggplot(aes(x = density), data = redwines) + geom_histogram(binwidth = .0005
 grid.arrange(p1,p2,p3,p4,p5,p6,p7,p8, ncol=4) + theme_light(base_size = 10)
 ```
 
-```{r echo=FALSE, include= TRUE, message= FALSE, warning= FALSE, Univariate_Plots_1, fig.width=16, fig.height=8}
+```{r echo=FALSE, include= FALSE, message= FALSE, warning= FALSE, Univariate_Plots_1, fig.width=16, fig.height=8}
 library(gridExtra)
 p1 <-ggplot(aes(x = fixed.acidity ), data = redwines) + geom_histogram(binwidth=.5)# +  scale_x_log10() #+ theme_light(base_size = 10)
 

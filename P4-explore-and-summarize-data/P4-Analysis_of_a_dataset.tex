@@ -24,13 +24,53 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
 \hypersetup{unicode=true,
-            pdftitle={Project 2 : Explartion of Red Wine},
+            pdftitle={Project 4 : Explartion of Red Wine Quality},
             pdfauthor={Isabel María Villalba Jiménez},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage{natbib}
 \bibliographystyle{apsr}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{{#1}}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{{#1}}}
+\newcommand{\ImportTok}[1]{{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{{#1}}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{{#1}}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{{#1}}}}
+\newcommand{\BuiltInTok}[1]{{#1}}
+\newcommand{\ExtensionTok}[1]{{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{{#1}}}
+\newcommand{\RegionMarkerTok}[1]{{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{{#1}}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{{#1}}}}
+\newcommand{\NormalTok}[1]{{#1}}
 \usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -75,7 +115,7 @@
 }
 
 \setlength{\droptitle}{-2em}
-  \title{Project 2 : Explartion of Red Wine}
+  \title{Project 4 : Explartion of Red Wine Quality}
   \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
   \author{Isabel María Villalba Jiménez}
@@ -83,19 +123,54 @@
   \postauthor{\par}
   \predate{\centering\large\emph}
   \postdate{\par}
-  \date{6 de diciembre de 2016}
+  \date{December 6th, 2016}
 
 
 \begin{document}
 \maketitle
 
+\section{Analysis}\label{analysis}
+
+In this work it will be analyzed the impact in quality of several
+parameters describing red wine. The dataset is curated by Udacity and
+comes from UCI repository
+\url{https://archive.ics.uci.edu/ml/datasets/Wine+Quality} and consists
+of 1599 sample data for Red wine
+\url{https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true}.
+
+In \citet{cortez2009modeling} it is shown that the most imporant
+features for assessing Red Wine quality are:
+
+\begin{itemize}
+\item
+  sulphates
+\item
+  pH
+\item
+  total sulfur dioxide
+\end{itemize}
+
+\section{Variable summary}\label{variable-summary}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load the Data}
+\NormalTok{redwines <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{'wineQualityReds.csv'}\NormalTok{)}
+
+\KeywordTok{dim}\NormalTok{(redwines)}
+\end{Highlighting}
+\end{Shaded}
+
 \begin{verbatim}
-##  [1] "X"                    "fixed.acidity"        "volatile.acidity"    
-##  [4] "citric.acid"          "residual.sugar"       "chlorides"           
-##  [7] "free.sulfur.dioxide"  "total.sulfur.dioxide" "density"             
-## [10] "pH"                   "sulphates"            "alcohol"             
-## [13] "quality"
+## [1] 1599   13
 \end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#names(redwines)}
+\KeywordTok{summary}\NormalTok{(redwines)}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{verbatim}
 ##        X          fixed.acidity   volatile.acidity  citric.acid   
@@ -128,8 +203,32 @@
 ##  Max.   :14.90   Max.   :8.000
 \end{verbatim}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# New variables }
+\CommentTok{#redwines$quality.factor <- factor(redwines$quality)}
+
+\NormalTok{redwines$quality.cat <-}\StringTok{ }\OtherTok{NA}
+\NormalTok{redwines$quality.cat <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(redwines$quality>=}\DecValTok{7}\NormalTok{, }\StringTok{'good'}\NormalTok{,}\StringTok{'medium'}\NormalTok{)}
+\NormalTok{redwines$quality.cat <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(redwines$quality<=}\DecValTok{4}\NormalTok{, }\StringTok{'bad'}\NormalTok{,redwines$quality.cat) }\CommentTok{# if not, leave the previous values}
+\NormalTok{redwines$quality.cat <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(redwines$quality.cat, }\DataTypeTok{levels =} \KeywordTok{list}\NormalTok{(}\StringTok{'bad'}\NormalTok{, }\StringTok{'medium'}\NormalTok{,}\StringTok{'good'}\NormalTok{)) }\CommentTok{# set the order!}
+
+\KeywordTok{print}\NormalTok{(}\StringTok{"Variables after dividing into quality groups"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \begin{verbatim}
-## 'data.frame':    1599 obs. of  15 variables:
+## [1] "Variables after dividing into quality groups"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{str}\NormalTok{(redwines) }\CommentTok{#summary of values for each variable}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    1599 obs. of  14 variables:
 ##  $ X                   : int  1 2 3 4 5 6 7 8 9 10 ...
 ##  $ fixed.acidity       : num  7.4 7.8 7.8 11.2 7.4 7.4 7.9 7.3 7.8 7.5 ...
 ##  $ volatile.acidity    : num  0.7 0.88 0.76 0.28 0.7 0.66 0.6 0.65 0.58 0.5 ...
@@ -143,70 +242,175 @@
 ##  $ sulphates           : num  0.56 0.68 0.65 0.58 0.56 0.56 0.46 0.47 0.57 0.8 ...
 ##  $ alcohol             : num  9.4 9.8 9.8 9.8 9.4 9.4 9.4 10 9.5 10.5 ...
 ##  $ quality             : int  5 5 5 6 5 5 5 7 7 5 ...
-##  $ quality.factor      : Factor w/ 6 levels "3","4","5","6",..: 3 3 3 4 3 3 3 5 5 3 ...
 ##  $ quality.cat         : Factor w/ 3 levels "bad","medium",..: 2 2 2 2 2 2 2 3 3 2 ...
 \end{verbatim}
 
-\begin{verbatim}
-## [1] medium good   bad   
-## Levels: bad medium good
-\end{verbatim}
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#unique(redwines$quality.cat)}
+\end{Highlighting}
+\end{Shaded}
 
-\section{Univariate Plots Section}\label{univariate-plots-section}
+\subsection{Univariate Plots Section}\label{univariate-plots-section}
 
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots-1.pdf}
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots-2.pdf}
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots-3.pdf}
+In this section it will be analyzed each of the variables describing the
+wines.
 
-\subsection{Fixed and volatile
+\subsubsection{Quality}\label{quality}
+
+\begin{quote}
+The distribution of wine shows that most of wines have a quality between
+5-6 points.
+\end{quote}
+
+\includegraphics{Figs/Univariate_Plots-1.pdf}
+
+\subsubsection{Fixed and volatile
 acidity}\label{fixed-and-volatile-acidity}
 
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots_acidity-1.pdf}
+\begin{quote}
+In the next plot it is deduced that the quality of the wine is directly
+proportional to the fixed acidity and acid levels and inversely
+proportional to volatile acidity.
+\end{quote}
 
-\begin{verbatim}
-## NULL
-\end{verbatim}
+\includegraphics{Figs/Univariate_Plots_acidity-1.pdf}
 
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots_residual_sugar-1.pdf}
+\subsubsection{Residual sugar}\label{residual-sugar}
 
-\begin{verbatim}
-## NULL
-\end{verbatim}
+\begin{quote}
+The plot of residual suggar shows that the better the wine the higher
+the residual sugar levels.
+\end{quote}
 
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots_chlorides-1.pdf}
+\includegraphics{Figs/Univariate_Plots_residual_sugar-1.pdf}
 
-\begin{verbatim}
-## NULL
-\end{verbatim}
+\subsubsection{Chlorides and sulfur
+dioxide}\label{chlorides-and-sulfur-dioxide}
 
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots_1-1.pdf}
+\begin{quote}
+In the plot of the chlorides, it can be onserved that the better the
+wine, the lower the chloride levels. For the sulfur dioxide, either the
+free or the total sulfur dioxide, high levels are indicator of medium
+quality, whereas bad and good wine have the same low amount of sulfure
+dioxide.
+\end{quote}
 
-\begin{verbatim}
-## NULL
-\end{verbatim}
+\includegraphics{Figs/Univariate_Plots_chlorides-1.pdf}
+
+\subsubsection{Density, pH, sulphates and
+alcohol}\label{density-ph-sulphates-and-alcohol}
+
+\begin{quote}
+The next plot shows that, generally, the lower the density, the better
+the quality of the wine. ALso, low pH levels are sign of beter quality.
+The higher the sulphates level, the better quality of the wine and also,
+good wines have higher amount of alcohol.
+\end{quote}
+
+\includegraphics{Figs/Univariate_Plots_density-1.pdf}
 
 \section{Univariate Analysis}\label{univariate-analysis}
 
 \subsubsection{What is the structure of your
 dataset?}\label{what-is-the-structure-of-your-dataset}
 
+There are 1599 red wines with 12 features (fixed.acidity,
+volatile.acidity, citric.acid, residual.sugar, chlorides,
+free.sulfur.dioxide, total.sulfur.dioxide, density, pH, sulphates,
+alcohol and quality). The variables quality is converted in a factor
+variable (adding a new variable named \texttt{quality.cat}) with the
+following levels:
+
+(worst) ----------------\textgreater{} (best)
+
+\texttt{quality.cat}: BAD (quality {[}0,4{]}), MEDIUM (quality (4,7)),
+GOOD (quality {[}7,10{]}),
+
+Other observations:
+
+The mean quality of the red wines is 5.636 and the median is 6. Q1
+corresponds to 5 and Q3 to 6, hence, 50\% of the data lays within 5-6
+range of quality, this is the level MEDIUM.
+
 \subsubsection{What is/are the main feature(s) of interest in your
 dataset?}\label{what-isare-the-main-features-of-interest-in-your-dataset}
+
+The main feature of interest in this dataset is the \textbf{quality} of
+the wine.
 
 \subsubsection{What other features in the dataset do you think will help
 support your investigation into your feature(s) of
 interest?}\label{what-other-features-in-the-dataset-do-you-think-will-help-support-your-investigation-into-your-features-of-interest}
 
+In \citet{cortez2009modeling} it is shown that the most imporant
+features for assessing Red Wine quality are: \textbf{sulphates},
+\textbf{pH} and \textbf{total sulfur dioxide}.
+
 \subsubsection{Did you create any new variables from existing variables
 in the
 dataset?}\label{did-you-create-any-new-variables-from-existing-variables-in-the-dataset}
+
+The amount of information available is enough to assess the quality of
+the wine and I did not create any new variables to support the analysis.
 
 \subsubsection{Of the features you investigated, were there any unusual
 distributions? Did you perform any operations on the data to tidy,
 adjust, or change the form of the data? If so, why did you do
 this?}\label{of-the-features-you-investigated-were-there-any-unusual-distributions-did-you-perform-any-operations-on-the-data-to-tidy-adjust-or-change-the-form-of-the-data-if-so-why-did-you-do-this}
 
+Most of the features had a normal distribution. Some of the features had
+quite skewed distributions and many oultiers and I performed a log10
+tranformation in order to have a better view.
+
+\includegraphics{Figs/univariate_tranformation-1.pdf}
+
 \section{Bivariate Plots Section}\label{bivariate-plots-section}
+
+\subsubsection{Fixed and volatile
+acidity}\label{fixed-and-volatile-acidity-1}
+
+\begin{quote}
+In the next plot it is deduced that the quality of the wine is directly
+proportional to the fixed acidity and acid levels and inversely
+proportional to volatile acidity.
+\end{quote}
+
+\includegraphics{Figs/Bivariate_Plots_acidity-1.pdf}
+
+\subsubsection{Residual sugar}\label{residual-sugar-1}
+
+\begin{quote}
+The plot of residual suggar shows that the better the wine the higher
+the residual sugar levels.
+\end{quote}
+
+\includegraphics{Figs/Bivariate_Plots_residual_sugar-1.pdf}
+
+\subsubsection{Chlorides and sulfur
+dioxide}\label{chlorides-and-sulfur-dioxide-1}
+
+\begin{quote}
+In the plot of the chlorides, it can be onserved that the better the
+wine, the lower the chloride levels. For the sulfur dioxide, either the
+free or the total sulfur dioxide, high levels are indicator of medium
+quality, whereas bad and good wine have the same low amount of sulfure
+dioxide.
+\end{quote}
+
+\includegraphics{Figs/Bivariate_Plots_chlorides-1.pdf}
+
+\subsubsection{Density, pH, sulphates and
+alcohol}\label{density-ph-sulphates-and-alcohol-1}
+
+\begin{quote}
+The next plot shows that, generally, the lower the density, the better
+the quality of the wine. ALso, low pH levels are sign of beter quality.
+The higher the sulphates level, the better quality of the wine and also,
+good wines have higher amount of alcohol.
+\end{quote}
+
+\includegraphics{Figs/Bivariate_Plots_density-1.pdf}
 
 \section{Bivariate Analysis}\label{bivariate-analysis}
 
@@ -223,6 +427,34 @@ interest)?}\label{did-you-observe-any-interesting-relationships-between-the-othe
 found?}\label{what-was-the-strongest-relationship-you-found}
 
 \section{Multivariate Plots Section}\label{multivariate-plots-section}
+
+\subsection{Correlation betweeen
+variables}\label{correlation-betweeen-variables}
+
+\begin{center}\includegraphics{Figs/Multivariate_Plots_2-1} \end{center}
+
+\subsection{Correlation by quality}\label{correlation-by-quality}
+
+\includegraphics{Figs/unnamed-chunk-2-1.pdf}
+
+From the general correlation matrix, three main variables can be
+selected due to their high correlation with quality: \textbf{alcohol}
+(R=0.5), \textbf{volatile.acidity} (R=0.4) and \textbf{sulphates}
+(R=0.3). In order to see if they are suitable to perform an analysis let
+us explore the correlation between them and also the distribution of
+samples in bivariates plots in the next graphics
+\ref{Correlations_comparative_from_table}.
+
+\begin{figure}
+
+{\centering \includegraphics{Figs/Correlations_comparative_from_table-1} 
+
+}
+
+\caption{Correlation between alcohol, volatile acidity and sulphates \label{Correlations_comparative_from_table}}\label{fig:Correlations_comparative_from_table}
+\end{figure}
+
+\begin{center}\includegraphics{Figs/Correlations_comparative_from_article-1} \end{center}
 
 \section{Multivariate Analysis}\label{multivariate-analysis}
 
@@ -259,13 +491,9 @@ model.}\label{optional-did-you-create-any-models-with-your-dataset-discuss-the-s
 
 \section{Reflection}\label{reflection}
 
-\section{Others}\label{others}
+\subsection{References}\label{references}
 
-\includegraphics{P4-Analysis_of_a_dataset_files/figure-latex/Univariate_Plots_log-1.pdf}
-
-\begin{verbatim}
-## NULL
-\end{verbatim}
+\includegraphics{Figs/Univariate_Plots_1-1.pdf}
 
 \bibliography{P4.bib}
 
