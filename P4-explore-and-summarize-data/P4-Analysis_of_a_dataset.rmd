@@ -197,13 +197,27 @@ colnames(redwines)
 
 There are 1599 red wines with 12 features (fixed.acidity, volatile.acidity, citric.acid, residual.sugar, chlorides, free.sulfur.dioxide, total.sulfur.dioxide, density, pH, sulphates, alcohol and quality). The variables quality is converted in a factor variable (adding a new variable named ```quality.cat```) with the following levels:
 
-(worst) —————-> (best)
 
-```quality.cat```: BAD (quality [0,4]), MEDIUM (quality (4,7)), GOOD (quality [7,10]),
+
+|                 | BAD  | MEDIUM | GOOD |
+|:---------------:|:----:|:------:|:----:|
+|```quality.cat```| [0,4]| (4,7) |[7,10]|
+
+Table: Quality range table.
 
 Other observations:
 
-The mean quality of the red wines is 5.636 and the median is 6. Q1 corresponds to 5 and Q3 to 6, hence, 50% of the data lays within 5-6 range of quality, this is the level MEDIUM.
+
+```{r tablequality, message=TRUE, results= "asis", echo= FALSE}
+##CONVERT SUMMARY to DF and PRINT
+#trasposed the table i
+summary_quality <- data.frame(unclass(t(summary(redwines$quality))), check.rows = TRUE, check.names = FALSE, stringsAsFactors = FALSE, row.names= "``redwines.quality``") 
+knitr::kable(summary_quality, caption = "Summary of ```redwines.quality```", row.names = TRUE)
+
+```
+
+
+Table \@ref(tab:tablequality) shows that the mean quality of the red wines is 5.636 and the median is 6. Q1 division corresponds to 5 and Q3 to 6, hence, 50% of the data lays within 5-6 range of quality, this is the level MEDIUM.
 
 
 ## What is/are the main feature(s) of interest in your dataset?
@@ -423,19 +437,19 @@ From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), th
 
 #fig.cap="Correlation between alcohol, volatile acidity and sulphates \\label{Correlations_comparative_from_table}"}
 
-
+alpha_value = 1/10
 corr_report <- ggcorr_custom(subset(redwines, select= c("volatile.acidity", "alcohol", "sulphates")), layout_exp = 1, base_size_font = 8 ) 
 #c("volatile.acidity", "alcohol", "sulphates", "quality.cat","quality"))
 
-multi1 <- ggplot(aes(x = sulphates, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi1 <- ggplot(aes(x = sulphates, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 
-multi2 <- ggplot(aes(x = sulphates, y = volatile.acidity, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi2 <- ggplot(aes(x = sulphates, y = volatile.acidity, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 
-multi3 <- ggplot(aes(x = volatile.acidity, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi3 <- ggplot(aes(x = volatile.acidity, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 grid.arrange(corr_report, multi1,multi2,multi3,ncol=2, 
@@ -452,14 +466,14 @@ Let us now explore the three variables suggested in @cortez2009modeling as the m
 corr_article <- ggcorr_custom(subset(redwines, select= c("total.sulfur.dioxide","pH", "sulphates")) , layout_exp = 1, base_size_font = 8)# + ggplot2::theme_light(base_size= 8)
 #c("total.sulfur.dioxide","pH", "sulphates", "quality.cat","quality")
 
-multi1 <- ggplot(aes(x = sulphates, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi1 <- ggplot(aes(x = sulphates, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 
-multi2 <- ggplot(aes(x = sulphates, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi2 <- ggplot(aes(x = sulphates, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
-multi3 <- ggplot(aes(x = total.sulfur.dioxide, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=1/5, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi3 <- ggplot(aes(x = total.sulfur.dioxide, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
 
 
