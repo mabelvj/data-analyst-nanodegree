@@ -226,15 +226,15 @@ The main feature of interest in this dataset is the **quality** of the wine.
 
 ## What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
 
-In @cortez2009modeling it is shown that the most imporant features for assessing Red Wine quality are: **sulphates**, **pH** and **total sulfur dioxide**.
+In @cortez2009modeling it is shown that the most imporant features for assessing Red Wine quality are: **sulphates**, **pH** and **total sulfur dioxide**. An analysis will be performed in order to certify whether these are the most importart features for the analysis or others are.
 
 ## Did you create any new variables from existing variables in the dataset?
 
-I did not create any new variables to support the analysis since he amount of information available is enough to assess the quality of the wine.
+I did not create any new variables to support the analysis since the amount of information available is enough to assess the quality of the wine.
 
 ## Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 
-Most of the features had a normal distribution. Some of the features had quite skewed distributions and  many oultiers and I performed a log10 tranformation in order to have a better view. This can be observed in figure \@ref(fig:univariatetranformation), where charateristics of plots in the left side are seen better with a transformation of the x axis. 
+Most of the features had a normal distribution. Some of the them had quite skewed distributions and many oultiers and I performed a log10 tranformation in order to have a better view.  The efect of this transformation can be observed in figure \@ref(fig:univariatetranformation), where charateristics of plots in the left side are seen better after the x axis is transformed. 
 
 ```{r univariatetranformation, fig.width=6, fig.height=6, fig.cap="Residual sugar and Chlorides distributions with original and log10() transformed axis"}
 #Residual sugar
@@ -255,12 +255,14 @@ grid.arrange(p4_normal, p4_log, p5_normal, p5_log, ncol=2) + theme_light(base_si
 
 
 # Bivariate Plots Section
+In this section it will be perfomed an analysis of the features vs the quality ranges.
+
 ```{r echo=FALSE, Bivariate_Plots}
 
 ```
 ## Fixed and volatile acidity
 
-> In the next plot (fig.\@ref(fig:bivariateplotsacidity)) it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
+In the next plot (fig.\@ref(fig:bivariateplotsacidity)) it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
 
 ```{r bivariateplotsacidity, echo=FALSE, message= FALSE,fig.width=8, fig.height=6, fig.cap= " Fixed and volatile acidity distributions per quality segment"}
@@ -283,7 +285,7 @@ grid.arrange(p1_a, p1_b, p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size =
 
 ## Residual sugar
 
-> The plot of residual suggar (\@ref(fig:bivariateplotresidualsugar)) shows that the better the wine the higher the residual sugar levels. 
+The plot of residual suggar (\@ref(fig:bivariateplotresidualsugar)) shows that the better the wine the higher the residual sugar levels. 
 
 ```{r echo=FALSE, bivariateplotresidualsugar,fig.width=8, fig.height=2, fig.cap="Residual sugar distribution per quality segment"}
 #Residual sugar
@@ -295,7 +297,7 @@ grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
 
 ## Chlorides and sulfur dioxide
 
-> In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
+In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
 
 ```{r echo=FALSE,  bivarateplotschloridessulfur,fig.width=8, fig.height=6, fig.cap="Chlorides and sulfur dioxide distributions per quality segment"}
 #Chlorides
@@ -316,7 +318,7 @@ grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10
 
 ## Density, pH, sulphates and alcohol
 
-> The next plot shows that, generally, the lower the density, the better the quality of the wine. Also, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
+The next plot shows that, generally, the lower the density, the better the quality of the wine. Also, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
 
 ```{r echo=FALSE, bivariateplotsdensity, fig.width=8, fig.height=8, fig.cap="Density, pH, suplhates and alcohol distributions per quality segment"}
 
@@ -337,6 +339,13 @@ p11_a <- ggplot(aes(x = alcohol, fill= quality.cat), data = redwines) + geom_his
 p11_b <-ggplot(aes(y = alcohol, x= quality.cat, fill= quality.cat), data = redwines) + geom_boxplot(alpha= 1, outlier.alpha = 1/10) + scale_y_log10() + ggtitle('Alcohol') + theme_light(base_size = 10)#transformed y
 
 grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(base_size = 10);
+```
+## Matrix of feature relationships
+```{r bivariateggpairs, fig.width=7, fig.asp=1, fig.cap="Matrix of relationships between variables"}
+cols_to_avoid= c("X", "quality.cat")
+column_names = colnames(redwines)
+cols_names = column_names[!(column_names %in% cols_to_avoid)]
+ggpairs(redwines, axisLabels = 'internal',  lower = list(continous = 'points', size = 8, mapping = aes(alpha=0.1, color= "cyan3")), upper = list(continous = 'smooth', size = 8), columns=2:10) + ggplot2::theme_minimal(base_size = 8)
 ```
 
 # Bivariate Analysis
