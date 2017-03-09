@@ -100,13 +100,14 @@ str(redwines) #summary of values for each variable
 #unique(redwines$quality.cat)
 ```
 
-## Univariate Plots Section
+# Univariate analysis
 
 In this section it will be analyzed each of the variables describing the wines.
 
+## Plots Section
 ###Quality
 
-> The distribution of wine shows that most of wines have a quality between 5-6 points.
+The distribution of wine shows that most of wines have a quality between 5-6 points.
 
 ```{r echo=FALSE, UnivariatePlots,fig.width=3, fig.height=3,  fig.cap = "Quality distribution"}
 ggplot(aes(x = quality), data = redwines) + geom_histogram(binwidth = 1, fill = "brown", color= "black") + ggtitle('Quality') +theme_light(base_size = 10)
@@ -119,7 +120,7 @@ library(GGally)
 
 ### Fixed and volatile acidity
 
-> In the next plot it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
+In the next plot it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
 ```{r echo=FALSE, UnivariatePlotsacidity,fig.width=9, fig.height=3, fig.cap="Fixed and volatile acidity distributions"}
 library(gridExtra)
@@ -138,7 +139,7 @@ grid.arrange(p1,p2, p3, ncol=3) + theme_light(base_size = 10)
 
 ### Residual sugar
 
-> The plot of residual suggar shows that the better the wine the higher the residual sugar levels. 
+The plot of residual suggar shows that the better the wine the higher the residual sugar levels. 
 
 ```{r echo=FALSE, UnivariatePlotsresidualsugar,fig.width=3, fig.height=3, fig.cap="Residual sugar distribution"}
 #Residual sugar
@@ -149,7 +150,7 @@ p4
 
 ### Chlorides and sulfur dioxide
 
-> In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
+In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
 
 ```{r echo=FALSE, UnivariatePlotschlorides,fig.width=9, fig.height=3, fig.cap="Chlorides and sulfur dioxide distributions"}
 #Chlorides
@@ -167,7 +168,7 @@ grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
 
 ### Density, pH, sulphates and alcohol
 
-> The next plot shows that, generally, the lower the density, the better the quality of the wine. ALso, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
+The next plot shows that, generally, the lower the density, the better the quality of the wine. ALso, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
 
 ```{r echo=FALSE, UnivariatePlotsdensity, fig.width=6, fig.height=6, fig.cap="Density, pH, sulphates and alcohol distributions"}
 #Density
@@ -187,9 +188,9 @@ grid.arrange(p8, p9, p10, p11, ncol=2) + theme_light(base_size = 10);
 
 
 
-# Univariate Analysis
+## Analysis
 
-## What is the structure of your dataset?
+### What is the structure of your dataset?
 ```{r}
 summary(redwines)
 colnames(redwines)
@@ -220,19 +221,19 @@ knitr::kable(summary_quality, caption = "Summary of ```redwines.quality```", row
 Table \@ref(tab:tablequality) shows that the mean quality of the red wines is 5.636 and the median is 6. Q1 division corresponds to 5 and Q3 to 6, hence, 50% of the data lays within 5-6 range of quality, this is the level MEDIUM.
 
 
-## What is/are the main feature(s) of interest in your dataset?
+### What is/are the main feature(s) of interest in your dataset?
 
 The main feature of interest in this dataset is the **quality** of the wine.
 
-## What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
+### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
 
 In @cortez2009modeling it is shown that the most imporant features for assessing Red Wine quality are: **sulphates**, **pH** and **total sulfur dioxide**. An analysis will be performed in order to certify whether these are the most importart features for the analysis or others are.
 
-## Did you create any new variables from existing variables in the dataset?
+### Did you create any new variables from existing variables in the dataset?
 
 I did not create any new variables to support the analysis since the amount of information available is enough to assess the quality of the wine.
 
-## Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
+### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 
 Most of the features had a normal distribution. Some of the them had quite skewed distributions and many oultiers and I performed a log10 tranformation in order to have a better view.  The efect of this transformation can be observed in figure \@ref(fig:univariatetranformation), where charateristics of plots in the left side are seen better after the x axis is transformed. 
 
@@ -254,13 +255,15 @@ grid.arrange(p4_normal, p4_log, p5_normal, p5_log, ncol=2) + theme_light(base_si
 
 
 
-# Bivariate Plots Section
+# Bivariate Analysis
+
+##Plots Section
 In this section it will be perfomed an analysis of the features vs the quality ranges.
 
 ```{r echo=FALSE, Bivariate_Plots}
 
 ```
-## Fixed and volatile acidity
+### Fixed and volatile acidity
 
 In the next plot (fig.\@ref(fig:bivariateplotsacidity)) it is deduced that the quality of the wine is directly proportional to the fixed acidity and acid levels and inversely proportional to volatile acidity. 
 
@@ -283,7 +286,7 @@ p3_b <-ggplot(aes(y = citric.acid, x= quality.cat, fill= quality.cat), data = re
 grid.arrange(p1_a, p1_b, p2_a,p2_b, p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
 ```
 
-## Residual sugar
+### Residual sugar
 
 The plot of residual suggar (\@ref(fig:bivariateplotresidualsugar)) shows that the better the wine the higher the residual sugar levels. 
 
@@ -295,7 +298,7 @@ p4_b <-ggplot(aes(y = residual.sugar, x= quality.cat, fill= quality.cat), data =
 grid.arrange(p4_a,p4_b, ncol=2) + theme_light(base_size = 10)
 ```
 
-## Chlorides and sulfur dioxide
+### Chlorides and sulfur dioxide
 
 In the plot of the chlorides, it can be onserved that the better the wine, the lower the chloride levels. For the sulfur dioxide, either the free or the total sulfur dioxide, high levels are indicator of medium quality, whereas bad and good wine have the same low amount of sulfure dioxide.
 
@@ -316,7 +319,7 @@ grid.arrange(p5_a,p5_b,p6_a,p6_b,p7_a,p7_b, ncol=2) + theme_light(base_size = 10
 ```
 
 
-## Density, pH, sulphates and alcohol
+### Density, pH, sulphates and alcohol
 
 The next plot shows that, generally, the lower the density, the better the quality of the wine. Also, low pH levels are sign of beter quality. The higher the sulphates level, the better quality of the wine and also, good wines have higher amount of alcohol.
 
@@ -340,21 +343,21 @@ p11_b <-ggplot(aes(y = alcohol, x= quality.cat, fill= quality.cat), data = redwi
 
 grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(base_size = 10);
 ```
-## Matrix of feature relationships
+### Matrix of feature relationships
 ```{r bivariateggpairs, fig.width=7, fig.asp=1, fig.cap="Matrix of relationships between variables"}
 cols_to_avoid= c("X", "quality.cat")
 column_names = colnames(redwines)
 cols_names = column_names[!(column_names %in% cols_to_avoid)]
-ggpairs(redwines, axisLabels = 'internal',  lower = list(continous = 'points', size = 8, mapping = aes(alpha=0.1, color= "cyan3")), upper = list(continous = 'smooth', size = 8), columns=2:10) + ggplot2::theme_minimal(base_size = 8)
+ggpairs(redwines, axisLabels = 'internal',  lower = list(continous = 'points', size = 8, mapping = aes(alpha=0.1, color= "cyan3")), upper = list(continous = 'smooth', size = 8), columns=2:10) + ggplot2::theme_light(base_size = 8)
 ```
 
-# Bivariate Analysis
+## Bivariate Analysis
 
-## Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-## Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
 
-## What was the strongest relationship you found?
+### What was the strongest relationship you found?
 
 
 
@@ -520,6 +523,51 @@ d
 
 
 # Multivariate Analysis
+```{r lm, fig.width=10,fig.asp=0.33}
+##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
+
+
+
+lm1 <- ggplot(aes(x = fixed.acidity, y = pH), data = redwines) + 
+  geom_point(aes(color=quality.cat),alpha=1/5, position = 'jitter')+
+  ggtitle('Fixed acidity and pH')+
+  stat_smooth(method = "lm", col = "red") #+ guides(color=FALSE)
+
+
+lm2 <- ggplot(aes(x = fixed.acidity, y = citric.acid), data = redwines) + 
+  geom_point(aes(color=quality.cat),alpha=1/5, position = 'jitter')+
+  ggtitle('Fixed acidity and Citric acid Relationship')+
+  stat_smooth(method = "lm", col = "red") #+ guides(color=FALSE)
+
+lm3 <- ggplot(aes(x = volatile.acidity, y = citric.acid), data = redwines) + 
+  geom_point(aes(color=quality.cat),alpha=1/5, position = 'jitter') +
+  coord_cartesian(ylim = c(0,1))+
+  ggtitle('Volatile acidity and Citric acid Relationship')+
+  stat_smooth(method = "lm", col = "red") #+ guides(color=FALSE)
+##ggplot(aes(x = sulphates, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+
+# arrange the three plots in a single row
+require(cowplot)
+prow <- plot_grid( lm1 + theme(legend.position="none"),
+           lm2 + theme(legend.position="none"),
+           lm3 + theme(legend.position="none"),
+           align = 'vh',
+           #labels = c("A", "B", "C"),
+           hjust = -1,
+           nrow = 1
+           )
+
+#grid.arrange(lm1, lm2, lm3, ncol=3)
+# extract the legend from one of the plots
+# (clearly the whole thing only makes sense if all plots
+# have the same legend, so we can arbitrarily pick one.)
+legend <- get_legend(lm1)
+
+# add the legend to the row we made earlier. Give it one-third of the width
+# of one plot (via rel_widths).
+p <- plot_grid( prow, legend, rel_widths = c(3, .3))
+p
+```
 
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
