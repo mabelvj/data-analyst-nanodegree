@@ -348,8 +348,37 @@ grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(
 cols_to_avoid= c("X", "quality.cat")
 column_names = colnames(redwines)
 cols_names = column_names[!(column_names %in% cols_to_avoid)]
-ggpairs(redwines, axisLabels = 'internal',  lower = list(continous = 'points', size = 8, mapping = aes(alpha=0.1, color= "cyan3")), upper = list(continous = 'smooth', size = 8), columns=2:10) + ggplot2::theme_light(base_size = 8)
+bvpairs <- ggpairs(redwines, axisLabels = 'internal',  lower = list(continous = 'points', size = 8, mapping = aes(alpha=0.1, color= "cyan3")), upper = list(continous = 'smooth', size = 8), columns=2:10) + ggplot2::theme_light(base_size = 8)
 ```
+
+```{r include=FALSE}
+require(datasets)
+require(GGally)
+require(ggplot2)
+
+my_fn <- function(data, mapping, ...){
+  p <- ggplot(data = data, mapping = mapping) + 
+    geom_point(alpha=1/5) + 
+    geom_smooth(method=loess, fill="red", color="red", ...) +
+    geom_smooth(method=lm, fill="blue", color="blue", ...)
+  p
+}
+
+g = ggpairs(redwines,columns =cols_names, lower = list(continuous = my_fn))
+g
+```
+
+```{r fig.width=3, fig.asp=12}
+for (var_names in cols_names){
+  #iterate over the variables and make an array
+  
+}
+```
+```{r}
+
+ggfacet(data = redwines, mapping = aes(color=quality.cat), columnsY = "quality", columnsX = cols_names, scales="free_x", types = list(continuous = "points"))
+```
+
 
 ## Bivariate Analysis
 
@@ -523,7 +552,15 @@ d
 
 
 # Multivariate Analysis
-```{r lm, fig.width=10,fig.asp=0.33}
+
+
+### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+
+### Were there any interesting or surprising interactions between features?
+
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+
+```{r lm, fig.width=12,fig.asp=0.33}
 ##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
 
 
@@ -533,6 +570,8 @@ d
 
 alpha_value = 1/7
 
+
+#lm1
 mylabel1 <- paste("rho == ", format(corr_general_R[(corr_general_R$y=='fixed.acidity') & (corr_general_R$x == 'pH'),'label'], digits = 3))
 
 lm1 <- ggplot(aes(x = fixed.acidity, y = pH), data = redwines) + 
@@ -540,10 +579,10 @@ lm1 <- ggplot(aes(x = fixed.acidity, y = pH), data = redwines) +
   ggtitle('Fixed acidity vs pH')+
   stat_smooth(method = "lm", col = "red")# guides(color=FALSE)
   
-lm1 <-lm1 + annotate("text",x =14,  y= 3.75,  label= mylabel1, parse=TRUE) # 3 % Add the value of r to the plot.
-#lm1_title <- 'Fixed acidity vs pH'
+lm1 <-lm1 + annotate("text",x =14,  y= 3.9,  label= mylabel1, parse=TRUE) # 3 % Add the value of r to the plot.
 
 
+#lm2
 mylabel2 <- paste("rho == ", format(corr_general_R[(corr_general_R$y=='fixed.acidity') & (corr_general_R$x == 'citric.acid'),'label'], digits = 3))
 
 lm2 <- ggplot(aes(x = fixed.acidity, y = citric.acid), data = redwines) + 
@@ -551,9 +590,9 @@ lm2 <- ggplot(aes(x = fixed.acidity, y = citric.acid), data = redwines) +
   ggtitle('Fixed acidity vs Citric acid')+
   ylim(0,1)+
   stat_smooth(method = "lm", col = "red") #+ guides(color=FALSE)
-#lm2_title <- 'Fixed acidity vs Citric acid' 
-lm2 <-lm2 + annotate("text",x =9,  y= 0.9,  label= mylabel2, parse=TRUE) # 3 % Add the 
+lm2 <-lm2 + annotate("text",x =12,  y= 0.9,  label= mylabel2, parse=TRUE) # 3 % Add the 
 
+#lm3
 lm3 <- ggplot(aes(x = volatile.acidity, y = citric.acid), data = redwines) + 
   geom_point(aes(color=quality.cat),alpha=alpha_value, position = 'jitter', na.rm = TRUE) +
   xlim(0,1) + ylim(0,1)+ 
@@ -563,8 +602,6 @@ mylabel3 <- paste("rho == ", format(corr_general_R[(corr_general_R$y=='volatile.
 
 lm3 <-lm3 + annotate("text",x =0.8,  y= 0.9,  label= mylabel3, parse=TRUE) # 3 % Add the 
 
-##ggplot(aes(x = sulphates, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
-#lm3_title <- 'Volatile acidity vs Citric acid'
 
 # arrange the three plots in a single row
 require(cowplot)
@@ -588,14 +625,6 @@ legend <- get_legend(lm1)
 p <- plot_grid( prow, legend, rel_widths = c(3, .3))
 p
 ```
-
-
-### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
-
-### Were there any interesting or surprising interactions between features?
-
-### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
-
 ------
 
 # Final Plots and Summary

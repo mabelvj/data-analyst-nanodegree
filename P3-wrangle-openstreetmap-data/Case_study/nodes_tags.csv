@@ -1,0 +1,32 @@
+id,key,value,type
+261221424,highway,traffic_signals,regular
+2406124091,addr:city,Chicago,regular
+2406124091,addr:housenumber,5157,regular
+2406124091,addr:postcode,60625,regular
+2406124091,addr:street,North Lincoln Ave,regular
+2406124091,amenity,restaurant,regular
+2406124091,cuisine,mexican,regular
+2406124091,name,La Cabana De Don Luis,regular
+2406124091,outdoor_seating,no,regular
+2406124091,phone,1 (773)-271-5176,regular
+2406124091,smoking,no,regular
+2406124091,takeaway,yes,regular
+2636084635,addr:city,Chicago,regular
+2636084635,addr:country,US,regular
+2636084635,addr:housenumber,4874,regular
+2636084635,addr:postcode,60625,regular
+2636084635,addr:state,Illinois,regular
+2636084635,addr:street,N. Lincoln Ave,regular
+2636084635,name,Matty Ks,regular
+2636084635,phone,(773)-654-1347,regular
+2636084635,shop,doityourself,regular
+2636084635,source,GPS,regular
+757860928,amenity,fast_food,regular
+757860928,cuisine,sausage,regular
+757860928,name,Shelly's Tasty Freeze,regular
+1683602133,addr:housename,Village Hall,regular
+1683602133,addr:housenumber,1400,regular
+1683602133,addr:postcode,60067,regular
+1683602133,addr:street,Baldwin Rd.,regular
+1683602133,amenity,townhall,regular
+1683602133,name,Village Hall,regular

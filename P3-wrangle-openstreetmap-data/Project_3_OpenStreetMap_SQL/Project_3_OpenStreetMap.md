@@ -4,17 +4,17 @@ Author: Isabel María Villalba Jiménez
 ### Map Area
 La Cala del Moral, Málaga, Spain
 
-- [https://www.openstreetmap.org/node/1243327729](https://www.openstreetmap.org/node/1243327729)
-- [http://metro.teczno.com/#charlotte](http://metro.teczno.com/#charlotte)
+- [https://www.openstreetmap.org/#map=10/36.6299/-4.4907](https://www.openstreetmap.org/#map=10/36.6299/-4.4907)
 
-This map is of my home village, a peaceful and little village in the outskirts of Málaga. I have chosen this area since I am curious to see what database querying reveals and I would like to help improve its mapping on OpenStreetMap.org.
+This map is of my home village, a peaceful and little village in the outskirts of Málaga and also the map of Málaga área, the capital of the province. I have chosen this area since I am curious to see what database querying reveals and I would like to help improve its mapping on OpenStreetMap.org.
 
 
 ## Problems Encountered in the Map
-After initially downloading a small sample size of the La Cala del Moral area and running it against a provisional data.py file, I noticed five main problems with the data, which I will discuss in the following order:
+
+After initially downloading a small sample size of the La Cala del Moral - Málaga area and running it against a provisional data.py file, I noticed five main problems with the data, which I will discuss in the following order:
 
 
-- Over­abbreviated street names *(“S Tryon St Ste 105”)*
+- Over­abbreviated street names *("CL PZ. CRUZ HUMILLADERO****")* and sometimes redundant information *(“AVENIDA AVDA. WASHINGTON-POLIG. EL VISO”)*  
 - Inconsistent postal codes *(“NC28226”, “28226­0783”, “28226”)*
 - “Incorrect” postal codes (Charlotte area zip codes all begin with “282” however a large portion of all documented zip codes were outside this region.)
 - Second­ level `“k”` tags with the value `"type"`(which overwrites the element’s previously processed `node[“type”]field`).
@@ -275,3 +275,10 @@ barbecue    1
 
 # Conclusion
  After this review of the data it’s obvious that the Charlotte area is incomplete, though I believe it has been well cleaned for the purposes of this exercise. It interests me to notice a fair amount of GPS data makes it into OpenStreetMap.org on account of users’ efforts, whether by scripting a map editing bot or otherwise. With a rough GPS data processor in place and working together with a more robust data processor similar to data.pyI think it would be possible to input a great amount of cleaned data to OpenStreetMap.org.
+ 
+ ---------------------------
+ 
+
+-- Street named "CARRER" in catalan: while map is in spanish.
+- CL: Calle
+--------------------------------------------------
