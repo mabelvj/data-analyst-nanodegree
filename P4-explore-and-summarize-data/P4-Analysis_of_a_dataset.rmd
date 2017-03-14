@@ -1,5 +1,5 @@
 ---
-title: 'Project 4  : Explartion of Red Wine Quality'
+title: 'Project 4  : Exploration of Red Wine Quality'
 author: "Isabel María Villalba Jiménez"
 date: "December 6th, 2016"
 output:
@@ -376,7 +376,7 @@ for (var_names in cols_names){
 ```
 ```{r}
 
-ggfacet(data = redwines, mapping = aes(color=quality.cat), columnsY = "quality", columnsX = cols_names, scales="free_x", types = list(continuous = "points"))
+ggfacet(data = redwines, mapping = aes(color=quality.cat), columnsX = "quality", columnsY = cols_names, scales="free_x", types = list(continuous = "points"))
 ```
 
 

@@ -38,4 +38,11 @@ Thumbs.db
 
 # My files #
 #####################
-Malaga.osm
+#Malaga.osm
+nodes*.csv
+nodes_tags.csv
+nodes.csv
+ways.csv
+ways_nodes.csv
+ways_tags.csv
+*.osm

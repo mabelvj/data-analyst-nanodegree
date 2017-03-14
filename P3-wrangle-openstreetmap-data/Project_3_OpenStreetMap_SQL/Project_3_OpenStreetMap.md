@@ -14,7 +14,7 @@ This map is of my home village, a peaceful and little village in the outskirts o
 After initially downloading a small sample size of the La Cala del Moral - Málaga area and running it against a provisional data.py file, I noticed five main problems with the data, which I will discuss in the following order:
 
 
-- Over­abbreviated street names *("CL PZ. CRUZ HUMILLADERO****")* and sometimes redundant information *(“AVENIDA AVDA. WASHINGTON-POLIG. EL VISO”)*  
+- Over­abbreviated street names  *("CL PZ. CRUZ HUMILLADERO")* and sometimes redundant information*(“AVENIDA AVDA. WASHINGTON-POLIG. EL VISO”)*  
 - Inconsistent postal codes *(“NC28226”, “28226­0783”, “28226”)*
 - “Incorrect” postal codes (Charlotte area zip codes all begin with “282” however a large portion of all documented zip codes were outside this region.)
 - Second­ level `“k”` tags with the value `"type"`(which overwrites the element’s previously processed `node[“type”]field`).
