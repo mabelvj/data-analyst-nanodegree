@@ -242,29 +242,39 @@ def shape_element_tag(element, tags_attr_fields, problem_chars, default_tag_type
 
     counter = -1
     for child in list(element):
-      #CHECK VALIDITY and RETURN ONLY VALID  keys: we may be in way nd we want to differentiate between  way tags and nodes
+      #CHECK VALIDITY and RETURN ONLY VALID  keys: we may be in way and we want to differentiate between childs in way_tags and way_nodes
       if (child.tag == 'nd' and tags_attr_fields== WAY_NODES_FIELDS) or (child.tag == 'way' and tags_attr_fields== WAY_TAGS_FIELDS) or (child.tag == 'tag' and tags_attr_fields== NODE_TAGS_FIELDS):
+        # Empty default dict
         tag_dict = dict.fromkeys(tags_attr_fields)
-        #pprint.pprint(child.attrib)
+        tag_dict['type'] =  default_tag_type
+        #©pprint.pprint(child.attrib)
 
         for key in child.keys(): # iterate to parse the values in the children
           if key in dict_keys.keys(): # maybe we have the info but is encoded : 'value' appears and 'v'
             #The child key needs to be translated
-            tag_dict[dict_keys.get(key)]= child.get(key)
-          else:
+            if (key == 'k' and (child.tag=="tag" or child.tag=="way")) and (len(child.attrib['k'].split(':',1))>1):
+              #special case for tag in way or node: ie: addr:postcode
+              #and
+              #we have more than one element in 'k' type:value
+                tag_dict['type'] = child.attrib['k'].split(':',1)[0]
+                tag_dict['key'] = child.attrib['k'].split(':',1)[1]
+            else:#other encoded keys or k with one unique value (ie: no 'addr:streetname' but only 'ele')
+              tag_dict[dict_keys.get(key)]= child.get(key)
+          else: # no encoded keys
             tag_dict[key] = child.get(key) 
-        
+          
+          #pprint.pprint(tag_dict)
 
         for key, value in tag_dict.items():
+          #inherit tags required in tag_attr_field from the parent 
           if value is None:
-          #inherit
             tag_dict[key] = element.get(key)
+
         #pprint.pprint(child.attrib)
         #pprint.pprint(child.keys())
         #print(child.get('k'))
         #tags.append({key:child.get(key) for key in tags_attr_fields})
-        tag_dict['type'] =  default_tag_type
-
+        
         if 'node_id' in tags_attr_fields:
           # we have to count the node position
           counter += 1

@@ -23,7 +23,8 @@ street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 #expected = ["Street", "Avenue", "Boulevard", "Drive", "Court", "Place", "Square", "Lane", "Road", 
 #            "Trail", "Parkway", "Commons"]
 expected = [u"Calle", u"Avenida", u"Bulevar", u"Carril", u"Plaza", u"Carretera", u"Autovía", u"Pasillo"
-            u"Alameda", u"Camino", u"Pasaje", u"Urbanización", u"Polígono"]#.encode('latin1')
+            u"Alameda", u"Camino", u"Pasaje", u"Urbanización", u"Polígono", u"Paseo", "Muelle", "Puerto",
+            "Cuesta", "Bloque"]#.encode('latin1')
 # UPDATE THIS VARIABLE
 mapping = { "C/": "Calle",
             "Clle": "Calle",
@@ -31,6 +32,7 @@ mapping = { "C/": "Calle",
             "CARRER": "Calle",
             "Ctra": "Carretera",
             "Ctra.": "Carretera",
+            "CR" : "Carretera",
             "Av": "Avenida",
             "Av.": "Avenida",
             "Avd": "Avenida",
@@ -47,8 +49,10 @@ mapping = { "C/": "Calle",
             "Plza.": "Plaza",
             "Urb." : u"Urbanización",
             "Urb" : u"Urbanización",
-            "Polig" : "Polígono",
-            "Polig." : "Polígono",
+            "Polig" : u"Polígono",
+            "Polig." : u"Polígono",
+            "Blq." : "Bloque",
+            "Blq" : "Bloque"
             }
 
 
