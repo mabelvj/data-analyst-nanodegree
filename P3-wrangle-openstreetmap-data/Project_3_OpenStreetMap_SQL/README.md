@@ -16,7 +16,6 @@ Looking at the XML file (OSM extension, but still XML), I found different types 
 The results are the following:
 
 ```python
-
 {'bounds': 1,
  'member': 22291,
  'meta': 1,
@@ -27,8 +26,7 @@ The results are the following:
  'relation': 1199,
  'tag': 162389,
  'way': 47490}
-
-```
+ ```
 
 ### Patterns in the Tags
 The `"k"` value of each tag contain different patterns. Using `2_tags.py`, I created 3 regular expressions to check for certain patterns in the tags: tags with only lower case letters, tags with a colon in their names and problematic chars.
@@ -279,9 +277,9 @@ with sqlite3.connect(db_filename) as conn:
 conn.close()
 ```
 
->These solutions should work, but **unfortunately**, it is not completely implemented the **compatibility between sqlite and latin characters**, so **accented letters are not recognized**.
+>**These solutions should work, but unfortunately, it is not completely implemented the compatibility between sqlite and latin characters and accented letters are not recognized.
 
->I have tried to find a workaround but it seems too excessively complicated when compared to the scope of this work.
+>I have tried to find a workaround but it seems too excessively complicated when compared to the scope of this work.**
 
 # 3. Data Overview
 ### File sizes:
@@ -482,5 +480,5 @@ Still, there is a lot of work pending related to special character in order to h
 3. [OSM_XML reference guide by OpenStreetMap](http://wiki.openstreetmap.org/wiki/OSM_XML)
 4. [Nodes reference guide by OpenStreetMap](http://wiki.openstreetmap.org/wiki/Node)
 5. [Ways reference guide by OpenStreetMap](http://wiki.openstreetmap.org/wiki/Way)
-6. [SQL schema](https://gist.github.com/swwelch/f1144229848b407e0a5d13fcb7fbbd6f)
+6. [SQl schema](https://gist.github.com/swwelch/f1144229848b407e0a5d13fcb7fbbd6f)
 7. [sqlite3 reference guide](https://pymotw.com/2/sqlite3/)
