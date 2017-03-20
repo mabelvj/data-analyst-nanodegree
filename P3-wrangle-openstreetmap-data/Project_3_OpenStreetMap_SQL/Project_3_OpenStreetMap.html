@@ -121,15 +121,18 @@ $(document).ready(function () {
 
 <div id="openstreetmap-data-case-study" class="section level1">
 <h1>OpenStreetMap Data Case Study</h1>
-<p>Author: Isabel María Villalba Jiménez</p>
-<div id="map-area" class="section level3">
-<h3>Map Area</h3>
+<blockquote>
+<p><strong>Author</strong>: Isabel María Villalba Jiménez</p>
+<p><strong>Date</strong>: March 20th, 2017</p>
+</blockquote>
+</div>
+<div id="map-area" class="section level1">
+<h1>0. Map Area</h1>
 <p>La Cala del Moral, Rincón de la Victoria and Málaga, Province of Málaga, Spain</p>
 <ul>
 <li><a href="https://www.openstreetmap.org/#map=10/36.6299/-4.4907" class="uri">https://www.openstreetmap.org/#map=10/36.6299/-4.4907</a></li>
 </ul>
 <p>This map is of my home village, a peaceful and little village in the outskirts of Málaga and also the map of Málaga area, the capital of the province. I have chosen this area since I am curious to see what database querying reveals and I would like to help improve its mapping on OpenStreetMap.org.</p>
-</div>
 </div>
 <div id="data-audit" class="section level1">
 <h1>1. Data Audit</h1>
@@ -550,9 +553,21 @@ vegetarian|1</code></pre>
 <div id="control-typo-errors" class="section level4">
 <h4>Control typo errors</h4>
 <ul>
-<li>Build a parser for the csv file to intensively find error patters, involving special characters, before writing into database. The csv had special characters and they were all written into de database, so this could work.</li>
-<li>Make format rules clear so the users know the format required for inserting the information.</li>
-<li>Develope a script or bot to clean the data regularly or certain period.</li>
+<li><p>Build a parser for the <code>csv</code> file to intensively find error patters, involving special characters, before writing into database. The <code>csv</code> had special characters and they were all written into de database, so this could work.</p>
+<ul>
+<li><p><strong>Benefits</strong>: having special characters corrected will result in a cleaner and more standardized outlook of the information.</p></li>
+<li><p><strong>Anticipated issues</strong>: it may be hard to deal with special characters in a SQL environment. Some users may not have compatibility with the special characters: using <code>UTF-8</code> is encouraged.</p></li>
+</ul></li>
+<li><p>Make format rules clear so the users know the format required for inserting the information. Rules must be clear and easy to follow.</p>
+<ul>
+<li><p><strong>Benefits</strong>: stating rules will result in a more professional and standardized information.</p></li>
+<li><p><strong>Anticipated issues</strong>: some users may have problems following the standardizing rules and other may just skip them and directly insert information at their will.</p></li>
+</ul></li>
+<li><p>Develop a script or bot to clean the data regularly or certain period.</p>
+<ul>
+<li><p><strong>Benefits</strong>: the script will help to keep the quality of the map up to a good level with a continuous basis.</p></li>
+<li><p><strong>Anticipated issues</strong>: continuous work in the script must be done in order to keep it continuously improving and detecting new variations in the patterns of the information inserted by users.</p></li>
+</ul></li>
 </ul>
 </div>
 </div>
@@ -561,8 +576,9 @@ vegetarian|1</code></pre>
 <h1>Files</h1>
 <ul>
 <li><code>Project_3_OpenStreetMap.md</code> : this file</li>
+<li><code>Project_3_OpenStreetMap.pdf</code> : pdf of this document</li>
 <li><code>README.md</code>: a copy of this file</li>
-<li><code>Malaga.osm</code>: too big, export from here <a href="https://www.openstreetmap.org/#map=10/36.6299/-4.4907" class="uri">https://www.openstreetmap.org/#map=10/36.6299/-4.4907</a> (results may be different since I selected the area manually)</li>
+<li><code>Malaga.osm</code>: too big, export it from here <a href="https://www.openstreetmap.org/#map=10/36.6299/-4.4907" class="uri">https://www.openstreetmap.org/#map=10/36.6299/-4.4907</a> (results may be different since I selected the area manually)</li>
 <li><code>1_mapparser.py</code> : find unique tags in the data</li>
 <li><code>2_tags.py</code> : find errors in the data</li>
 <li><code>3_audit.py</code> : audit street, city and update their names</li>
@@ -571,14 +587,13 @@ vegetarian|1</code></pre>
 <li><code>6_csv_to_db.py</code>: insert the values from the CSV files into the database</li>
 <li><code>7_correct_cities.py</code>: script to correct misspelling appearing in city names</li>
 <li><code>data_wrangling.sql</code>: supplied schema for the SQL database structure</li>
-<li><code>Project_3_OpenStreetMap.pdf</code> : pdf of this document</li>
 </ul>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
 <ol style="list-style-type: decimal">
 <li><a href="https://gist.github.com/carlward/54ec1c91b62a5f911c42#file-sample_project-md">OpenStreetMap Data Case Study by Carlward</a></li>
-<li><a href="https://gist.github.com/carlward/54ec1c91b62a5f911c42#file-sample_project-md">OpenStreetMap Data Case Study by Pratyush Kumar</a></li>
+<li><a href="https://github.com/pratyush19/Udacity-Data-Analyst-Nanodegree/tree/master/P3-OpenStreetMap-Wrangling-with-SQL">OpenStreetMap Data Case Study by Pratyush Kumar</a></li>
 <li><a href="http://wiki.openstreetmap.org/wiki/OSM_XML">OSM_XML reference guide by OpenStreetMap</a></li>
 <li><a href="http://wiki.openstreetmap.org/wiki/Node">Nodes reference guide by OpenStreetMap</a></li>
 <li><a href="http://wiki.openstreetmap.org/wiki/Way">Ways reference guide by OpenStreetMap</a></li>

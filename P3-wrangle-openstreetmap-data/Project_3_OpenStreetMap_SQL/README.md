@@ -1,7 +1,10 @@
 # OpenStreetMap Data Case Study
-Author: Isabel María Villalba Jiménez
 
-### Map Area
+>**Author**: Isabel María Villalba Jiménez
+>
+>**Date**: March 20th, 2017
+
+# 0. Map Area
 La Cala del Moral, Rincón de la Victoria and Málaga, Province of Málaga, Spain
 
 - [https://www.openstreetmap.org/#map=10/36.6299/-4.4907](https://www.openstreetmap.org/#map=10/36.6299/-4.4907)
@@ -16,6 +19,7 @@ Looking at the XML file (OSM extension, but still XML), I found different types 
 The results are the following:
 
 ```python
+
 {'bounds': 1,
  'member': 22291,
  'meta': 1,
@@ -26,7 +30,8 @@ The results are the following:
  'relation': 1199,
  'tag': 162389,
  'way': 47490}
- ```
+
+```
 
 ### Patterns in the Tags
 The `"k"` value of each tag contain different patterns. Using `2_tags.py`, I created 3 regular expressions to check for certain patterns in the tags: tags with only lower case letters, tags with a colon in their names and problematic chars.
@@ -277,9 +282,9 @@ with sqlite3.connect(db_filename) as conn:
 conn.close()
 ```
 
->**These solutions should work, but unfortunately, it is not completely implemented the compatibility between sqlite and latin characters and accented letters are not recognized.
+>These solutions should work, but **unfortunately**, it is not completely implemented the **compatibility between sqlite and latin characters**, so **accented letters are not recognized**.
 
->I have tried to find a workaround but it seems too excessively complicated when compared to the scope of this work.**
+>I have tried to find a workaround but it seems too excessively complicated when compared to the scope of this work.
 
 # 3. Data Overview
 ### File sizes:
@@ -456,14 +461,31 @@ Still, there is a lot of work pending related to special character in order to h
 ### Additional Suggestion and Ideas
 
 #### Control typo errors
-* Build a parser for the csv file to intensively find error patters, involving special characters, before writing into database.  The csv had special characters and they were all written into de database, so this could work.
-* Make format rules clear so the users know the format required for inserting the information.
-* Develope a script or bot to clean the data regularly or certain period.
+* Build a parser for the `csv` file to intensively find error patters, involving special characters, before writing into database. The `csv` had special characters and they were all written into de database, so this could work.
+
+    - **Benefits**: having special characters corrected will result in a cleaner and more standardized outlook of the information.
+    
+    - **Anticipated issues**: it may be hard to deal with special characters in a SQL environment. Some users may not have compatibility with the special characters: using `UTF-8` is encouraged.
+    
+    
+* Make format rules clear so the users know the format required for inserting the information. Rules must be clear and easy to follow.
+
+    - **Benefits**: stating rules will result in a more professional and standardized information.
+    
+    - **Anticipated issues**:  some users may have problems following the standardizing rules and other may just skip them and directly insert information at their will.
+    
+    
+* Develop a script or bot to clean the data regularly or certain period.
+
+    - **Benefits**: the script will help to keep the quality of the map up to a good level with a continuous basis.
+    
+    - **Anticipated issues**: continuous work in the script must be done in order to keep it continuously improving and detecting new variations in the patterns of the information inserted by users.
 
 # Files
 * `Project_3_OpenStreetMap.md` : this file
+* `Project_3_OpenStreetMap.pdf` : pdf of this document
 * `README.md`: a copy of this file
-* `Malaga.osm`: too big, export from here  [https://www.openstreetmap.org/#map=10/36.6299/-4.4907](https://www.openstreetmap.org/#map=10/36.6299/-4.4907) (results may be different since I selected the area manually)
+* `Malaga.osm`: too big, export it from here  [https://www.openstreetmap.org/#map=10/36.6299/-4.4907](https://www.openstreetmap.org/#map=10/36.6299/-4.4907) (results may be different since I selected the area manually)
 * `1_mapparser.py` : find unique tags in the data
 * `2_tags.py` : find errors in the data
 * `3_audit.py` : audit street, city and update their names
@@ -472,13 +494,12 @@ Still, there is a lot of work pending related to special character in order to h
 * `6_csv_to_db.py`: insert the values from the CSV files into the database
 * `7_correct_cities.py`: script to correct misspelling appearing in city names
 * `data_wrangling.sql`: supplied schema for the SQL database structure
-* `Project_3_OpenStreetMap.pdf` : pdf of this document
 
 # References
 1. [OpenStreetMap Data Case Study by Carlward](https://gist.github.com/carlward/54ec1c91b62a5f911c42#file-sample_project-md)
-2. [OpenStreetMap Data Case Study by Pratyush Kumar](https://gist.github.com/carlward/54ec1c91b62a5f911c42#file-sample_project-md)
+2. [OpenStreetMap Data Case Study by Pratyush Kumar](https://github.com/pratyush19/Udacity-Data-Analyst-Nanodegree/tree/master/P3-OpenStreetMap-Wrangling-with-SQL)
 3. [OSM_XML reference guide by OpenStreetMap](http://wiki.openstreetmap.org/wiki/OSM_XML)
 4. [Nodes reference guide by OpenStreetMap](http://wiki.openstreetmap.org/wiki/Node)
 5. [Ways reference guide by OpenStreetMap](http://wiki.openstreetmap.org/wiki/Way)
-6. [SQl schema](https://gist.github.com/swwelch/f1144229848b407e0a5d13fcb7fbbd6f)
+6. [SQL schema](https://gist.github.com/swwelch/f1144229848b407e0a5d13fcb7fbbd6f)
 7. [sqlite3 reference guide](https://pymotw.com/2/sqlite3/)
