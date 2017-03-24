@@ -10,11 +10,11 @@ Introduction to statistical analysis
 
 t-test, statistical analysis, R, rmarkdown
 
-## [P2: Investigate a Dataset](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P2-investigate-dataset) *(in progress)*
+## [P2: Investigate a Dataset](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P2-investigate-dataset)
 
 Python, pandas, numpy, jupyter-notebook 
 
-## [P3: Wrangle OpenStreetMap Data](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P3-wrangle-openstreetmap-data)*(in progress)*
+## [P3: Wrangle OpenStreetMap Data](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P3-wrangle-openstreetmap-data)
 
  XML, JSON, Excel, csv
 
