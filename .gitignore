@@ -46,3 +46,5 @@ ways.csv
 ways_nodes.csv
 ways_tags.csv
 *.osm
+*.db
+.Rhistory
