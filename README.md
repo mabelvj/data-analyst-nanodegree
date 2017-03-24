@@ -1,24 +1,24 @@
 # Projects for Udacity **Data Analyst Nanodegree**
 
-author: mabelvj
+author: Isabel María Villalba Jiménez ([@mabelvj](https://github.com/mabelvj))
 
-##[P0: Analyze Chopstick Length](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P0-analyze-chopstick-length)
+## [P0: Analyze Chopstick Length](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P0-analyze-chopstick-length)
 
 Introduction to statistical analysis
 
-##[P1: Test a Perceptual Phenomenon](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P1-test-perceptual-phenomenon)
+## [P1: Test a Perceptual Phenomenon](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P1-test-perceptual-phenomenon)
 
 t-test, statistical analysis, R, rmarkdown
 
-##[P2: Investigate a Dataset](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P2-investigate-dataset) *(in progress)*
+## [P2: Investigate a Dataset](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P2-investigate-dataset) *(in progress)*
 
 Python, pandas, numpy, jupyter-notebook 
 
-##[P3: Wrangle OpenStreetMap Data](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P3-wrangle-openstreetmap-data)*(in progress)*
+## [P3: Wrangle OpenStreetMap Data](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P3-wrangle-openstreetmap-data)*(in progress)*
 
  XML, JSON, Excel, csv
 
-##[P4: Explore and Summarize Data](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P4-explore-and-summarize-data)*(in progress)*
+## [P4: Explore and Summarize Data](https://github.com/mabelvj/data-analyst-nanodegree/tree/master/P4-explore-and-summarize-data)*(in progress)*
  
 ggplot, dplyr, R, rmarkdown
 
