@@ -344,11 +344,12 @@ p11_b <-ggplot(aes(y = alcohol, x= quality.cat, fill= quality.cat), data = redwi
 grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(base_size = 10);
 ```
 ### Matrix of feature relationships
-```{r bivariateggpairs, fig.width=7, fig.asp=1, fig.cap="Matrix of relationships between variables"}
+```{r bivariateggpairs, fig.width=7, fig.asp=1, fig.cap="Matrix of relationships between variables", include= FALSE}
 cols_to_avoid= c("X", "quality.cat")
 column_names = colnames(redwines)
 cols_names = column_names[!(column_names %in% cols_to_avoid)]
 bvpairs <- ggpairs(redwines, axisLabels = 'internal',  lower = list(continous = 'points', size = 8, mapping = aes(alpha=0.1, color= "cyan3")), upper = list(continous = 'smooth', size = 8), columns=2:10) + ggplot2::theme_light(base_size = 8)
+bvpairs
 ```
 
 ```{r include=FALSE}
@@ -368,14 +369,8 @@ g = ggpairs(redwines,columns =cols_names, lower = list(continuous = my_fn))
 g
 ```
 
-```{r fig.width=3, fig.asp=12}
-for (var_names in cols_names){
-  #iterate over the variables and make an array
-  
-}
-```
-```{r}
-
+```{r include=FALSE}
+#FIGURE TO BE RESTORED
 ggfacet(data = redwines, mapping = aes(color=quality.cat), columnsX = "quality", columnsY = cols_names, scales="free_x", types = list(continuous = "points"))
 ```
 
@@ -482,19 +477,59 @@ alpha_value = 1/10
 corr_report <- ggcorr_custom(subset(redwines, select= c("volatile.acidity", "alcohol", "sulphates")), layout_exp = 1, base_size_font = 8 ) 
 #c("volatile.acidity", "alcohol", "sulphates", "quality.cat","quality"))
 
-multi1 <- ggplot(aes(x = sulphates, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+
+plot_linear_model_bivar <- function (x = "quality", y, 
+                               corr_gral = corr_general_R, 
+                               df = redwines,
+                               group = 'quality.cat'){
+  
+  alpha_value = 1/10
+  
+  print( format(corr_gral[(corr_gral$y== y) & (corr_gral$x == x),"label"],corrdigits = 3))
+  #lm
+  mylabel <- paste('rho == ', format(corr_gral[(corr_gral$y== y) & 
+                                                 (corr_gral$x == x),"label"],
+                        digits = 3))
+  
+  # strsplit("quality.cat", "[.]")[[1]][1] -> "quality"
+  
+  #mean by group of x
+  lm_ <- ggplot(data = df,
+                aes(x =  eval(as.name(x)), 
+                    y = eval(as.name(y)), 
+                    color= eval(as.name(group)),
+                    fill = eval(as.name(group))))+
+        geom_point(alpha=alpha_value, 
+                   position = 'jitter', show.legend = FALSE) +
+        #geom_boxplot(outlier.alpha = 0, alpha = 0, show.legend = FALSE)+
+        geom_smooth(method = "lm", na.rm = TRUE, size = 0.25,
+                    show.legend = FALSE)+
+       # stat_summary(fun.y = "mean", geom = "line", show.legend = FALSE, color= "red", linetype= "dashed")+
+    facet_wrap(formula(paste('~',group))) +
+    #ggtitle(paste(y,'vs', x, sep=" "))+
+        xlab(x)+ ylab(y) #+guides(fill=FALSE)
+  #print(mylabel)
+  lm_ <-lm_ + annotate("text",
+                       x = median(df[,x]), 
+                       y= min(df[,y])+ 0.95*diff(range(df[,y])), 
+                       label= mylabel, parse=TRUE, size= 3)+
+              theme_light(base_size = 8)
+  # 3 % Add the value of r to the plot.
+  # locate in the range: y = min(df[,y])+ 0.9*diff(range(df[,y]))
+  return (lm_)
+}
+
+multi1 <- plot_linear_model_bivar(x= 'sulphates', y = 'alcohol', corr_gral = corr_report$data, df = redwines) 
 
 
-
-multi2 <- ggplot(aes(x = sulphates, y = volatile.acidity, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
-
+multi2 <- plot_linear_model_bivar(x= 'sulphates', y = 'volatile.acidity', corr_gral = corr_report$data, df = redwines) 
 
 
-multi3 <- ggplot(aes(x = volatile.acidity, y = alcohol, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+multi3 <- plot_linear_model_bivar(x = 'alcohol', y= 'volatile.acidity', corr_gral = corr_report$data, df = redwines) 
 
-
-grid.arrange(corr_report, multi1,multi2,multi3,ncol=2, 
-             layout_matrix = cbind(c(1,1,1), c(2,3,4))) + theme_light(base_size = 8);#+ ggplot2::guides(color= FALSE, fill=FALSE);
+p<-grid.arrange(corr_report, multi1,multi2,multi3,ncol=2, 
+             layout_matrix = cbind(c(1,1,1), c(2,3,4))) +
+  theme_light(base_size = 8);#+ ggplot2::guides(color= FALSE, fill=FALSE);
 
 ```
 From plot \@ref(fig:corrreport) it is observed that there is a strong relationship between the sulphates and volatile acidity, and less strong between alcohol and volatile acidity.
@@ -507,19 +542,18 @@ Let us now explore the three variables suggested in @cortez2009modeling as the m
 corr_article <- ggcorr_custom(subset(redwines, select= c("total.sulfur.dioxide","pH", "sulphates")) , layout_exp = 1, base_size_font = 8)# + ggplot2::theme_light(base_size= 8)
 #c("total.sulfur.dioxide","pH", "sulphates", "quality.cat","quality")
 
-multi1 <- ggplot(aes(x = sulphates, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
+
+multi1 <- plot_linear_model_bivar(x= 'sulphates', y = 'pH', corr_gral = corr_article$data, df = redwines) 
 
 
+multi2 <- plot_linear_model_bivar(x= 'sulphates', y = 'total.sulfur.dioxide', corr_gral = corr_article$data, df = redwines) 
 
-multi2 <- ggplot(aes(x = sulphates, y = total.sulfur.dioxide, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
 
-
-multi3 <- ggplot(aes(x = total.sulfur.dioxide, y = pH, fill= quality.cat), data = redwines)+ geom_point(alpha=alpha_value, aes(color= quality.cat))+ facet_wrap(~redwines$quality.cat) +theme_light(base_size = 8)
-
+multi3 <- plot_linear_model_bivar(x= 'pH', y = 'total.sulfur.dioxide', corr_gral = corr_article$data, df = redwines) 
 
 
 grid.newpage()
-grid.arrange(corr_article, multi1,multi2,multi3,ncol=2, 
+p <- grid.arrange(corr_article, multi1,multi2,multi3,ncol=2, 
              layout_matrix = cbind(c(1,1,1), c(2,3,4)))
 #http://www.sthda.com/english/wiki/ggplot2-easy-way-to-mix-multiple-graphs-on-the-same-page-r-software-and-data-visualization
 #grid.arrange(bp, arrangeGrob(dp, sc), ncol = 2)
@@ -626,6 +660,11 @@ p <- plot_grid( prow, legend, rel_widths = c(3, .3))
 p
 ```
 
+
+------
+
+# Final Plots and Summary
+
 ```{r lm_quality, fig.width=12,fig.asp=0.33}
 ##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
 
@@ -656,14 +695,13 @@ plot_linear_model <- function (x = "quality", y,
         geom_point(alpha=alpha_value, 
                    position = 'jitter', show.legend = FALSE) +
         #geom_boxplot(outlier.alpha = 0, alpha = 0, show.legend = FALSE)+
-        geom_smooth(method = "lm", na.rm = TRUE, 
+        geom_smooth(method = "lm", na.rm = TRUE,
                     show.legend = FALSE)+
         stat_summary(fun.y = "mean", 
                      geom = "line", 
-                     #show.legend = FALSE, 
+                     show.legend = FALSE, 
                      color= "red",
-                     linetype= "dashed", 
-                     label = "mean")+
+                     linetype= "dashed")+
     ggtitle(paste(y,'vs', x, sep=" "))+
         xlab(x)+ ylab(y) #+guides(fill=FALSE)
   #print(mylabel)
@@ -689,16 +727,11 @@ lm3 <- plot_linear_model(x='quality', y = 'total.sulfur.dioxide')
 
 
 # arrange the three plots in a single row
-p_ <- grid.arrange(lm1,lm2,lm3, ncol=3)
+#p_ <- grid.arrange(lm1,lm2,lm3, ncol=3)
 ```
-
-------
-
-# Final Plots and Summary
-
 ### Plot One
 ```{r echo=FALSE, Plot_One}
-
+lm1
 ```
 
 ### Description One
@@ -706,7 +739,7 @@ p_ <- grid.arrange(lm1,lm2,lm3, ncol=3)
 
 ### Plot Two
 ```{r echo=FALSE, Plot_Two}
-
+lm2
 ```
 
 ### Description Two
@@ -714,7 +747,7 @@ p_ <- grid.arrange(lm1,lm2,lm3, ncol=3)
 
 ### Plot Three
 ```{r echo=FALSE, Plot_Three}
-
+lm3
 ```
 
 ### Description Three
