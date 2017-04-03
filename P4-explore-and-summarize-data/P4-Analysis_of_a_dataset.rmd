@@ -45,11 +45,15 @@ this_dir <- 'Git/data-analyst-nanodegree/P4-explore-and-summarize-data/'
 setwd("~")
 setwd(this_dir)
 
-library(ggplot2)
+#remove.packages("UpSetR")
+#remove.packages("GGally")
+require(ggplot2)
+require(GGally)
 library(gridExtra)
 # stable version on CRAN
 #install.packages("bookdown")
 library(bookdown)
+
 
 
 # Captioner
@@ -433,7 +437,7 @@ ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_av
     scale_alpha(range=c(0.,.7))+
     scale_size(range=c(0,9))+
     guides(fill= FALSE, color= FALSE, size = FALSE, alpha = FALSE) + 
-    ggplot2::theme_minimal(base_size = base_size_font)+
+    #ggplot2::theme_minimal(base_size = base_size_font)+
     ggplot2::theme(axis.line = element_line(colour = "black"),
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
@@ -448,26 +452,6 @@ corr_general_R <- corr_general$data
 
 ### Correlation between variables by quality range
 Let us now analyze the correlation between the variables for each quality range in figure \@ref(fig:multivariatecorrquality). It can be seen that features are more correlated between them for *lower* quality wine. Some strong relationships between variables are kept for all quality ranges, as pH-density, pH-citric acid and ph-fixed acidity, or fixed acid-volatile acidity and fixed acid-fixed acidity. 
-```{r multivariatecorrquality, fig.width=12, fig.asp=0.33, fig.cap="Correlation vs Quality"}
-
-corr_total_1 <- ggcorr_custom(subset(redwines, quality.cat=="bad"), layout_exp = 2, base_size_font = 8)  + ggplot2:: ggtitle("Bad")
-
-corr_total_2 <- ggcorr_custom(subset(redwines, quality.cat=="medium"), layout_exp = 2, base_size_font = 8) + ggplot2:: ggtitle("Medium")
-
-corr_total_3 <- ggcorr_custom(subset(redwines, quality.cat=="good"), layout_exp = 2, base_size_font = 8) + ggplot2:: ggtitle("Good")
-
-
-
-gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name = "Correlation vs Quality")  +  theme(plot.title = element_text(size = 12))
-# + ggplot2:: theme_light(base_size = 6)
-#temp <- gridExtra::arrangeGrob(corr_total_1, corr_total_2, corr_total_3, nrow = 3, name = "Correlation vs Quality") + ggplot2:: theme_light(base_size = 10)
-
-#grid.newpage()
-#grid.draw(temp)
-
-```
-
-From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** (R=0.5), **volatile.acidity** (R=0.4) and  **sulphates** (R=0.3). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
 
 ```{r corrreport, fig.width=8, fig.height=4, fig.align= 'center', fig.cap= "Correlation between alcohol, volatile acidity and sulphates"}
 
@@ -509,11 +493,11 @@ plot_linear_model_bivar <- function (x = "quality", y,
     #ggtitle(paste(y,'vs', x, sep=" "))+
         xlab(x)+ ylab(y) #+guides(fill=FALSE)
   #print(mylabel)
-  lm_ <-lm_ + annotate("text",
-                       x = median(df[,x]), 
-                       y= min(df[,y])+ 0.95*diff(range(df[,y])), 
-                       label= mylabel, parse=TRUE, size= 3)+
-              theme_light(base_size = 8)
+  #lm_ <-lm_ + annotate("text",
+  #                     x = median(df[,x]), 
+  #                     y= min(df[,y])+ 0.95*diff(range(df[,y])), 
+  #                     label= mylabel, parse=TRUE, size= 3)+
+  #            theme_light(base_size = 8)
   # 3 % Add the value of r to the plot.
   # locate in the range: y = min(df[,y])+ 0.9*diff(range(df[,y]))
   return (lm_)
