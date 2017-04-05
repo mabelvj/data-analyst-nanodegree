@@ -347,7 +347,7 @@ p11_b <-ggplot(aes(y = alcohol, x= quality.cat, fill= quality.cat), data = redwi
 
 grid.arrange(p8_a,p8_b,p9_a,p9_b,p10_a,p10_b,p11_a,p11_b, ncol=2) + theme_light(base_size = 10);
 ```
-### Matrix of feature relationships
+<!---### Matrix of feature relationships-->
 ```{r bivariateggpairs, fig.width=7, fig.asp=1, fig.cap="Matrix of relationships between variables", include= FALSE}
 cols_to_avoid= c("X", "quality.cat")
 column_names = colnames(redwines)
@@ -381,21 +381,10 @@ ggfacet(data = redwines, mapping = aes(color=quality.cat), columnsX = "quality",
 
 ## Bivariate Analysis
 
-### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+###Correlation
+#### Correlation betweeen variables
 
-### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
-
-### What was the strongest relationship you found?
-
-
-
-
-# Multivariate Plots Section
-
-##Correlation
-### Correlation betweeen variables
-
-In the next figure (fig.\@ref(fig:MultivariateCorrelation)) it is shown the correlation factor between the different variables in the Red Wines dataset. Significant correlation values ($|R|>0.3$) are highigtjed with stronger color density the higher the correlation value.
+In the next figure (fig.\@ref(fig:MultivariateCorrelation)) it is shown the correlation factor between the different variables in the Red Wines dataset. Significant correlation values ($|R|>0.3$) are highlighted with stronger color density the higher the correlation value.
 
 For the purpose of this analysis, the focus will be placed in the relationship between quality and other variables.
 
@@ -447,11 +436,88 @@ return(corr)
 }
 
 corr_general <- ggcorr_custom(redwines, layout_exp = 2) #+ ggplot2::theme_light(base_size= 7)
+corr_general
 corr_general_R <- corr_general$data
+
+
+
+
+plot_linear_model <- function (x = "quality", y, 
+                               corr_gral = corr_general_R, 
+                               df = redwines, draw_mean = TRUE, group ="quality"){
+  
+  alpha_value = 1/7
+  #lm
+  mylabel <- paste('rho == ', 
+                   format(corr_gral[(corr_gral$y== y) & 
+                        (corr_gral$x == strsplit(x, "[.]")[[1]][1]),"label"],
+                        digits = 3))
+  # strsplit("quality.cat", "[.]")[[1]][1] -> "quality"
+  
+  #mean by group of x
+  if(is.null(group)){
+    lm_ <- ggplot(data = df,
+                aes(x =  eval(as.name(x)), 
+                    y = eval(as.name(y))))
+  }
+  else{
+      lm_ <- ggplot(data = df,
+                aes(x =  eval(as.name(x)), 
+                    y = eval(as.name(y)),
+                    color= eval(as.name(group))))
+  }
+
+  lm_ <- lm_  + geom_point(alpha=alpha_value, 
+                   position = 'jitter', show.legend = FALSE) +
+        #geom_boxplot(outlier.alpha = 0, alpha = 0, show.legend = FALSE)+
+        geom_smooth(method = "lm", na.rm = TRUE,
+                    show.legend = FALSE)+
+        annotate("text", x = median(df[,x]),y= min(df[,y])+ 0.95*diff(range(df[,y])), 
+                         label= mylabel, parse=TRUE, size= 3) +# 3 % Add the value of r to the plot.
+    # locate in the range: y = min(df[,y])+ 0.9*diff(range(df[,y]))
+
+        ggtitle(paste(y,'vs', x, sep=" "))+
+        xlab(x)+ ylab(y) #+guides(fill=FALSE)
+  #print(mylabel)
+
+  if(draw_mean){
+    print(draw_mean)    
+    
+    lm_ <-lm_ +stat_summary(fun.y = "mean", 
+                     geom = "line", 
+                     show.legend = FALSE, 
+                     color= "red",
+                     linetype= "dashed")
+  }
+  return (lm_)
+}
 ```
 
-### Correlation between variables by quality range
+
+#### Correlation between variables by quality range
 Let us now analyze the correlation between the variables for each quality range in figure \@ref(fig:multivariatecorrquality). It can be seen that features are more correlated between them for *lower* quality wine. Some strong relationships between variables are kept for all quality ranges, as pH-density, pH-citric acid and ph-fixed acidity, or fixed acid-volatile acidity and fixed acid-fixed acidity. 
+```{r multivariatecorrquality, fig.width=12, fig.asp=0.33, fig.cap="Correlation vs Quality"}
+
+corr_total_1 <- ggcorr_custom(subset(redwines, quality.cat=="bad"), layout_exp = 2, base_size_font = 8)  + ggplot2:: ggtitle("Bad")
+
+corr_total_2 <- ggcorr_custom(subset(redwines, quality.cat=="medium"), layout_exp = 2, base_size_font = 8) + ggplot2:: ggtitle("Medium")
+
+corr_total_3 <- ggcorr_custom(subset(redwines, quality.cat=="good"), layout_exp = 2, base_size_font = 8) + ggplot2:: ggtitle("Good")
+
+
+
+gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name = "Correlation vs Quality")  +  theme(plot.title = element_text(size = 12))
+# + ggplot2:: theme_light(base_size = 6)
+#temp <- gridExtra::arrangeGrob(corr_total_1, corr_total_2, corr_total_3, nrow = 3, name = "Correlation vs Quality") + ggplot2:: theme_light(base_size = 10)
+
+#grid.newpage()
+#grid.draw(temp)
+
+```
+
+
+
+From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** (R=0.5), **volatile.acidity** (R=0.4) and  **sulphates** (R=0.3). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
 
 ```{r corrreport, fig.width=8, fig.height=4, fig.align= 'center', fig.cap= "Correlation between alcohol, volatile acidity and sulphates"}
 
@@ -549,7 +615,6 @@ Figure \@ref(fig:corrreport) shows that the strongest relationship is between su
 From figure \@ref(fig:corrarticle) and \@ref(fig:corrreport) it can be concluded the varibles in the second figure (**sulphates**, **pH** and **total sulfur dioxide**), the ones suggested by @cortez2009modeling  are less correlated between them and lead to a more accurate analysis. 
 
 
-
 ```{r echo=FALSE, include=FALSE, Multivariate_Plots}
 #NOT INCLUDED
 require(GGally)
@@ -567,6 +632,62 @@ d <- ggpairs(data=tmp,
 d
 #d + facet_grid(~quality.cat)
 ```
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+For the three main variables influencing the quality of wine:
+
+- **sulphates vs quality** 
+  The correlation between this two variables is $\rho=0.3$.
+- **pH vs quality**
+  The correlation between this two variables is negative with a value $\rho=-0.1$.
+- **total sulfur dioxide vs quality**
+  The correlation between this two variables is also negative with a value $\rho=-0.2$.
+```{r lm_quality, fig.width=12,fig.asp=0.33,  fig.align= 'center', fig.cap=  " Sulphates, pH and total sulfur dioxide vs quality"}
+##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
+
+
+###############IMPORTANT###########
+
+# GREEK LETTERS IN ANNOTATE(): PARSE=TRUE
+
+
+#lm1
+
+lm1 <- plot_linear_model(x='quality', y = 'sulphates')
+
+#lm2
+
+lm2 <- plot_linear_model(x='quality', y = 'pH') 
+
+#lm3
+
+lm3 <- plot_linear_model(x='quality', y = 'total.sulfur.dioxide')
+
+
+# arrange the three plots in a single row
+p_ <- grid.arrange(lm1,lm2,lm3, ncol=3)
+p_
+```
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)? What was the strongest relationship you found?
+
+
+Figure \@ref(fig:MultivariateCorrelation) shows the correlation between the variables in the dataset. The strongest are these pairs: citric acid-fixed acidity, total sulfur dioxide - free sulfur dioxide, density- fixed acidity and pH - fixed acidity.
+
+IT is logical that citric acid influences fixed acidity, as does free sulfur dioxide with total sulfur dioxide. Ph is known to be related to the acid levels, so no surprise here. I did not know there was such a strong relationship between density and fixed acidity.
+
+
+```{r bivariateq1_1, fig.width=6, fig.asp=0.5, fig.align= 'center', fig.cap= "Density and pH vs fixed acidity"}
+bv1 <- plot_linear_model(x='density', y = 'fixed.acidity', draw_mean= FALSE, group = NULL)
+bv2 <- plot_linear_model(x='pH', y = 'fixed.acidity', draw_mean= FALSE, group = NULL)
+
+grid.arrange(bv1, bv2, ncol =2)
+```
+
+
+# Multivariate Plots Section
+
 
 
 # Multivariate Analysis
@@ -649,70 +770,6 @@ p
 
 # Final Plots and Summary
 
-```{r lm_quality, fig.width=12,fig.asp=0.33}
-##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
-
-
-###############IMPORTANT###########
-
-# GREEK LETTERS IN ANNOTATE(): PARSE=TRUE
-
-
-
-plot_linear_model <- function (x = "quality", y, 
-                               corr_gral = corr_general_R, 
-                               df = redwines){
-  
-  alpha_value = 1/7
-  #lm
-  mylabel <- paste('rho == ', 
-                   format(corr_gral[(corr_gral$y== y) & 
-                        (corr_gral$x == strsplit(x, "[.]")[[1]][1]),"label"],
-                        digits = 3))
-  # strsplit("quality.cat", "[.]")[[1]][1] -> "quality"
-  
-  #mean by group of x
-  lm_ <- ggplot(data = df,
-                aes(x =  eval(as.name(x)), 
-                    y = eval(as.name(y)), 
-                    color= eval(as.name(x))))+
-        geom_point(alpha=alpha_value, 
-                   position = 'jitter', show.legend = FALSE) +
-        #geom_boxplot(outlier.alpha = 0, alpha = 0, show.legend = FALSE)+
-        geom_smooth(method = "lm", na.rm = TRUE,
-                    show.legend = FALSE)+
-        stat_summary(fun.y = "mean", 
-                     geom = "line", 
-                     show.legend = FALSE, 
-                     color= "red",
-                     linetype= "dashed")+
-    ggtitle(paste(y,'vs', x, sep=" "))+
-        xlab(x)+ ylab(y) #+guides(fill=FALSE)
-  #print(mylabel)
-  lm_ <-lm_ + annotate("text",
-                       x = median(df[,x]), 
-                       y= min(df[,y])+ 0.95*diff(range(df[,y])), 
-                       label= mylabel, parse=TRUE, size= 3) # 3 % Add the value of r to the plot.
-  # locate in the range: y = min(df[,y])+ 0.9*diff(range(df[,y]))
-  return (lm_)
-}
-
-#lm1
-
-lm1 <- plot_linear_model(x='quality', y = 'sulphates')
-
-#lm2
-
-lm2 <- plot_linear_model(x='quality', y = 'pH') 
-
-#lm3
-
-lm3 <- plot_linear_model(x='quality', y = 'total.sulfur.dioxide')
-
-
-# arrange the three plots in a single row
-#p_ <- grid.arrange(lm1,lm2,lm3, ncol=3)
-```
 ### Plot One
 ```{r echo=FALSE, Plot_One}
 lm1
