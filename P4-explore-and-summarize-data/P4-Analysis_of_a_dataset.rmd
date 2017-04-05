@@ -381,10 +381,12 @@ ggfacet(data = redwines, mapping = aes(color=quality.cat), columnsX = "quality",
 
 ## Bivariate Analysis
 
-###Correlation
+### Correlation
+A good way to see how to variables are related is using the correlation. In this sectio it will be calculated the correlation between the features of red wine and the strongest will be analyzed.
+
 #### Correlation betweeen variables
 
-In the next figure (fig.\@ref(fig:MultivariateCorrelation)) it is shown the correlation factor between the different variables in the Red Wines dataset. Significant correlation values ($|R|>0.3$) are highlighted with stronger color density the higher the correlation value.
+In the next figure (fig.\@ref(fig:MultivariateCorrelation)) it is shown the correlation factor between the different variables in the Red Wines dataset. Significant correlation values ($|\rho|>0.3$) are highlighted with stronger color density the higher the correlation value.
 
 For the purpose of this analysis, the focus will be placed in the relationship between quality and other variables.
 
@@ -517,7 +519,7 @@ gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name
 
 
 
-From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** (R=0.5), **volatile.acidity** (R=0.4) and  **sulphates** (R=0.3). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
+From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** ($\rho=0.5$), **volatile.acidity** ($\rho=0.4$) and  **sulphates** ($\rho=0.3$). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
 
 ```{r corrreport, fig.width=8, fig.height=4, fig.align= 'center', fig.cap= "Correlation between alcohol, volatile acidity and sulphates"}
 
@@ -610,7 +612,7 @@ p <- grid.arrange(corr_article, multi1,multi2,multi3,ncol=2,
 ```
 
 
-Figure \@ref(fig:corrreport) shows that the strongest relationship is between sulphates and pH (R=-0.2) followed by pH-total sulfur dioxide.  
+Figure \@ref(fig:corrreport) shows that the strongest relationship is between sulphates and pH ($\rho=-0.2$) followed by pH-total sulfur dioxide.  
 
 From figure \@ref(fig:corrarticle) and \@ref(fig:corrreport) it can be concluded the varibles in the second figure (**sulphates**, **pH** and **total sulfur dioxide**), the ones suggested by @cortez2009modeling  are less correlated between them and lead to a more accurate analysis. 
 
@@ -635,7 +637,7 @@ d
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-For the three main variables influencing the quality of wine:
+For the three main variables (fig.\@ref(fig:lmquality)) influencing the quality of wine:
 
 - **sulphates vs quality** 
   The correlation between this two variables is $\rho=0.3$.
@@ -643,7 +645,7 @@ For the three main variables influencing the quality of wine:
   The correlation between this two variables is negative with a value $\rho=-0.1$.
 - **total sulfur dioxide vs quality**
   The correlation between this two variables is also negative with a value $\rho=-0.2$.
-```{r lm_quality, fig.width=12,fig.asp=0.33,  fig.align= 'center', fig.cap=  " Sulphates, pH and total sulfur dioxide vs quality"}
+```{r lmquality, fig.width=12,fig.asp=0.33,  fig.align= 'center', fig.cap=  " Sulphates, pH and total sulfur dioxide vs quality"}
 ##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
 
 
@@ -675,10 +677,10 @@ p_
 
 Figure \@ref(fig:MultivariateCorrelation) shows the correlation between the variables in the dataset. The strongest are these pairs: citric acid-fixed acidity, total sulfur dioxide - free sulfur dioxide, density- fixed acidity and pH - fixed acidity.
 
-IT is logical that citric acid influences fixed acidity, as does free sulfur dioxide with total sulfur dioxide. Ph is known to be related to the acid levels, so no surprise here. I did not know there was such a strong relationship between density and fixed acidity.
+It is logical that citric acid influences fixed acidity, as does free sulfur dioxide with total sulfur dioxide. Ph is known to be related to the acid levels, so no surprise here. I did not know there was such a strong relationship between density and fixed acidity.
 
-
-```{r bivariateq1_1, fig.width=6, fig.asp=0.5, fig.align= 'center', fig.cap= "Density and pH vs fixed acidity"}
+Figure \@ref(fig:bivariateq1) shows the relationship between fixed acidity and density, and between fixed acidity and pH. Fixed acidity and density have a strong positive correlation ($\rho=0.7$) and fixed acidity and pH show a strong negative correlation ($\rho=-0.7$).
+```{r bivariateq1, fig.width=6, fig.asp=0.5, fig.align= 'center', fig.cap= "Density and pH vs fixed acidity"}
 bv1 <- plot_linear_model(x='density', y = 'fixed.acidity', draw_mean= FALSE, group = NULL)
 bv2 <- plot_linear_model(x='pH', y = 'fixed.acidity', draw_mean= FALSE, group = NULL)
 
