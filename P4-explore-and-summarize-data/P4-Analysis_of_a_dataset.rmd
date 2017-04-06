@@ -25,6 +25,8 @@ output:
 link-citations: yes
 bibliography: P4.bib
 biblio-style: apsr
+nocite: | 
+  @jasonmedina, @SanjayMenon, @IwanThomas
 ---
 
 ```{r global_options, include=FALSE}
@@ -106,6 +108,13 @@ str(redwines) #summary of values for each variable
 
 #unique(redwines$quality.cat)
 ```
+
+- `X`: is the row id
+- `quality`: range is between 3 and 8
+- `quality.cat`: generated to group quality in ranges: 0-4 -> BAD, 4-7 -> MEDIUM, 7-10 -> GOOD. More information in the section "Analysis".
+- All variables except total.sulfar.dioxide and free.sulfar.dioxide (integers), are continuous.
+- total.sulfer.dioxide is the sum of free.sulfur.dioxide and bound forms: hence the two sulfur variables are related.
+- volitale.acidity is acetic acid, different from tartaric or fixed.acidity and citric.acid. Acetic acid gives wine vinegar taste, while fixed acids do not easily evaporate. Citric acid is added to some wines for freshness or to increase acidity. @jasonmedina
 
 # Univariate analysis
 
@@ -416,10 +425,10 @@ ggcorr_custom <- function(x, method = "pairwise", palette = "RdYlGn", cols_to_av
          geom = "blank",
          hjust = 1,
          angle = -25,
-         digits = 2,
-         nbreaks = 8,
+         digits = ,
+         nbreaks = 4,
          name = "",
-         label_round = 1,
+         label_round = 2,
          label_size = 3,
          legend.size = 7,
          layout.exp = layout_exp,
@@ -520,9 +529,7 @@ gridExtra::grid.arrange(corr_total_1, corr_total_2, corr_total_3, ncol = 3, name
 
 ```
 
-
-
-From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** ($\rho=0.5$), **volatile.acidity** ($\rho=0.4$) and  **sulphates** ($\rho=0.3$). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
+From the general correlation matrix (fig.\@ref(fig:MultivariateCorrelation)), three main variables can be selected due to their high correlation with quality: **alcohol** ($\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='alcohol')&(corr_general_R$x=='quality'), select = 'label' ),2)` ), **volatile.acidity** ($\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='volatile.acidity')&(corr_general_R$x=='quality'), select = 'label' ),2)` ) and  **sulphates** ($\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='sulphates')&(corr_general_R$x=='quality'), select = 'label' ),2)` ). In order to see if they are suitable to perform an analysis let us explore the correlation between them and also the distribution of samples in bivariate plots in figure \@ref(fig:corrreport).
 
 ```{r corrreport, fig.width=8, fig.height=4, fig.align= 'center', fig.cap= "Correlation between alcohol, volatile acidity and sulphates"}
 
@@ -641,14 +648,11 @@ d
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
-For the three main variables (fig.\@ref(fig:lmquality)) influencing the quality of wine:
+For the three main variables (fig.\@ref(fig:lmquality)) influencing the quality of wine the correlation is:
 
-- **sulphates vs quality** 
-  The correlation between this two variables is $\rho=0.3$.
-- **pH vs quality**
-  The correlation between this two variables is negative with a value $\rho=-0.1$.
-- **total sulfur dioxide vs quality**
-  The correlation between this two variables is also negative with a value $\rho=-0.2$.
+- **sulphates vs quality**: $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='alcohol')&(corr_general_R$x=='quality'), select = 'label' ),2)`.
+- **pH vs quality**: $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='pH')&(corr_general_R$x=='quality'), select = 'label' ),2)`.
+- **total sulfur dioxide vs quality**: $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='total.sulfur.dioxide')&(corr_general_R$x=='quality'), select = 'label' ),2)`.
 ```{r lmquality, fig.width=12,fig.asp=0.33,  fig.align= 'center', fig.cap=  "Sulphates, pH and total sulfur dioxide vs quality"}
 ##ggplot(aes(x = quality, y = free.sulfur.dioxide), data = redwines) + geom_point(aes(color=quality.cat),alpha=1/4, position = 'jitter')+ ggtitle(' Free SO2 and  Quality Relationship')
 
@@ -683,7 +687,7 @@ Figure \@ref(fig:MultivariateCorrelation) shows the correlation between the vari
 
 It is logical that citric acid influences fixed acidity, as does free sulfur dioxide with total sulfur dioxide. Ph is known to be related to the acid levels, so no surprise here. I did not know there was such a strong relationship between density and fixed acidity.
 
-Figure \@ref(fig:bivariateq1) shows the relationship between fixed acidity and density, and between fixed acidity and pH. Fixed acidity and density have a strong positive correlation ($\rho=0.7$) and fixed acidity and pH show a strong negative correlation ($\rho=-0.7$).
+Figure \@ref(fig:bivariateq1) shows the relationship between fixed acidity and density, and between fixed acidity and pH. Fixed acidity and density have a strong positive correlation ($\rho=$ `rround(subset(corr_general_R, (corr_general_R$y=='fixed.acidity')&(corr_general_R$x=='density'), select = 'label' ),2)`) and fixed acidity and pH show a strong negative correlation ($\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='fixed.acidity')&(corr_general_R$x=='pH'), select = 'label' ),2)`).
 ```{r bivariateq1, fig.width=6, fig.asp=0.5, fig.align= 'center', fig.cap= "Density and pH vs fixed acidity"}
 bv1 <- plot_linear_model(x='density', y = 'fixed.acidity', draw_mean= FALSE, group = NULL)
 bv2 <- plot_linear_model(x='pH', y = 'fixed.acidity', draw_mean= FALSE, group = NULL)
@@ -857,26 +861,31 @@ three_plots_grid(mv1, mv2, mv3)
 
 Figure \@ref(fig:mv1) shows the 2D density distribution of the three variables (compared in pairs) that influence the most the quality of the wine.   It is interesting how the centers seem to displace in a linear manner.  
 
-- For the case of sulphates-pH there is a negative dependence, coincident with the value of the correlation for these two variables $\rho=-0.2$.
+- For the case of sulphates-pH there is a negative dependence, coincident with the value of the correlation for these two variables $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='pH')&(corr_general_R$x=='sulphates'), select = 'label' ),2)`.
 
-- For the case of sulphates-total sulfur dioxide there seems to be no dependence,  what is coincident with the value of the correlation for these two variables $\rho=0$.
+- For the case of sulphates-total sulfur dioxide there seems to be no dependence,  what is coincident with the value of the correlation for these two variables $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='total.sulfur.dioxide')&(corr_general_R$x=='sulphates'), select = 'label' ),2)`.
 
-- For the case of pH-total sulfur dioxide there seems to be no dependence,  what is coincident with the value of the correlation for these two variables $\rho=-0.1$.
+- For the case of pH-total sulfur dioxide there seems to be no dependence,  what is coincident with the value of the correlation for these two variables $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='total.sulfur.dioxide')&(corr_general_R$x=='pH'), select = 'label' ),2)`.
 
 Figure \@ref(fig:mv3) shows the relationship between the highest values of correlation in figure the matrix of correlation in figure \@ref(fig:MultivariateCorrelation). In this case the variables pairs selected were: fixed acidity vs pH, fixed acidity vs citric acid and volatile acidity vs citric acid, al with different colors per quality range.   
 
-- For the case of fixed acidity vs pH there is a negative dependence, coincident with the value of the correlation for these two variables $\rho=-0.7$.
+- For the case of fixed acidity vs pH there is a negative dependence, coincident with the value of the correlation for these two variables $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='fixed.acidity')&(corr_general_R$x=='pH'), select = 'label' ),2)`.
 
-- For the case of fixed acidity vs citric acid  there seems to be a strong dependence,  what is coincident with the value of the correlation for these two variables $\rho=0.7$.
+- For the case of fixed acidity vs citric acid  there seems to be a strong dependence,  what is coincident with the value of the correlation for these two variables $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='fixed.acidity')&(corr_general_R$x=='citric.acid'), select = 'label' ),2)`.
 
-- For the case of volatile acidity vs citric acid there seems to be no dependence,  what is coincident with the value of the correlation for these two variables $\rho=-0.6$.
+- For the case of volatile acidity vs citric acid there seems to be no dependence,  what is coincident with the value of the correlation for these two variables $\rho=$ `r round(subset(corr_general_R, (corr_general_R$y=='volatile.acidity')&(corr_general_R$x=='citric.acid'), select = 'label' ),2)`.
 
 ## Were there any interesting or surprising interactions between features?
 
 I found that there is no significative correlation between pH-total sulfur dioxide. Also, I found that usually, higher quality wine is related to higher levels of citric acid.
 
 ## OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
-```{r}
+
+I created a multiple linear model with the three main features: sulphates, pH and total sulfur dioxide. 
+
+The linear model used takes log10 of each variable to make the model. In figure \@ref(fig:lmodel1) it is shown how the overall error is reduced. However, when looking to the error per quality range (fig. \@ref(fig:lmodel2)), the error is higher for extreme values of quality. This makes sense, since the most abundant group is the one with medium quality and hence, the model is more accurate with this segment. 
+```{r lmodel, fig.width=15, fig.asp=0.33,  fig.align= 'center', fig.cap=" Error by linear model", include=TRUE, message=TRUE}
+
 m <- lm(quality ~
             I(log10(sulphates)) +
             I(log10(total.sulfur.dioxide)) +
@@ -884,7 +893,7 @@ m <- lm(quality ~
                 data = redwines)
 
 redwines$quality.predictions <- predict(m,redwines)
-redwines$quality.error <- (redwines$quality.predictions - redwines$quality)/redwines$quality
+redwines$quality.error <- sqrt(((redwines$quality.predictions - redwines$quality)/redwines$quality)**2)
 
 #plot(m)
 
@@ -894,28 +903,37 @@ general_model <-ggplot(data = redwines, aes(x = quality, y = quality.error)) +
 category_mode <- ggplot(data = redwines, aes(x = quality, y = quality.error, color= quality.cat)) +
   geom_boxplot()+ facet_wrap(~quality.cat)
 
-general_model
-
-category_mode
-
 summary(m)
 ```
+```{r lmodel1, fig.width=4, fig.asp=1,  fig.align= 'center', fig.cap=" Error by linear model", include=TRUE}
+general_model + theme(axis.text=element_text(size = 10))
+```
+```{r lmodel2, fig.width=12, fig.asp=0.33,  fig.align= 'center', fig.cap=" Error by linear model", include=TRUE}
 
+category_mode + theme(axis.text=element_text(size = 10))
+```
 
-------
+The model has the following strengths and limitations:
+
+- strengths: simple and limited to most influencing variables.
+
+- limitations: not all variables are included, the combination of variables is linear and the quality is set by humans with different criteria.
+
 
 # Final Plots and Summary
 
-### Plot One
+## Plot One
 ```{r echo=FALSE, PlotOne, fig.width=8, fig.asp=0.5,  fig.align= 'center', fig.cap="Correlation matrix"}
  
 corr_general
 ```
 
-### Description One
+## Description One {-}
 
+Figure \@ref(fig:PlotOne) shows the correlation coefficient between the variables in the Red Wines dataset.
 
-### Plot Two
+## Plot Two
+
 ```{r echo=FALSE, PlotTwo, fig.width=12, fig.asp=0.33,  fig.align= 'center', fig.cap=  "Sulphates, pH and total sulfur dioxide vs quality"}
 plm
 
@@ -923,23 +941,33 @@ plm
 grid.arrange(lm1_end,lm2_end,lm3_end, ncol=3)
 ```
 
-### Description Two
+## Description Two {-}
 
+Figure \@ref(fig:PlotTwo) shows the distribution per quality value of for the three main variables influencing the quality of wine, with a line blue showing the linear model of the relation quality-feature and a red one showing the mean value of the feature per quality value.
 
-### Plot Three
-```{r echo=FALSE, PlotThree ,fig.width=8, fig.asp=0.5,  fig.align= 'center', fig.cap=" Citric acidity vs quality"}
+## Plot Three
+
+```{r echo=FALSE, PlotThree ,fig.width=8, fig.asp=0.4,  fig.align= 'center', fig.cap=" Citric acidity vs quality"}
 
 grid.arrange(p3_a,p3_b, ncol=2) + theme_light(base_size = 10)
 ```
 
-### Description Three
+### Description Three {-}
 
-------
+Figure \@ref(fig:PlotThree) shows the distribution of citric acid per quality range and also the box plot per quality range. It can be observed how higher quality wines have more levels of citic acid than lower quality wine. I really liked this conclusion, and that is why it is included here, because I always thought it would be the opposite, that lower quality wine would be the more acid. 
 
 # Reflection
 
+With this work I have realized how important is to investigate a dataset before starting to make a model or just to extract conclusions. Making an Exploratory Data Analysis (EDA) is an iterative work trying to find the best way to explain relationships between variables and distribution of data and then communicate the result in a clear and concise way.
 
-## References
+I found that the correlation matrix is crucial for continuous variables, giving the lead on where you have to look closer at. It is also important to know the the data, each variable and for that, the plotting the distributions is important.
+
+Sulphates, pH and total sulfur dioxide are the most important features to explaing the Red Wine quality, as suggested by @cortez2009modeling. However, the correlation matrix shows that it is alcohol, sulphates and volatile acidity the most correlated with quality. After exploring the correlation coefficient between them I could see that "alcohol, sulphates and volatile acidity" set is more correlated between the variables than the "sulphates, pH and total sulfur dioxide" set. From quality exploration it is noticeable that there are no records for wines with quality below 3 or above 8.
+
+This EDA of the Red Wine quality has given me the opportunity to approach a dataset using R and draw conclusions from data. This experience will be helpful in the future when approaching simiar problems.
+
+# References {-}
+
 
 
 
