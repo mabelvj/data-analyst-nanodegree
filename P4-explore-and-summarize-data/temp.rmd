@@ -1,0 +1,162 @@
+---
+title: 'Project 4  : Exploration of Red Wine Quality'
+author: "Isabel María Villalba Jiménez"
+date: "December 6th, 2016"
+output:
+  bookdown::html_document2: 
+    fig_caption: yes
+  github_document:
+    depth: 1
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 8
+  html_document:
+    depth: 1
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 8
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 7
+    highlight: tango
+    keep_tex: yes
+link-citations: yes
+bibliography: P4.bib
+biblio-style: apsr
+nocite: | 
+  @jasonmedina, @SanjayMenon, @IwanThomas
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.cap = NULL, fig.width=4, fig.height=4, 
+                      fig.path='Figs/', fig.align = 'center',
+                      echo=FALSE, warning=FALSE, message=FALSE,
+                      include = TRUE, results= 'hide', 
+                      tidy.opts=list(width.cutoff=80),tidy=TRUE)
+# Set so that long lines in R will be wrapped:
+```
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+this_dir <- 'Git/data-analyst-nanodegree/P4-explore-and-summarize-data/' 
+setwd("~")
+setwd(this_dir)
+
+#remove.packages("UpSetR")
+#remove.packages("GGally")
+require(ggplot2)
+require(GGally)
+library(gridExtra)
+# stable version on CRAN
+#install.packages("bookdown")
+library(bookdown)
+
+
+
+# Captioner
+# Now included in bookdown
+#captioner is an R package for generating figure numbers and captions
+#https://github.com/adletaw/captioner
+
+#install.packages("devtools")
+#devtools::install_github("adletaw/captioner")
+#library(captioner)
+
+#Set default theme
+theme_set(theme_light())
+```
+
+
+#Analysis
+
+In this work it will be analyzed the impact in quality of several parameters describing red wine. The dataset is curated by Udacity and comes from UCI repository [https://archive.ics.uci.edu/ml/datasets/Wine+Quality](https://archive.ics.uci.edu/ml/datasets/Wine+Quality) and consists of 1599 sample data for Red wine [https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true](https://docs.google.com/document/d/1qEcwltBMlRYZT-l699-71TzInWfk4W9q5rTCSvDVMpc/pub?embedded=true).
+
+ In @cortez2009modeling it is shown that the most imporant features for assessing Red Wine quality are:
+ 
+- sulphates
+
+- pH
+
+- total sulfur dioxide
+
+# Variable summary
+
+
+```{r Load_the_Data}
+# Load the Data
+redwines <- read.csv('wineQualityReds.csv')
+
+#dim(redwines)
+#names(redwines)
+summary(redwines)
+
+# New variables 
+#redwines$quality.factor <- factor(redwines$quality)
+
+redwines$quality.cat <- NA
+redwines$quality.cat <- ifelse(redwines$quality>=7, 'good','medium')
+redwines$quality.cat <- ifelse(redwines$quality<=4, 'bad',redwines$quality.cat) 
+# if not, leave the previous values
+redwines$quality.cat <- factor(redwines$quality.cat,
+                               levels = list('bad', 'medium','good')) # set the order!
+
+print("Variables after dividing into quality groups")
+str(redwines) #summary of values for each variable
+
+#unique(redwines$quality.cat)
+```
+
+The dataset has `r dim(redwines)[1]` wine entries and `r dim(redwines)[0]` features.
+
+The summary of the dataset is the following 
+```{r results='hold'} 
+summary(redwines)
+```
+
+- `X`: is the row id
+- `quality`: range is between 3 and 8
+- `quality.cat`: generated to group quality in ranges: 0-4 -> BAD, 
+4-7 -> MEDIUM, 7-10 -> GOOD. More information on the section "Analysis".
+- All variables except total.sulfar.dioxide and free.sulfar.dioxide (integers), 
+are continuous.
+- total.sulfer.dioxide is the sum of free.sulfur.dioxide and bound forms: hence 
+the two sulfur variables are related.
+- volitale.acidity is acetic acid, different from tartaric or fixed.acidity and 
+citric.acid. Acetic acid gives wine vinegar taste, while fixed acids do not 
+easily evaporate. Citric acid is added to some wines for freshness or to increase
+acidity. @jasonmedina
+
+# Univariate analysis
+
+In this section it will be analyzed each of the variables describing the wines.
+
+## Plots Section
+###Quality
+
+The distribution of wine shows that most of wines have a quality between 5-6 
+points.
+
+```{r echo=FALSE, UnivariatePlots,fig.width=3, fig.height=3, fig.cap = "Quality distribution"}
+ggplot(aes(x = quality), data = redwines) + 
+geom_histogram(binwidth = 1, 
+                fill = "brown", color= "black") +
+ggtitle('Quality') + 
+theme_light(base_size = 10)
+ 
+#ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth = .02) 
+#+ scale_x_log10() + ggtitle('Sulphates')
+
+library(GGally)
+#ggpairs(redwines, axisLabels = 'internal', lower = list(continous = 'points', 
+#mapping = aes(shape= quality.cat, color=quality.cat), size = 8), #
+#upper = list(continous = 'smooth', discrete = 'facetwrap', size = 8), 
+#columns=2:10) + theme_light(base_size = 8)
+```
