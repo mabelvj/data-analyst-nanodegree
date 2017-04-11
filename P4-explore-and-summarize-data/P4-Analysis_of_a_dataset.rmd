@@ -122,7 +122,8 @@ The dataset has `r dim(redwines)[1]` wine entries and `r dim(redwines)[2]` featu
 
 The summary of the dataset is the following: 
 ```{r results='hold'} 
-summary(redwines)
+s <- summary(redwines)
+s
 ```
 
 - `X`: is the row id
@@ -143,16 +144,18 @@ increase acidity. @jasonmedina
 In this section it will be analyzed each of the variables describing the wines.
 
 ## Plots Section
-###Quality
+### Quality
 
 The distribution of wine shows that most of wines have a quality between 5-6 
-points.
+points. The mean value is `r round(mean(redwines$quality),2)` and median 
+`r round(median(redwines$quality),2)`.
 
 ```{r echo=FALSE, UnivariatePlots,fig.width=3, fig.height=3, fig.cap = "Quality distribution"}
 ggplot(aes(x = quality), data = redwines) + 
 geom_histogram(binwidth = 1, 
                 fill = "brown", color= "black") +
 ggtitle('Quality') + 
+scale_x_continuous(breaks = seq(3,8,1))
 theme_light(base_size = 10)
  
 #ggplot(aes(x = sulphates), data = redwines) + geom_histogram(binwidth = .02) 
@@ -168,9 +171,14 @@ library(GGally)
 ### Fixed and volatile acidity, citric acid
 
 The plot \@ref(fig:UnivariatePlotsacidity1) shows the distribution of fixed 
-acidity, volatile acidity and citric acid. Fixed acidity is negatively skewed, 
-volatile acidity is positively skewed and citric acid appears to be a bimodal 
-distribution.
+acidity, volatile acidity and citric acid. Fixed acidity is negatively skewed 
+with mean `r round(mean(redwines$fixed.acidity),2)` and median 
+`r round(median(redwines$fixed.acidity),2)`. The volatile acidity is positively skewed 
+with mean `r round(mean(redwines$volatile.acidity),2)` and median 
+`r round(median(redwines$volatile.acidity),2)`.
+The citric acid appears to be a bimodal or even a trimodal distribution with 
+overall mean `r round(mean(redwines$citric.acid),2)` and median 
+`r round(median(redwines$citric.acid),2)`.
 
 ```{r echo=FALSE, UnivariatePlotsacidity1, fig.width=9, fig.height=3, fig.cap="Fixed acidity, volatile acidity and citric acid distribution"}
 library(gridExtra)
@@ -203,41 +211,53 @@ grid.arrange(p1,p2, p3, ncol=3) + theme_light(base_size = 10)
 
 ### Residual sugar
 
-The plot of residual suggar shows that the better the wine the higher
-the residual sugar levels. 
+The plot of residual suggar (\@ref(fig:UnivariatePlotsresidualsugar) ) is positively skewed 
+with mean `r round(mean(redwines$residual.sugar),2)` and median 
+`r round(median(redwines$residual.sugar),2)`. It is also noticeable the 
+presence of outliers in the upper part of the graphic.
 
 ```{r echo=FALSE, UnivariatePlotsresidualsugar,fig.width=3, fig.height=3, fig.cap="Residual sugar distribution"}
 #Residual sugar
 p4 <- ggplot(aes(x = residual.sugar), data = redwines) +
-      geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +
-      scale_x_log10() + ggtitle('Residual sugar') + theme_light(base_size = 10)
+      geom_histogram(binwidth=.5,  color = "black", fill = "turquoise3") +
+      #scale_x_log10() + 
+      ggtitle('Residual sugar') + theme_light(base_size = 10)
 
 p4
 ```
 
-### Chlorides and sulfur dioxide
+### Chlorides, free sulfur dioxide and total sulfur dioxide
 
-In the plot of the chlorides, it can be onserved that the better the wine, 
-the lower the chloride levels. For the sulfur dioxide, either the free 
-or the total sulfur dioxide, high levels are indicator of medium quality, 
-whereas bad and good wine have the same low amount of sulfure dioxide.
+The plot \@ref(fig:UnivariatePlotschlorides) shows chlorides, free sulfur 
+dioxide and total sulfur dioxide levels distribution.
+The distribution of chlorides is positively skewed 
+with mean `r signif(mean(redwines$chlorides),2)` and median 
+`r signif(median(redwines$chlorides),2)`. The free sulfur dioxide is 
+positively skewed with mean `r signif(mean(redwines$free.sulfur.dioxide),2)` 
+and median `r signif(median(redwines$free.sulfur.dioxide),2)`.
+The total sulfur dioxide is positively skewed with mean `r signif(mean(redwines$total.sulfur.dioxide),2)` 
+and median `r signif(median(redwines$total.sulfur.dioxide),2)`.
+
 
 ```{r echo=FALSE, UnivariatePlotschlorides,fig.width=9, fig.height=3, fig.cap="Chlorides and sulfur dioxide distributions"}
 #Chlorides
 p5 <- ggplot(aes(x = chlorides), data = redwines) + 
-      geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") +
-      scale_x_log10() + ggtitle('Chlorides')+ theme_light(base_size = 10)
+      geom_histogram(binwidth=.025,  color = "black", fill = "turquoise3") +
+      #scale_x_log10() + 
+      ggtitle('Chlorides')+ theme_light(base_size = 10)
 
 #Free sulfur dioxide
 p6 <- ggplot(aes(x = free.sulfur.dioxide), data = redwines) + 
-      geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") + 
-      scale_x_log10() + ggtitle('Free sulfur dioxide') + 
+      geom_histogram(binwidth=2.5,  color = "black", fill = "turquoise3") + 
+      #scale_x_log10() + 
+      ggtitle('Free sulfur dioxide') + 
       theme_light(base_size = 10)
 
 #Total sulfur dioxide
 p7 <- ggplot(aes(x = total.sulfur.dioxide), data = redwines) + 
-      geom_histogram(binwidth=.1,  color = "black", fill = "turquoise3") + 
-      scale_x_log10() + ggtitle('Total sulfur dioxide') + 
+      geom_histogram(binwidth=10,  color = "black", fill = "turquoise3") + 
+      #scale_x_log10() + 
+      ggtitle('Total sulfur dioxide') + 
       theme_light(base_size = 10)
 
 grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
@@ -246,31 +266,44 @@ grid.arrange(p5, p6, p7, ncol=3) + theme_light(base_size = 10)
 
 ### Density, pH, sulphates and alcohol
 
-The next plot shows that, generally, the lower the density, 
-the better the quality of the wine. ALso, low pH levels are sign of better 
-quality. The higher the sulphates level, the better quality of the wine 
-and also, good wines have higher amount of alcohol.
 
+The plot \@ref(fig:UnivariatePlotsdensity) shows density, pH, sulphates and 
+alcohol distributions.
+The distribution of density seems to be a symmetrical normal distribution
+with mean `r signif(mean(redwines$density),4)` and median 
+`r signif(median(redwines$density),4)`. The pH distribution seems to be 
+negatively skewed with mean `r signif(mean(redwines$pH),3)` 
+and median `r signif(median(redwines$pH),3)`.
+The sulphates distribution is positively skewed with mean 
+`r signif(mean(redwines$sulphates),2)` 
+and median `r signif(median(redwines$sulphates),2)`.
+The alcohol distribution is positively skewed with mean 
+`r signif(mean(redwines$alcohol),3)` 
+and median `r signif(median(redwines$alcohol),3)`.
 ```{r echo=FALSE, UnivariatePlotsdensity, fig.width=6, fig.height=6, fig.cap="Density, pH, sulphates and alcohol distributions"}
 #Density
 p8 <- ggplot(aes(x = density), data = redwines) + 
       geom_histogram(binwidth=.0005,  color = "black", fill = "turquoise3") +
-      scale_x_log10() + ggtitle('Density')+ theme_light(base_size = 10)
+      #scale_x_log10() + 
+      ggtitle('Density')+ theme_light(base_size = 10)
 
 #pH
 p9 <- ggplot(aes(x = pH), data = redwines) + 
-      geom_histogram(binwidth=.01, color = "black", fill = "turquoise3") +
-      scale_x_log10() + ggtitle('pH') + theme_light(base_size = 10)
+      geom_histogram(binwidth=.05, color = "black", fill = "turquoise3") +
+      #scale_x_log10() + 
+      ggtitle('pH') + theme_light(base_size = 10)
 
 #Sulphates
 p10 <-  ggplot(aes(x = sulphates), data = redwines) + 
         geom_histogram(binwidth=.05,  color = "black", fill = "turquoise3") +  
-        scale_x_log10() + ggtitle('Sulphates')+ theme_light(base_size = 10) 
+        #scale_x_log10() + 
+        ggtitle('Sulphates')+ theme_light(base_size = 10) 
 
 #Alcohol
 p11 <-  ggplot(aes(x = alcohol), data = redwines) + 
-        geom_histogram(binwidth=.01, color = "black", fill = "turquoise3") +
-        scale_x_log10() + ggtitle('Alcohol')+ theme_light(base_size = 10)
+        geom_histogram(binwidth=.25, color = "black", fill = "turquoise3") +
+        #scale_x_log10() + 
+        ggtitle('Alcohol')+ theme_light(base_size = 10)
 
 grid.arrange(p8, p9, p10, p11, ncol=2) + theme_light(base_size = 10);
 ```
