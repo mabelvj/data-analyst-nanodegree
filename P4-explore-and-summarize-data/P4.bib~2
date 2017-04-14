@@ -1,0 +1,43 @@
+%% This BibTeX bibliography file was created using BibDesk.
+%% http://bibdesk.sourceforge.net/
+
+
+%% Created for Mabel at 2017-03-24 15:25:10 +0100 
+
+
+%% Saved with string encoding Unicode (UTF-8) 
+
+
+
+@webpage{IwanThomas,
+	Annote = {https://cdn.rawgit.com/IwanThomas/Udacity-Data-Analysis-Nanodegree/master/Project-4/RedWineRMD.html},
+	Author = {Iwan Thomas},
+	Date-Added = {2017-03-24 14:21:38 +0000},
+	Date-Modified = {2017-03-24 14:23:24 +0000},
+	Title = {EDA of Red Wine Quality Dataset },
+	Url = {https://github.com/IwanThomas/Udacity-Data-Analysis-Nanodegree/blob/master/Project-4/RedWineRMD.Rmd}}
+
+@webpage{SanjayMenon,
+	Date-Added = {2017-03-09 17:13:03 +0000},
+	Date-Modified = {2017-03-24 14:25:09 +0000},
+	Title = {Wine Quality Analysis},
+	Url = {https://rpubs.com/sanmen/24803},
+	Urldate = {http://rstudio-pubs-static.s3.amazonaws.com/24803_abbae17a5e154b259f6f9225da6dade0.html}}
+
+@webpage{jasonmedina,
+	Author = {Medina, Jason},
+	Date-Added = {2017-02-15 17:14:27 +0000},
+	Date-Modified = {2017-03-24 14:23:43 +0000},
+	Title = {P4 Explore and Summarize Data: Red Wine EDA},
+	Url = {https://rpubs.com/jasonmedina/220283},
+	Urldate = {https://rpubs.com/jasonmedina/220283}}
+
+@article{cortez2009modeling,
+	Author = {Cortez, Paulo and Cerdeira, Ant{\'o}nio and Almeida, Fernando and Matos, Telmo and Reis, Jos{\'e}},
+	Journal = {Decision Support Systems},
+	Number = {4},
+	Pages = {547--553},
+	Publisher = {Elsevier},
+	Title = {Modeling wine preferences by data mining from physicochemical properties},
+	Volume = {47},
+	Year = {2009}}
