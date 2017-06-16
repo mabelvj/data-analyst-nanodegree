@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<link href="https://fonts.googleapis.com/css?family=Lato:300,400|Oswald:500" rel="stylesheet">
+<style>
+
+
+:root {
+  --light-grey: silver; 
+  --ultra-light-grey: gainsboro;
+  --dark-grey : dimgray; /*dimgray*/
+  --black: #444;
+  --red : #bb2629;
+  --orange: darkorange;
+  --blue: teal;
+  --mean_global: rgba(172, 164, 160 , 1);
+  --mean_line:  rgba(0, 157, 159 ,.5);
+  --slope-color-over: darkorange;
+  --title: var(--dark-grey);
+  --title-main: darkgrey;/*rgba(39, 158, 144, 0.9);*/
+  --slope-color:  var(--ultra-light-grey);
+  --description-size: 18px;
+}
+    body{ 
+      color: var(--light-grey); 
+      background: white; 
+      font: normal 12px "Lato", sans-serif;
+      margin: 2em;
+      width: 1280px;
+
+    }
+    header { 
+      margin: 0 0 20px 220px; 
+      border-bottom: 1px solid #6c6c6c; 
+      width: 360px; 
+      position: relative; }
+
+    h1     { 
+      font-size: 28px; 
+      font-weight: normal; 
+      text-shadow: #fff 0 1px 0; 
+      margin: 0 0 0 0; 
+      padding: 0; 
+    }
+    small  { 
+      color: #a3a3a3; 
+      font-size: 12px; 
+      position: absolute; 
+      bottom: -1.8em; 
+      left: 0;
+    }
+    a{ 
+      color: #a3a3a3; 
+    }
+
+    span.label_year:hover { 
+      cursor: ew-resize; 
+    }
+
+    text{ 
+      fill: var(--black); 
+    }
+    
+    g.tick{
+      display: none;
+    }
+
+    text.label.start { text-anchor: end; }
+    text.label.end { text-anchor: start; }
+
+    text.axis.label{
+      fill: var(--slope-color);
+      display: none;
+    }
+
+    text.title{
+      fill: var(--title);
+
+    }
+
+    text.title.main{
+      text-anchor: start;
+      font-size: 35px;
+      font-weight: 500;
+      margin: 0 auto;
+      display: block;
+      font-family: 'Oswald', sans-serif;
+      color: var(--title-main);
+    }
+
+    wrap{
+      width: 100%;
+      display: block;
+
+    }
+    text.title.description{
+      text-anchor: start;
+      font-size: var(--description-size);
+      font-weight: 300;
+      margin: 0 auto;
+      vertical-align: top; /*inline with the menu for the left variable*/
+    }
+
+    .select{/*formating the menu*/
+      margin: 0 auto;
+      display: inline-block;
+      background: none;
+      color: var(--light-grey);
+      font-family: "Lato", sans-serif;
+      font-size: var(--description-size);
+      font-weight: 300;
+      border: 0px;
+      outline: 0px;
+      white-space: nowrap !important;
+      width: 360px;
+      text-anchor: start;
+      margin-left:  -4px; /*to force text alignment inside the dropdown menu*/
+    }
+
+    option{ /*options of the menu*/
+      padding: 0px 0px !important;
+      text-align: left !important;
+    }
+    text.mean_line{
+      fill: var(--mean_line);/*fill because we are calling it from d3 and a svg*/
+      /*stroke: var(--blue);*/
+      color : var(--mean_line);
+
+    }
+
+    text.mean_line_global{
+      fill: var(--mean_global);
+      color: var(--mean_global);
+    }
+
+    text.slope{
+      fill: var(--slope-color-over);
+      color: var(--slope-color-over);
+
+    }
+    line.mean_line { 
+      stroke: var(--mean_line);
+      stroke-width: 3;
+      opacity: 0.75;      
+    }
+    line.mean_line_global { 
+      stroke: var(--mean_global);
+      stroke-width: 2;
+      opacity: 1;
+      stroke-dasharray: 2,2; 
+    }
+    line.slope { 
+      stroke: var(--slope-color);
+      stroke-width: 1;
+      opacity:0.5;
+    }
+
+
+
+    .missing text.label { display: none; }
+    .missing line.slope { display: none; }
+
+    /*.over text{ 
+      fill: var(--red); 
+    }*/
+
+    .over text.info{       
+      width : 25px !important;
+      overflow-wrap: break-word !important; 
+      background-color: white; /*this way we avoid overlapping*/ 
+    } 
+
+    .over line.slope { 
+      stroke: var(--slope-color-over); 
+      stroke-width: 3;
+      /*transition: visibility 30ms linear 0.5s, opacity 30ms linear;*/
+    }
+    .over line.mean_line,.over line.mean_line_global { 
+      stroke-width: 5;
+    }
+
+
+    .legend rect {
+      fill:black;
+      stroke:black;
+      opacity:0.8;}
+
+      .comment{
+        max-width: 90%;
+      }
+</style>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+<div id="chart"></div>
+
+<script>
+// REFERENCES:
+//http://bl.ocks.org/zbjornson/2547496
+// DIMENSIONS AND MARGINS
+
+  // margin
+  var margin = {top: 100, right: 35, bottom: 30, left: 40, label: 5};
+  font_size = 12,
+  w     = 255,
+  //h    = 0.3 * data.length * font_size ;
+  // fixed height
+  h = 500;
+  width = w - margin.left - margin.right,
+  height = h- margin.top - margin.bottom;
+
+
+function get_bin(edad, interval = 10) {
+  return Math.floor(parseInt(edad) / interval) * interval;
+}
+
+var hombres = [];
+var mujeres = [];
+var p = []
+
+var dataset = {}; 
+var data_series= [];
+var list_of_countries = [];
+
+function create_menu(){
+  var data_series_internal;
+  data_series_internal = import_variable_names();
+  menu(data_series_internal);
+}
+
+
+
+d3.csv("./data/countries.csv",function(error, data0){
+  data0.forEach(function(d) {
+    list_of_countries.push({'name' : d.name, 'region': d.region, 'sub-region': d["sub-region"]});
+  });
+  d3.csv("./data/data_dict.csv",function(error, data){ 
+    data.forEach(function(d) {
+        data_series.push(d["Indicator Name"]);
+    });
+    // Maps each country to its continent value
+      var list_of_continents = return_unique_elements_array(list_of_countries.map(function(d){return d.region;}));
+
+      d3.csv("./data/data.csv",function(error, data){
+            data.forEach(function(d) {
+            //selection of the year column
+                d["2014"] = +d["2014"];
+            // Add continent information
+                var country_info= list_of_countries.filter(function(a){
+                  if(a.name.indexOf(d["Country Name"]) > -1){
+                      return true;
+                  }
+                });
+
+                if (country_info.length > 0){
+                  // Not null : save info
+                  d["region"] = country_info[0]["region"];
+                  d["sub-region"] = country_info[0]["sub-region"];
+                }
+                else{
+                  d["region"] = "Undefined";
+                  d["sub-region"] = "Undefined";
+                }
+            });
+
+          // Set default variables to be displayed
+            var selectedLeftVar = "Health expenditure per capita (current US$)";
+            var selectedRightVar = "Life expectancy at birth, total (years)";
+
+            //Add the title and the description of the graphics
+            d3.select('#chart')
+                    .append("wrap")
+                    .append("text")
+                    .classed("title main", true)
+                    .attr("x", 0)             
+                    .attr("y", 0 )
+                    .text("Does health spending affect the years we get to live?");
+            // Create menu once the list of variables is imported
+            // First let's remove the right variable from the menu
+            var index = data_series.indexOf(selectedRightVar);
+            if (index > -1) {
+              var data_menu = data_series;
+              //delete data_menu[index];
+              data_menu.splice(index, 1);
+            }
+            // Create the menu without rightvar
+            var selectedLeftVar = menu(data_menu, data, list_of_continents);
+
+            //Add subtitle after selecting leftVar from menu
+            insert_graphs_description(selectedLeftVar, selectedRightVar, data_menu);
+
+            // Plot per continent after the titles and menu are loaded. 
+            plot_continents(data, list_of_continents, selectedLeftVar, selectedRightVar)
+
+      });
+
+  });
+});
+
+function plot_continents(data, list_of_continents, selectedLeftVar, selectedRightVar){
+  // Call draw for each continent
+  for (var i = 0; i < list_of_continents.length; i++ ){
+    var continent = list_of_continents[i];
+    if (continent != ""){
+      // Only if continent has a valid value.
+      plot_data(data, continent, selectedLeftVar, selectedRightVar);
+    };
+  };
+}
+
+function insert_graphs_description(selectedLeftVar, selectedRightVar = "Life expectancy at birth, total (years)"){
+    //Adds a line under the title describing the variables plotted
+
+    d3.selectAll("text.title.description").remove();
+    d3.select('wrap')
+            .append("text")
+            .classed("title description", true)
+            .attr("x", 0)             
+            .attr("y", 0 )
+            .html(" vs " + selectedRightVar );
+            //.html(" vs " + selectedRightVar + " <br/> per continent");
+            // html function is used so as to be able to insert html tags
+    return true;
+}
+
+function menu(data_names, data, list_of_continents, defaultSelectValue = "Health expenditure per capita (current US$)"){
+  var select = d3.select('wrap') //Include the menu in the site description
+      .append('select')
+      .attr('class','select')
+      .on('change',onchange);
+
+  var options = select
+    .selectAll('option')
+    .data(data_names).enter()
+    .append('option')
+    .text(function (d) { return d; })
+    .property("selected", function(d){ return d === defaultSelectValue; });
+
+    function onchange() {
+      selectValue = d3.select('select').property('value');
+         //debugger;
+      d3.selectAll('svg').remove();
+      // Remove graph description and replot it
+      insert_graphs_description(selectedLeftVar = selectValue);
+      plot_continents(data, list_of_continents, selectValue);
+      return selectValue;
+    };
+
+
+
+  // Return selected variable
+  return(d3.select('select').property('value'));
+
+}
+
+function import_variable_names(){
+  var data_series= [];
+  d3.csv("./data/data_dict.csv",function(error, data){ 
+    data.forEach(function(d) {
+        data_series.push(d["Indicator Name"]);
+    });
+});
+  return data_series;
+
+
+}
+
+function plot_data(data, continent_name = null, leftVar ="Health expenditure per capita (current US$)", rightVar = "Life expectancy at birth, total (years)"){
+
+// Columns for each variable are extracted and saved into var1 and var2. Then those columns are joined into one variable dataset.
+// Then, if data si to be plotted by continent, data is filtered and passed to draw.
+      var1 = extract_variable(data, leftVar);
+      var2 = extract_variable(data, rightVar);
+      dataset = filter_countries(var1, var2);
+
+    if ((continent_name.length > 0) && (continent_name != "Undefined")){
+      // If continents: filter dataset per contient.
+      data_filtered = data.filter(function(a){return a.region == continent_name});  
+      var1 = extract_variable(data_filtered, leftVar);
+      var2 = extract_variable(data_filtered, rightVar);
+      dataset_filtered = filter_countries(var1, var2);  
+
+      draw(dataset_filtered, leftVar, rightVar, continent_name, dataset);
+      //http://bl.ocks.org/phoebebright/raw/3176159/
+  
+    } 
+    else{
+      draw(dataset, leftVar, rightVar, continent_name, dataset);
+
+    }
+};
+
+
+function return_unique_elements_array(arr)
+{
+  var n = {},r=[];
+  for(var i = 0; i < arr.length; i++) 
+  {
+    if (!n[arr[i]]) 
+    {
+      n[arr[i]] = true; 
+      r.push(arr[i]); 
+    }
+  }
+  return r;
+}
+
+
+function extract_variable(arr, varName){
+    return(arr.filter(function(d){return (d["Series Name"] == varName)&&(!isNaN(d["2014"]))}));
+
+}
+
+function filter_countries(var1, var2){
+  // This function select the intersection of countries
+  // between the selected variables and returns it
+  // as an array.
+  var countries1 = [],
+      countries2 = [],
+      countriesInt = [];
+      countries1 = return_countries(var1);
+      countries2 = return_countries(var2);
+      // Obtaining the intersenction of countries between varaibles
+      countriesInt = intersection_destructive(countries1,countries2).sort();
+      return(join_variables(var1, var2, countriesInt));
+}
+
+function return_countries(arr){
+  // This function returns an array containing all the Country Names
+  // in arr
+    var variable = [];
+    for (var i = 0; i < arr.length; i++ ) {
+        variable.push(arr[i]["Country Name"]);
+    };
+    return(variable);
+}
+
+
+function intersection_destructive(a, b)
+// This function retunr the destructive intersection
+// of array a and b
+{
+  var result = [];
+  while( a.length > 0 && b.length > 0 )
+  {  
+     if      (a[0] < b[0] ){ a.shift(); }
+     else if (a[0] > b[0] ){ b.shift(); }
+     else /* they're equal */
+     {
+       result.push(a.shift());
+       b.shift();
+     }
+  }
+  return result;
+}
+
+function join_variables(v1, v2, list_of_rows){
+  // Columns names are: the column used to join the variables, then as every var has the same Series Name, it will be obtained the first row Series anmes for each variable, v1, v2.
+
+  var column_index = "Country Name";
+  var column = "2014";
+  var result = [];
+
+ 
+  var temp1 =[], temp2 = [];
+    for (var i = 0; i < list_of_rows.length; i++ ){
+        temp_dict = {};
+        temp1 = return_row(v1, column_index, list_of_rows[i])[column];
+        temp2 = return_row(v2, column_index, list_of_rows[i])[column];
+        temp_dict[column_index] = list_of_rows[i];
+        temp_dict[v1[0]["Series Name"]] = temp1;
+        temp_dict[v2[0]["Series Name"]] = temp2;
+        result.push(temp_dict);
+    };
+    return(result);
+}
+
+function return_row(arr, column, value){
+// Finds the row containing the element in value
+    var i = 0,
+        found = false;
+    while (!found || i < arr.length){
+      if (arr[i][column] == value){
+        found = true;
+        return(arr[i])
+      }
+      else{
+        i += 1;
+      }
+    }
+
+}
+
+function get_accumulated(arr) {
+    var bins = [], values = [], prev;
+    for ( var i = 0; i < arr.length; i++ ) {
+        if ( arr[i].bin !== prev ) {
+            bins.push(arr[i].bin);
+            values.push(arr[i].value);
+        } else {
+            values[values.length-1]+=arr[i].value;
+        };
+        prev = arr[i].bin;
+    };
+
+    return convert_to_array_of_objects([bins, values]);
+}
+
+function convert_to_array_of_objects(arr){
+  // This function convert to standard array of objects
+  // after extracting values in get_accumulated.
+    var bins_values = [];
+    for (var i = 0; i < arr[0].length; i++ ) {
+      bins_values.push({
+        bin: arr[0][i],
+        value: arr[1][i]
+      });
+    };
+    return bins_values;
+}
+
+function add_svg(){
+  var svg = d3.select("#chart")
+      .append("svg")
+      .attr('id', function(d){return "svg" + d3.selectAll("svg")[0].length;})
+      .attr("width", width + margin.left + margin.right)
+     .attr("height", height + margin.top + margin.bottom)
+     .append("g")
+     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  ////////////////////
+  return svg;
+}
+
+function draw(data, leftVar, rightVar, title = null, data_total){
+//http://databank.worldbank.org/data/reports.aspx?source=2&series=SH.XPD.PUBL&country=#advancedDownloadOptions
+  k= data.length;
+
+  var chart = add_svg();
+
+// Put into a function
+    // Add new "Country Name" mean 
+      var mean_value_global = {}
+
+// Global mean
+      mean_value_global  ["Country Name"] = "global mean";
+      mean_value_global  [leftVar] =  d3.mean(
+                      data_total.map(function(d) {return d[leftVar];})
+                    );
+      mean_value_global  [rightVar] =    d3.mean(
+                      data_total.map(function(d) {return d[rightVar];})
+                    );
+      data.push(mean_value_global );
+
+  if (title != null){
+    // Mean value for the continent
+        var mean_value = {}
+
+        mean_value ["Country Name"] = "continent mean";
+        mean_value [leftVar] =  d3.mean(
+                        data.map(function(d) {return d[leftVar];})
+                      );
+        mean_value [rightVar] =    d3.mean(
+                        data.map(function(d) {return d[rightVar];})
+                      );
+        data.push(mean_value);
+  }
+
+
+//////////////
+
+
+
+  var leftScale = d3.scale.linear()
+      .range([height,0]);
+  
+  function return_units(variable){
+    //finds units between parentheses: i.e.(% GDP) or($ USD)
+    var regExp = /\(([^)]+)\)/;
+    var units = regExp.exec(variable)[1];
+
+    if (units.indexOf("$") >= 0){
+        //check if data is in dollars
+        return '$';
+      }
+      else if (units.indexOf("%") >= 0){
+        //check if data is in %
+        return '%';
+      }
+      else{
+        //if percentage or other: round to 0.1
+        return '';
+      };
+  }
+
+  leftScale.domain([0, d3.max(data_total, function(d) {
+    var units = return_units(leftVar);
+      if (units == '$'){
+        //check if data is in dollars
+        return round_variable(d[leftVar], step = 500);
+      }
+      else{
+        //if percentage or other: round to 0.1
+        return round_variable(d[leftVar], step = 0.1);
+      };
+     })])
+    .clamp(true);
+
+
+  var rightScale = d3.scale.linear()
+      .domain(d3.extent(data_total, function(d) { return Math.round(d[rightVar]); }))
+      .range([height,0])
+      .clamp(true);
+
+  var leftAxis = d3.svg.axis()
+      .scale(leftScale)
+      .orient("left")
+      .tickValues( leftScale.ticks( 0 ).concat( leftScale.domain() ))
+      .tickSize(0);
+
+  var rightAxis = d3.svg.axis()
+      .scale(rightScale)
+      .orient("right")
+      .tickValues( rightScale.ticks( 0 ).concat( rightScale.domain() ))
+      .tickSize(0);
+
+  formatValue = d3.format(".2s");
+
+  // translate left axis
+  chart.append("g")
+      .call(leftAxis) //does not appear in the correct position
+      .attr("transform", "translate(" + margin.left + "," + 0 + ")")
+      .attr("class", "left axis");
+  // translate right axis
+  chart.append("g")
+      .attr("transform", "translate(" + (width - margin.right) + "," + 0 + ")")
+      .attr("class", "right axis")
+      .call(rightAxis);
+
+  // title
+  chart.append("text")
+          .classed('title', true)
+          .attr("x", (width / 2))             
+          .attr("y", "-1em")
+          .attr("text-anchor", "middle") 
+          .style("font-size", "24px") 
+          .style("text-decoration", "none")  
+          .text(title);
+// Axis labels
+// Left axis label
+  chart.append("text")
+        .classed('axis label', true)
+        .attr("x",  margin.left - margin.label)
+        .attr("y", 0 - margin.top/2)
+        .attr("dy", "0em")
+        .attr("alignment-baseline", "baseline !important") 
+        .style("font-size", "11px") 
+        .attr("text-anchor", "end")
+        .text(leftVar)
+        .call(wrap, 1.5 * margin.left);   
+        // Using : .attr("y", 11 - margin.top )
+        // we ensure to be on the limit of the edge.
+// Right axis
+  chart.append("text")      
+        .classed('axis label', true)
+        .attr("x",  width - margin.right)
+        .attr("y", 0 - margin.top/2)
+        .attr("dy", "0em")
+        .attr("alignment-baseline", "baseline !important") 
+        .style("font-size", "11px") 
+        .attr("text-anchor", "start")
+        .text(rightVar)
+        .call(wrap, 2.0 * margin.right); 
+
+
+  // Countries
+  var country = chart.selectAll("g.country")
+                  .data( data );
+  country
+    .enter()
+    .append("g")
+    .call(filter_labels)
+    .classed("country", true);
+
+
+  // Actions on mouseover
+  country
+    .on("mouseover", movein)
+    .on("mouseout", moveout);
+
+  //Add means values
+  country.call(add_mean_text);
+
+      function add_mean_text(){
+        // Selects current chart and then add text to each mean line in the chart.
+        var showInfo = false;
+        // we only show info for the first svg
+        if (chart[0][0].parentNode.id ==1){
+            showInfo = true;
+        }
+        var a = chart.selectAll('g.mean_line.country');
+
+        label_lines(a,  leftVar, rightVar, showInfo);
+            
+        if (title != null){ 
+          var b = chart.selectAll('g.mean_line_global.country');
+          label_lines(b,  leftVar, rightVar, showInfo);
+        }
+      }
+
+      function label_lines(g, leftVar, rightVar, showInfo = true){
+        // The class is used to remove the additional text later
+        // Showing country info can be controlled with showInfo.
+        if (showInfo == true){
+        var info = g.append('text')
+           .call(filter_labels)
+           .classed('info', true)
+           .attr('x', 0 - margin.left)
+           .attr("y", function(d) {return leftScale(d[leftVar]) })
+           .attr("dy", "0em")
+           .attr("text-anchor", "start")
+           .attr("alignment-baseline", "middle")
+           .text(function(d){
+            return d["Country Name"];})
+           .call(wrap, (margin.left - margin.label));
+        }
+        // ** Left column
+        var left_column = g.append("text")
+          .call(filter_labels)
+          .classed("label start", true)
+          .style("font-size", font_size)
+          .attr("x", margin.left - margin.label)
+          .attr("y", function(d) {return leftScale(d[leftVar]) })
+          .text(function(d) { 
+            return d3.round(d[leftVar]) + " " + return_units(leftVar); });
+
+        // ** Right column
+        var right_column = g.append("text")
+          .call(filter_labels)
+          .classed("label end", true)
+          .style("font-size", font_size)
+          .attr("x", width - margin.right + margin.label )
+          .attr("y", function(d) {return rightScale(d[rightVar]) })
+          .text(function(d) { return d3.round(d[rightVar], 1) + " yr"; });
+        
+        return g;
+      }
+
+
+      function filter_labels(data){
+        // sets a class depending on the Country Name 
+        // so different colors can be applied 
+        // to different tags
+          data.attr("class", function(d){
+            return(
+              d["Country Name"] == 'continent mean' ?'mean_line' : 
+              (d["Country Name"] == 'global mean' ? 'mean_line_global': 'slope'));
+          });
+
+      }
+
+      function movein() { 
+        //inserts text when selecting
+        //removes text in the graphic after leaving the line selected. 
+        d3.select(this.parentNode).selectAll('.label.start').remove();
+        d3.select(this.parentNode).selectAll('.label.end').remove();
+        d3.select(this.parentNode).selectAll('.info').remove();
+        var g = d3.select(this).classed("over", true);
+        g = label_lines(g, leftVar, rightVar);
+        d3.select("g").classed("hidden", false);
+
+      }
+      function moveout(){
+        //removes text after leaving the line selected.
+      // mean values are added again after leaving the area
+        //var g = d3.select(this);
+        var timeFading = 5;
+        var g = d3.select(this).classed("over", false);
+        g.select('text.label.start').remove();
+        g.select('text.label.end').remove();
+        g.select('text.info').remove();
+        g.call(add_mean_text); 
+      }
+
+
+      // ** Slope lines
+      var line = country
+                    .selectAll("line.slope")
+                      .data( function(d) { return [d]; } );
+          line
+           .enter()
+            .append("line")
+            .attr("x1", margin.left)
+            .attr("x2", width-margin.right)
+            .attr("y1", function(d) { return leftScale(d[leftVar] ); })
+            .attr("y2", function(d) { return rightScale(d[rightVar] ); });
+
+          line
+            .classed("slope", function(d) { return d[leftVar] || d[rightVar]; })
+            .attr("y1", function(d,i) { return d[leftVar] && d[rightVar] ? Math.round( leftScale(d[leftVar]) - font_size/2 + 2) : null; })
+            .attr("y2", function(d,i) { return d[leftVar] && d[rightVar]  ? Math.round( rightScale(d[rightVar])  - font_size/2 + 2) : null; });
+
+
+
+          line
+          .attr("class", function(d){
+            return(
+              d["Country Name"] == 'continent mean' ?'mean_line' : 
+              (d["Country Name"] == 'global mean' ? 'mean_line_global': 'slope'));
+          });
+
+      // Add comments to chart
+      comments(chart);
+      return chart;
+};
+
+
+
+function round_variable(number, step){
+
+  return Math.ceil(number/step)*step;
+}
+
+
+
+function group_data(data, coeff=10){
+  var nested_data = d3.nest()
+  .key(function(d) { return Math.round(d.bin / coeff) * coeff})
+  .rollup(function(a) {return d3.sum(a, function(d) {return d.value})})
+  .entries(data)
+  return nested_data;
+}
+
+
+function wrap(text, width) {
+  // http://bl.ocks.org/mbostock/7555321
+  // Wrap text and break lines when necessary.
+  text.each(function() {
+      var text = d3.select(this),
+      words = text.text().split(/\s+/).reverse(),
+      word,
+      line = [],
+      lineNumber = 0,
+      x = text.attr("x"),
+      y = text.attr("y"),
+      dy = parseFloat(text.attr("dy")),
+      lineHeight = 1.1, // ems
+      tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");     
+      while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          var textWidth = tspan.node().getComputedTextLength();
+          if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
+              tspan.text(line.join(" "));
+              line = [word];
+              ++lineNumber;
+              tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", lineNumber * lineHeight - dy + "em").text(word);
+              //modified from 
+              //lineNumber * lineHeight + dy
+              // So as the text is displaced vertically
+          }
+      }
+  }) ;
+}
+function comments(chart){
+// Coments are added based on individual charts
+  var comment = "";
+  var t = chart
+        .append('text')
+        .classed('comment', true);
+
+  switch(chart[0][0].parentNode.id){
+      case 'svg1':
+        break;
+      case 'svg2':
+        comment = "Europe spends more on health and lives longer";
+        break;
+      case 'svg3':
+        break;
+      case 'svg4':
+        break;
+      case 'svg5':
+        break;
+      default:
+        break;
+  }
+  t
+          .attr("x", 0)             
+          .attr("y", "-1em")
+          .attr("text-anchor", "middle") 
+          .style("text-decoration", "none")  
+          .html(comment);
+}
+</script>
+
+
+</body>
