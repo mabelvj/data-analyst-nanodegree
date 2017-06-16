@@ -65,55 +65,80 @@ print count," extreme value in 'salary'";
 
 del data_dict["TOTAL"]
 
+del data_dict["THE TRAVEL AGENCY IN THE PARK"] # not representative
+
+del data_dict["LOCKHART EUGENE E"] #All NaN
+
+
+
 print('\n==================================================================\n')
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
-my_dataset = data_dict
+my_dataset = pd.DataFrame(data_dict)
 
+##
+# Count NaNs
+print("Counting NaNs")
+print ((my_dataset == 'NaN').sum(axis = 1).sort_values(ascending = False))
+print('\n -----------------------------------------------------------------\n')
 ## Custom aggregate features
 ## Communication
 def communication_poi(my_dataset):
 # We iterate over the entire dataset to extract poi communcation
-	for item in my_dataset:
-		person = my_dataset[item]
+	data = my_dataset.copy(deep = True)
+	new_data = pd.DataFrame()
+	for item in data:
+		#iterate over the columns of the dataframe. Columns contains people.
+		person = data[item]
+		person_data = dict() #new data to be calculated and appended
 		if (all([	person['from_poi_to_this_person'] != 'NaN',
 					person['from_this_person_to_poi'] != 'NaN',
 					person['to_messages'] != 'NaN',
 					person['from_messages'] != 'NaN'
 				])):
 			fraction_from_poi = float(person["from_poi_to_this_person"]) / float(person["to_messages"])
-			person["fraction_from_poi"] = fraction_from_poi
+			person_data["fraction_from_poi"] = fraction_from_poi
 			fraction_to_poi = float(person["from_this_person_to_poi"]) / float(person["from_messages"])
-			person["fraction_to_poi"] = fraction_to_poi
+			person_data["fraction_to_poi"] = fraction_to_poi
 			fraction_total_poi = float(person['from_this_person_to_poi'] + person['from_poi_to_this_person']) / \
 													float(person['to_messages'] + person['from_messages'])
-			person["fraction_total_poi"] = fraction_total_poi
+			person_data["fraction_total_poi"] = fraction_total_poi
 		else:
-			person["fraction_from_poi"] = person["fraction_to_poi"] =  person["fraction_total_poi"] =0
-		my_dataset[item] = person #save the value and update my_dataset
-	return my_dataset;
+			person_data["fraction_from_poi"] = person_data["fraction_to_poi"] =  person_data["fraction_total_poi"] =0
 
-my_dataset = communication_poi(my_dataset)
+		new_data[item] = pd.Series(person_data) #add column
+
+	return pd.concat([data, new_data], axis=0) #save the value and update my_dataset
+
+
+my_dataset= communication_poi(my_dataset).copy(deep = True)
 ## Financial:
 def wealth(my_dataset):
-	for item in my_dataset:
-		person = my_dataset[item]
+	## Calculates the wealth as the sum of salary, total stock value
+	# exercised stock options and bonuses.
+	data = my_dataset.copy(deep = True)
+	new_data = pd.DataFrame()
+
+	for item in data:
+		person = data[item]
+		person_data = dict() #new data to be calculated and appended
 		if (all([	person['salary'] != 'NaN',
 					person['total_stock_value'] != 'NaN',
 					person['exercised_stock_options'] != 'NaN',
 					person['bonus'] != 'NaN'
 				])):
-			person['wealth'] = sum([person[field] for field in ['salary',
+			person_data['wealth'] = sum([person[field] for field in ['salary',
 															   'total_stock_value',
 															   'exercised_stock_options',
 															   'bonus']])
 		else:
-		    person['wealth'] = 'NaN'
-		
-		my_dataset[item] = person #save the value
-	return my_dataset;
+		    person_data['wealth'] = 'NaN'
+		new_data[item] = pd.Series(person_data) #add column
 
-my_dataset = wealth(my_dataset);
+	return pd.concat([data, new_data], axis=0) #save the value and update my_dataset
+
+
+my_dataset = wealth(my_dataset).copy(deep = True);
 
 ## Features to be used in the prediction
 my_features = features_list + ['fraction_from_poi',
@@ -136,7 +161,9 @@ my_features = features_list + ['fraction_from_poi',
 							   'wealth']
 
 ### Extract features and labels from dataset for local testing
+
 data = featureFormat(my_dataset, my_features, sort_keys = True)
+
 labels, features = targetFeatureSplit(data)
 
 print "Intuitive features:\n", pd.DataFrame(my_features)
@@ -147,7 +174,7 @@ scaler = MinMaxScaler()
 features = scaler.fit_transform(features)
 
 # K-best features
-k_best = SelectKBest(k = 3)
+k_best = SelectKBest(k = 10)
 k_best.fit(features, labels)
 
 results_list = zip(k_best.get_support(), my_features[1:], k_best.scores_)
