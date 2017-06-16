@@ -2,90 +2,168 @@
 
 import sys
 import pickle
+import random
+import matplotlib
+from matplotlib import pyplot
 sys.path.append("../tools/")
 
+from numpy import mean
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data
-import enron_tools
-import tester
-
-
 from sklearn.feature_selection import SelectKBest
-from sklearn.pipeline import Pipeline
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectPercentile, f_classif
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+from sklearn import tree
+from sklearn.grid_search import GridSearchCV
+
+import pandas as pd
+import numpy as np
 
 
-from sklearn.naive_bayes import GaussianNB
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
 
 ### Task 1: Select what features you'll use.
 ### features_list is a list of strings, each of which is a feature name.
 ### The first feature must be "poi".
-
-# These are the features appearing on the enron dataset.
-# New features will be created later and
-# the best will be selecting using SelectKBest().
-features_list = features_list = ['poi',
-                 'bonus',
-                 'deferral_payments',
-                 'deferred_income',
-                 'director_fees',
-                 'exercised_stock_options',
-                 'expenses',
-                 'loan_advances',
-                 'long_term_incentive',
-                 'other',
-                 'restricted_stock',
-                 'restricted_stock_deferred',
-                 'salary',
-                 'total_payments',
-                 'total_stock_value',
-                 'from_messages',
-                 'from_poi_to_this_person',
-                 'from_this_person_to_poi',
-                 'shared_receipt_with_poi',
-                 'to_messages']
+features_list = ['poi'] # You will need to use more features
 
 ### Load the dictionary containing the dataset
-with open("final_project_dataset.pkl", "r") as data_file:
-    data_dict = pickle.load(data_file)
+data_dict = pickle.load(open("final_project_dataset.pkl", "r") )
 
 ### Task 2: Remove outliers
 
-outliers = ['TOTAL', 'LOCKHART EUGENE E', 'THE TRAVEL AGENCY IN THE PARK']
-enron_tools.remove_outliers(data_dict, outliers)
+### EXPLORATION
 
+num_data_points = len(data_dict)
+num_data_features = len(data_dict[data_dict.keys()[0]])
+
+num_poi = 0
+for dic in data_dict.values():
+	if dic['poi'] == 1: num_poi += 1
+
+print "Data points: ", num_data_points
+print "Features: ", num_data_features
+print "POIs: ", num_poi
+
+#
+#
+#
+# Clean data
+#
+#
+#
+
+count = 0
+for k, v in data_dict.items():
+	if v['salary'] != 'NaN' and v['salary'] > 10000000:
+		count = count + 1;
+print count," extreme value in 'salary'";
+#There is an extreme outlier in salary
+
+#TOTAL  turn out to be the sum of the salaries & bonuses list, let's remove it
+
+del data_dict["TOTAL"]
+
+print('\n==================================================================\n')
 ### Task 3: Create new feature(s)
-enron_tools.compute_fraction_poi_communication(data_dict)
-enron_tools.total_wealth_by_person(data_dict)
-
-features_list += ['fraction_poi_communication', 'total_wealth']
-
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
 
-# Top 10 best features using SelectKBest().
-best_features_list = ['poi',
-                      'exercised_stock_options',
-                      'total_stock_value',
-                      'bonus',
-                      'salary',
-                      'total_wealth',
-                      'deferred_income',
-                      'long_term_incentive',
-                      'restricted_stock',
-                      'total_payments',
-                      ]
+## Custom aggregate features
+## Communication
+def communication_poi(my_dataset):
+# We iterate over the entire dataset to extract poi communcation
+	for item in my_dataset:
+		person = my_dataset[item]
+		if (all([	person['from_poi_to_this_person'] != 'NaN',
+					person['from_this_person_to_poi'] != 'NaN',
+					person['to_messages'] != 'NaN',
+					person['from_messages'] != 'NaN'
+				])):
+			fraction_from_poi = float(person["from_poi_to_this_person"]) / float(person["to_messages"])
+			person["fraction_from_poi"] = fraction_from_poi
+			fraction_to_poi = float(person["from_this_person_to_poi"]) / float(person["from_messages"])
+			person["fraction_to_poi"] = fraction_to_poi
+			fraction_total_poi = float(person['from_this_person_to_poi'] + person['from_poi_to_this_person']) / \
+													float(person['to_messages'] + person['from_messages'])
+			person["fraction_total_poi"] = fraction_total_poi
+		else:
+			person["fraction_from_poi"] = person["fraction_to_poi"] =  person["fraction_total_poi"] =0
+		my_dataset[item] = person #save the value and update my_dataset
+	return my_dataset;
 
+my_dataset = communication_poi(my_dataset)
+## Financial:
+def wealth(my_dataset):
+	for item in my_dataset:
+		person = my_dataset[item]
+		if (all([	person['salary'] != 'NaN',
+					person['total_stock_value'] != 'NaN',
+					person['exercised_stock_options'] != 'NaN',
+					person['bonus'] != 'NaN'
+				])):
+			person['wealth'] = sum([person[field] for field in ['salary',
+															   'total_stock_value',
+															   'exercised_stock_options',
+															   'bonus']])
+		else:
+		    person['wealth'] = 'NaN'
+		
+		my_dataset[item] = person #save the value
+	return my_dataset;
 
+my_dataset = wealth(my_dataset);
+
+## Features to be used in the prediction
+my_features = features_list + ['fraction_from_poi',
+							   'fraction_to_poi',
+							   'fraction_total_poi',
+							   'shared_receipt_with_poi', #this is interesting. Maybe POI share receipts trying to commit fraud
+							   'expenses',
+							   'loan_advances',
+							   'long_term_incentive',
+							   'other',
+							   'restricted_stock',
+							   'restricted_stock_deferred',
+							   'deferral_payments',
+							   'deferred_income',
+							   'salary',
+							   'total_stock_value',
+							   'exercised_stock_options',
+							   'total_payments',
+							   'bonus',
+							   'wealth']
 
 ### Extract features and labels from dataset for local testing
-data = featureFormat(my_dataset, features_list, sort_keys = True)
+data = featureFormat(my_dataset, my_features, sort_keys = True)
+labels, features = targetFeatureSplit(data)
+
+print "Intuitive features:\n", pd.DataFrame(my_features)
+print ('\n----------------------------------------------------------------- \n')
+
+# Scale features to make better predictions
+scaler = MinMaxScaler()
+features = scaler.fit_transform(features)
+
+# K-best features
+k_best = SelectKBest(k = 3)
+k_best.fit(features, labels)
+
+results_list = zip(k_best.get_support(), my_features[1:], k_best.scores_)
+results_list = sorted(results_list, key=lambda x: x[2], reverse=True)
+
+## Create pandas to prettify the results
+
+results_df = pd.DataFrame(results_list)
+print "K-best features:\n", results_df
+print ('\n----------------------------------------------------------------- \n')
+
+## 3 best features chosen by SelectKBest
+# feature_list = 'poi'
+my_features = features_list + results_df[1][results_df[0]==True].values.tolist()
+
+data = featureFormat(my_dataset, my_features, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
 ### Task 4: Try a varity of classifiers
@@ -94,196 +172,75 @@ labels, features = targetFeatureSplit(data)
 ### you'll need to use Pipelines. For more info:
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
-def tune_logistic_regression():
-
-    skb = SelectKBest()
-    pca = PCA()
-    lr_clf = LogisticRegression()
-
-    pipe_lr = Pipeline(steps=[("SKB", skb), ("PCA", pca), ("LogisticRegression", lr_clf)])
-
-    lr_k = {"SKB__k": range(9, 10)}
-    lr_params = {'LogisticRegression__C': [1e-08, 1e-07, 1e-06],
-                 'LogisticRegression__tol': [1e-2, 1e-3, 1e-4],
-                 'LogisticRegression__penalty': ['l1', 'l2'],
-                 'LogisticRegression__random_state': [42, 46, 60]}
-    lr_pca = {"PCA__n_components": range(3, 8), "PCA__whiten": [True, False]}
-
-    lr_k.update(lr_params)
-    lr_k.update(lr_pca)
-
-    enron_tools.get_best_parameters_reports(pipe_lr, lr_k, features, labels)
-
-
-def tune_svc():
-
-    skb = SelectKBest()
-    pca = PCA()
-    svc_clf = SVC()
-
-    pipe_svc = Pipeline(steps=[("SKB", skb), ("PCA", pca), ("SVC", svc_clf)])
-
-    svc_k = {"SKB__k": range(8, 10)}
-    svc_params = {'SVC__C': [1000], 'SVC__gamma': [0.001], 'SVC__kernel': ['rbf']}
-    svc_pca = {"PCA__n_components": range(3, 8), "PCA__whiten": [True, False]}
-
-    svc_k.update(svc_params)
-    svc_k.update(svc_pca)
-
-    enron_tools.get_best_parameters_reports(pipe_svc, svc_k, features, labels)
-
-
-def tune_decision_tree():
-
-    skb = SelectKBest()
-    pca = PCA()
-    dt_clf = DecisionTreeClassifier()
-
-    pipe = Pipeline(steps=[("SKB", skb), ("PCA", pca), ("DecisionTreeClassifier", dt_clf)])
-
-    dt_k = {"SKB__k": range(8, 10)}
-    dt_params = {"DecisionTreeClassifier__min_samples_leaf": [2, 6, 10, 12],
-                 "DecisionTreeClassifier__min_samples_split": [2, 6, 10, 12],
-                 "DecisionTreeClassifier__criterion": ["entropy", "gini"],
-                 "DecisionTreeClassifier__max_depth": [None, 5],
-                 "DecisionTreeClassifier__random_state": [42, 46, 60]}
-    dt_pca = {"PCA__n_components": range(4, 7), "PCA__whiten": [True, False]}
-
-    dt_k.update(dt_params)
-    dt_k.update(dt_pca)
-
-    enron_tools.get_best_parameters_reports(pipe, dt_k, features, labels)
-
-
-def tune_random_forest():
-
-    skb = SelectKBest()
-    rf_clf = RandomForestClassifier()
-
-    pipe_rf = Pipeline(steps=[("SKB", skb), ("RandomForestClassifier", rf_clf)])
-
-    rf_k = {"SKB__k": range(8, 11)}
-    rf_params = {'RandomForestClassifier__max_depth': [None, 5, 10],
-                  'RandomForestClassifier__n_estimators': [10, 15, 20, 25],
-                  'RandomForestClassifier__random_state': [42, 46, 60]}
-
-    rf_k.update(rf_params)
-
-    enron_tools.get_best_parameters_reports(pipe_rf, rf_k, features, labels)
-
-
-def tune_ada_boost():
-
-    skb = SelectKBest()
-    ab_clf = AdaBoostClassifier()
-
-    pipe_ab = Pipeline(steps=[("SKB", skb), ("AdaBoostClassifier", ab_clf)])
-
-    ab_k = {"SKB__k": range(8, 11)}
-    ab_params = {'AdaBoostClassifier__n_estimators': [10, 20, 30, 40],
-                 'AdaBoostClassifier__algorithm': ['SAMME', 'SAMME.R'],
-                 'AdaBoostClassifier__learning_rate': [.8, 1, 1.2, 1.5]}
-
-    ab_k.update(ab_params)
-
-    enron_tools.get_best_parameters_reports(pipe_ab, ab_k, features, labels)
-
-
-if __name__ == '__main__':
-
-    '''         GAUSSIAN NAIVE BAYES            '''
-
-    clf = GaussianNB()
-    print "Gaussian Naive Bayes : \n", tester.test_classifier(clf, my_dataset, best_features_list)
-
-
-    '''         LOGISTIC REGRESSION             '''
-
-    #tune_logistic_regression()
-
-    best_features_list_lr = enron_tools.get_k_best(my_dataset, features_list, 9)
-
-    clf_lr = Pipeline(steps=[
-        ('scaler', StandardScaler()),
-        ('pca', PCA(n_components=4, whiten=False)),
-        ('classifier', LogisticRegression(tol=0.01, C=1e-08, penalty='l2', random_state=42))])
-
-    print "Logistic Regression : \n", tester.test_classifier(clf_lr, my_dataset, best_features_list_lr)
-
-
-    '''         SUPPORT VECTOR CLASSIFIER           '''
-
-    #tune_svc()
-
-    best_features_list_svc = enron_tools.get_k_best(my_dataset, features_list, 8)
-
-    clf_svc = Pipeline(steps=[
-        ('scaler', StandardScaler()),
-        ('pca', PCA(n_components=6, whiten=True)),
-        ('classifier', SVC(C=1000, gamma=.001, kernel='rbf'))])
-
-    print "Support Vector Classifier : \n", tester.test_classifier(clf_svc, my_dataset, best_features_list_svc)
-
-
-    '''         DECISION TREE CLASSIFIER            '''
-
-    #tune_decision_tree()
-
-    best_features_list_dt = enron_tools.get_k_best(my_dataset, features_list, 8)
-
-    clf_dt = Pipeline(steps=[
-        ('scaler', StandardScaler()),
-        ('pca', PCA(n_components=5, whiten=True)),
-        ('classifier', DecisionTreeClassifier(criterion='entropy',
-                                              min_samples_leaf=2,
-                                              min_samples_split=2,
-                                              random_state=46,
-                                              max_depth=None))
-    ])
-
-    print "Decision Tree Classifier : \n",tester.test_classifier(clf_dt, my_dataset, best_features_list_dt)
-
-
-    '''         RANDOM FOREST CLASSIFIER              '''
-
-    #tune_random_forest()
-
-    best_features_list_rf = enron_tools.get_k_best(my_dataset, features_list, 9)
-
-    clf_rf = Pipeline(steps=[
-        ('scaler', StandardScaler()),
-        ('classifier', RandomForestClassifier(max_depth=5,
-                                              n_estimators=25,
-                                              random_state=42))
-    ])
-
-    print "Random Forest Classifier : \n", tester.test_classifier(clf_rf, my_dataset, best_features_list_rf)
-
-
-    '''         ADA BOOST CLASSIFIER            '''
-
-    #tune_ada_boost()
-
-    best_features_list_ab = enron_tools.get_k_best(my_dataset, features_list, 9)
-
-    clf_ab = Pipeline(steps=[
-        ('scaler', StandardScaler()),
-        ('classifier', AdaBoostClassifier(learning_rate=1.5,
-                                          n_estimators=30,
-                                          algorithm='SAMME.R'))
-    ])
-
-    print "Ada Boost Classifier : \n", tester.test_classifier(clf_ab, my_dataset, best_features_list_ab)
-
-
-
-    '''         dump final algorithm classifier, dataset and features in the data directory         '''
-    #dump_classifier_and_data(clf_lr, my_dataset, best_features_list_lr)
-
-
-# Provided to give you a starting point. Try a variety of classifiers.
+def test_clf(grid_search, features, labels, parameters, iterations=100):
+	precision, recall = [], []
+	for iteration in range(iterations):
+		features_train, features_test, labels_train, labels_test = train_test_split(features, labels, random_state=iteration)
+		grid_search.fit(features_train, labels_train)
+		predictions = grid_search.predict(features_test)
+		precision = precision + [precision_score(labels_test, predictions)]
+		recall = recall + [recall_score(labels_test, predictions)]
+		if iteration % 10 == 0:
+			sys.stdout.write('.')
+	print '\nPrecision:', mean(precision)
+	print 'Recall:', mean(recall)
+	best_params = grid_search.best_estimator_.get_params()
+	for param_name in sorted(parameters.keys()):
+		print '%s=%r, ' % (param_name, best_params[param_name])
+
+# Gaussian #http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
+parameters = {}
+grid_search = GridSearchCV(clf, parameters)
+print '\nGaussianNB:'
+test_clf(grid_search, features, labels, parameters)
+
+# ## Decission tree 
+# from sklearn import tree
+# clf = tree.DecisionTreeClassifier()
+
+# parameters = {'criterion': ['gini', 'entropy'],
+#               'min_samples_split': [2, 5, 10],
+#               'max_depth': [None, 1,2, 5],
+#               'min_samples_leaf': [1, 5, 10],
+#               'max_leaf_nodes': [None, 5, 10]}
+# grid_search = GridSearchCV(clf, parameters)
+# print '\nDecisionTree:'
+# test_clf(grid_search, features, labels, parameters)
+
+# ## AdaBoost
+# from sklearn.ensemble import AdaBoostClassifier
+# clf = AdaBoostClassifier()
+# parameters = {'n_estimators': [2, 5, 10],
+#               'algorithm': ['SAMME', 'SAMME.R'],
+#               'learning_rate': [.5,.8, 1, 1.2]}
+# grid_search = GridSearchCV(clf, parameters)
+# print '\nAdaBoost:'
+# test_clf(grid_search, features, labels, parameters)
+
+# GaussianNB:
+# Precision: 0.436988095238
+# Recall: 0.294571428571
+
+# DecisionTree:
+# ..........
+# Precision: 0.21119047619
+# Recall: 0.140321428571
+# criterion='entropy', 
+# max_depth=None, 
+# max_leaf_nodes=5, 
+# min_samples_leaf=1, 
+# min_samples_split=2, 
+
+# AdaBoost:
+# ..........
+# Precision: 0.321896825397
+# Recall: 0.156273809524
+# algorithm='SAMME', 
+# learning_rate=1, 
+# n_estimators=10,  
+
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
@@ -293,13 +250,45 @@ clf = GaussianNB()
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-from sklearn.cross_validation import train_test_split
-features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
+
+from sklearn.naive_bayes import GaussianNB
+clf = GaussianNB()
+
+# Cross validation
+from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.metrics import precision_recall_curve
+
+sss = StratifiedShuffleSplit(n_splits=20, test_size=0.3, random_state=19)
+sss.get_n_splits(features, labels)
+
+print(sss)       
+
+precision = []
+recall = []
+
+features = np.array(features)
+labels = np.array(labels)
+for train_index, test_index in sss.split(features, labels):
+   #print("TRAIN:", train_index, "TEST:", test_index)
+   X_train, X_test = features[train_index], features[test_index]
+   y_train, y_test = labels[train_index], labels[test_index]
+   clf.fit(X_train, y_train)
+   y_pred = clf.predict(X_test)
+   p, r, _ = precision_recall_curve(y_test,y_pred)
+   precision.append(p)
+   recall.append(r)
+
+print "Average precision: %.2f \n" %np.mean(np.array(precision))
+print "Average recall: %.2f \n" %np.mean(np.array(recall))
+
+
+test_clf(grid_search, features, labels, parameters)
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf, my_dataset, features_list)
+dump_classifier_and_data(clf, my_dataset, my_features)
+
+
