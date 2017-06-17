@@ -62,9 +62,17 @@ In order to complement the 21 features, I created 4 additional features to compl
 * `fraction_poi_total`: fraction of emails related to POIs. Proportion of messages are between POIs compared to overall messages. This feature allows to know what ratio of the communication of a person is with a POI. People with high rates of comunication with a POI may be POIs.
 * `wealth`: salary, total stock value, exercised stock options and bonuses. Abnormal amount of money may indicate that the person is taking advantage of the company and that he/she is a POI.
 
+I used scikit-learn SelectKBest to select the most influential features and used those features for all the upcoming algorithms.
+As this datset is quite imbalanced (the number of elements of one class is different from the other), the accuracy is not a good metric to use for selecting parameters.
 
-I used scikit-learn SelectKBest to select best 10 influential features and used those featuers for all the upcoming algorithm. 
-This is the rank returned by ```SelectKBest``` showing the importance of each variable of the dataset:
+In this case it will be used the **precision** which is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false positives ($F_p$) and the **recall**, that is defined as the number of true positives ($T_p$) over the number of true positives plus the number of false negatives ($F_n$).
+
+For this dataset the precision is shows the proportion of POIs succesfully identified and the recall shows the proportion of individuals amont the identified as POIs that are truly POIs. THe algorithm tested for the parameters selection will be Gaussian Naïve Bayes since, apart from being the one used for this project, it is generic algorithm. 
+
+
+![](./final_project/pr.png)
+
+The value for k select will be 7, that is the one that has best combination of precision and recall. This is the rank returned by ```SelectKBest``` showing the importance of each variable of the dataset:
 
 | Features                      | Scores   | 
 | ----------------------------- |:--------:| 
@@ -75,9 +83,6 @@ This is the rank returned by ```SelectKBest``` showing the importance of each va
 | Fraction to POI		| 16.64 |
 | Wealth 					  | 15.55  |
 | Deferred Income				  | 11.6   |
-| Long Term Incentive           | 10.07    |
-| Restricted Stock				  | 9.35    |
-| Total Payments				  	  | 8.87    |
 
 
 It seems that knowing how deep you involved into Stocks and how much money you receive from Bonuses and Salary are ones of the most imporant features to tell whether you can be a POI or not. Also quite important, the fraction of communication sent to POI.
@@ -86,7 +91,9 @@ It seems that knowing how deep you involved into Stocks and how much money you r
 
 ##3. Parameters Tuning
 
-Parameter tuning is the process of adjusting the parameters of an algorithm to improve its performanc when predicting for new data. Parameters are important to design an algorithm that allows to predict as accurately as posible where being able to generalize as much as posible. There is a subtle line in which we must decide how much we want to predict accurately or we want to generalize. In the extreme, an algorithm with high scores when predicting may have a good performance with new data (overfitting) and vice versa, parameters with a stable performance for new data may be not good at learning from the available data.
+Parameter tuning is the process of adjusting the parameters of an algorithm to improve its performanc when predicting for new data. Parameters are important to design an algorithm that allows to predict as accurately as posible where being able to generalize as much as posible. There is a subtle line in which we must decide how much we want to predict accurately or we want to generalize. In the extreme, an algorithm with high scores when predicting may have a good performance with new data (overfitting) and vice versa, parameters with a stable performance for new data may be not good at learning from the available data (underfitting).
+
+Had we decided to select the parameters using the score obtained on the training data we could be incurring in overfitting and hence, not being able to generalize well, and the performance with unknown data would be poor.
 
 
 In order to evaluate the performance of an algorithm a metric must be chosen.
@@ -100,8 +107,8 @@ I tested three different algorithms, performing a `scikit-learn` `GridSearchCV` 
 ###GaussianNB: 
 **parameters** used in GridSearchCV: no parameters are required 
 ........
-Precision: 0.436988095238
-Recall: 0.294571428571
+Precision: 0.421051587302
+Recall: 0.35271031746
 
 ##DecisionTree: 
 **parameters** : 
@@ -113,13 +120,14 @@ Recall: 0.294571428571
                'min_samples_leaf': [1, 5, 10],
                'max_leaf_nodes': [None, 5, 10]} ```
 ..........
-Precision: 0.21119047619
-Recall: 0.140321428571
+Precision: 0.195115079365
+Recall: 0.163666666667
 criterion='entropy', 
 max_depth=None, 
-max_leaf_nodes=5, 
-min_samples_leaf=1, 
+max_leaf_nodes=None, 
+min_samples_leaf=10, 
 min_samples_split=2, 
+
 
 ##AdaBoost:
 **parameters** : 
@@ -130,11 +138,11 @@ min_samples_split=2,
                'learning_rate': [.5,.8, 1, 1.2]}```
 
 ..........
-Precision: 0.321896825397
-Recall: 0.156273809524
+Precision: 0.325694444444
+Recall: 0.160202380952
 algorithm='SAMME', 
-learning_rate=1, 
-n_estimators=10, 
+learning_rate=0.5, 
+n_estimators=5, 
 
 
 The best behavior is shown by the GaussianNB classifier, with better recall and precision than the others.
@@ -151,8 +159,8 @@ Cross validation methods are quite used when the amount of data available is res
 The validation of the algorithm was made using 20 randomized trials and returned the mean value of the performance metrics selected:
 
 ```
-Average precision: 0.46 
-Average recall: 0.42 
+Average precision: 0.56 
+Average recall: 0.38 
 ```
 
 
@@ -161,10 +169,10 @@ Average recall: 0.42
 The performance of the algorithm after running the test has been:                                         
 
 ```
-Precision: 0.36
-Recall: 0.3
+Precision: 0.42
+Recall: 0.35
 ```                                              
-With a **precision** score of 0.36, it tells us that if this model predicts 100 POIs, then the chance would be 36 people who are truely POIs and the rest 64 are innocent. On the other hand, with a **recall** score of 0.3, this model can find 30% of all real POIs by making a prediction. As I commented before, due to the imbalance of the dataset, the accuracy is not a good measurement. High accuracy for this dataset can be achieved, for example, just by flagging all people as non-POI since the amount of POI is quite reduced when compared to non-POIs.
+With a **precision** score of 0.42, it tells us that if this model predicts 100 POIs, then the chance would be 36 people who are truely POIs and the rest 58 are innocent. On the other hand, with a **recall** score of 0.35, this model can find 35% of all real POIs by making a prediction. As I commented before, due to the imbalance of the dataset, the accuracy is not a good measurement. High accuracy for this dataset can be achieved, for example, just by flagging all people as non-POI since the amount of POI is quite reduced when compared to non-POIs.
   
 #Sources
 

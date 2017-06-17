@@ -174,7 +174,83 @@ scaler = MinMaxScaler()
 features = scaler.fit_transform(features)
 
 # K-best features
-k_best = SelectKBest(k = 10)
+
+
+def kbest_performance(features, labels):
+	from sklearn.naive_bayes import GaussianNB
+	from sklearn.metrics import precision_recall_curve
+	from sklearn.model_selection import StratifiedShuffleSplit
+	# Check the performance of the classifier when adding more features
+	
+	features = np.array(features)
+	labels = np.array(labels)
+	precision = []
+	recall = []
+	sss = StratifiedShuffleSplit(n_splits=20, test_size=0.3, random_state=19)
+
+	for train_index, test_index in sss.split(features, labels):
+	   #print("TRAIN:", train_index, "TEST:", test_index)
+		X_train, X_test = features[train_index], features[test_index]
+		y_train, y_test = labels[train_index], labels[test_index]
+		clf = GaussianNB() # Final selected model
+		clf.fit(X_train, y_train)
+		y_pred = clf.predict(X_test)		
+		p = precision_score(y_test,y_pred)
+		r = recall_score(y_test,y_pred)   
+		precision.append(p)
+   		recall.append(r)
+
+	#print "Average precision: %.2f \n" %np.mean(np.array(precision))
+	#print "Average recall: %.2f \n" %np.mean(np.array(recall))
+
+   	return([np.mean(np.array(precision)),np.mean(np.array(recall))])
+
+
+## Try different values for k
+k_array = range(2, np.array(my_features).size, 1)
+precision = [];
+recall = [];
+
+for v in k_array:
+
+ 	k_best = SelectKBest(k = v)
+ 	k_best.fit(features, labels)
+
+ 	results_list = zip(k_best.get_support(), my_features[1:], k_best.scores_)
+	results_list = sorted(results_list, key=lambda x: x[2], reverse=True)
+
+ 	## Create pandas to prettify the results
+
+ 	results_df = pd.DataFrame(results_list)
+
+ 	## 3 best features chosen by SelectKBest
+ 	# feature_list = 'poi'
+ 	my_features_ = features_list + results_df[1][results_df[0]==True].values.tolist()
+
+ 	data_ = featureFormat(my_dataset, my_features_, sort_keys = True)
+ 	labels_, features_ = targetFeatureSplit(data_)
+ 	p, r = kbest_performance(features_, labels_)
+ 	precision.append(p)
+ 	recall.append(r)
+
+
+import matplotlib.pyplot as plt
+
+
+p1 = plt.figure()
+plt.plot(k_array, precision, 'o-', label = 'precision')
+plt.plot(k_array, recall, 'o-', label = 'recall')
+plt.title('Precision and Recall')
+
+plt.xlabel('k')
+plt.ylim([0.0,1.0])
+plt.legend()
+#plt.show()
+p1.savefig('pr.png')
+
+## Value selected of k = 7
+
+k_best = SelectKBest(k = 7)
 k_best.fit(features, labels)
 
 results_list = zip(k_best.get_support(), my_features[1:], k_best.scores_)
@@ -223,28 +299,28 @@ grid_search = GridSearchCV(clf, parameters)
 print '\nGaussianNB:'
 test_clf(grid_search, features, labels, parameters)
 
-# ## Decission tree 
-# from sklearn import tree
-# clf = tree.DecisionTreeClassifier()
+## Decission tree 
+from sklearn import tree
+clf = tree.DecisionTreeClassifier()
 
-# parameters = {'criterion': ['gini', 'entropy'],
-#               'min_samples_split': [2, 5, 10],
-#               'max_depth': [None, 1,2, 5],
-#               'min_samples_leaf': [1, 5, 10],
-#               'max_leaf_nodes': [None, 5, 10]}
-# grid_search = GridSearchCV(clf, parameters)
-# print '\nDecisionTree:'
-# test_clf(grid_search, features, labels, parameters)
+parameters = {'criterion': ['gini', 'entropy'],
+              'min_samples_split': [2, 5, 10],
+              'max_depth': [None, 1,2, 5],
+              'min_samples_leaf': [1, 5, 10],
+              'max_leaf_nodes': [None, 5, 10]}
+grid_search = GridSearchCV(clf, parameters)
+print '\nDecisionTree:'
+test_clf(grid_search, features, labels, parameters)
 
-# ## AdaBoost
-# from sklearn.ensemble import AdaBoostClassifier
-# clf = AdaBoostClassifier()
-# parameters = {'n_estimators': [2, 5, 10],
-#               'algorithm': ['SAMME', 'SAMME.R'],
-#               'learning_rate': [.5,.8, 1, 1.2]}
-# grid_search = GridSearchCV(clf, parameters)
-# print '\nAdaBoost:'
-# test_clf(grid_search, features, labels, parameters)
+## AdaBoost
+from sklearn.ensemble import AdaBoostClassifier
+clf = AdaBoostClassifier()
+parameters = {'n_estimators': [2, 5, 10],
+              'algorithm': ['SAMME', 'SAMME.R'],
+              'learning_rate': [.5,.8, 1, 1.2]}
+grid_search = GridSearchCV(clf, parameters)
+print '\nAdaBoost:'
+test_clf(grid_search, features, labels, parameters)
 
 # GaussianNB:
 # Precision: 0.436988095238
@@ -283,7 +359,7 @@ clf = GaussianNB()
 
 # Cross validation
 from sklearn.model_selection import StratifiedShuffleSplit
-from sklearn.metrics import precision_recall_curve
+#from sklearn.metrics import precision_recall_curve
 
 sss = StratifiedShuffleSplit(n_splits=20, test_size=0.3, random_state=19)
 sss.get_n_splits(features, labels)
@@ -301,7 +377,8 @@ for train_index, test_index in sss.split(features, labels):
    y_train, y_test = labels[train_index], labels[test_index]
    clf.fit(X_train, y_train)
    y_pred = clf.predict(X_test)
-   p, r, _ = precision_recall_curve(y_test,y_pred)
+   p = precision_score(y_test,y_pred)
+   r = recall_score(y_test,y_pred)
    precision.append(p)
    recall.append(r)
 
