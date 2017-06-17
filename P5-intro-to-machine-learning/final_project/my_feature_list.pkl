@@ -11,8 +11,4 @@ aS'salary'
 p5
 aS'fraction_to_poi'
 p6
-aS'wealth'
-p7
-aS'deferred_income'
-p8
 a.

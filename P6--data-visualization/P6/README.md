@@ -7,7 +7,7 @@ The data will be plotted in five different graphs, one per continent, keeping in
 # Design 
 The first aim of the project was to be able to represent the data in a clear way. After plotting the data altogether, I decided to implement an algorithm to filter the data and asign them their correspondent continent, so as to be able to plot them separately.
 
-Last graph is saved in index.html and also in that with the highest index (i.e. index9.html).
+> Last graph is saved in index.html and also in that with the highest index (i.e. index9.html). The first graph has the lowest index (in this case index0.html.
 
 The process of design of the graph has had the following steps:
 
@@ -27,9 +27,8 @@ The process of design of the graph has had the following steps:
 7. Added **menu** to select variable in the left.
 	- "Health expenditure per capita(current US$)" is the variable more correlated with "Life expectancy at birth, total(years)"
 8. Added **main title** and **subtitle** describing variables plotted. Removed names of variables from each side of the graphs. Placed the menu in the top right of the page.
-
-- Adjusted width to  10246x500px to be displayed on most computers. 
-- Sent everything to background
+	- Adjusted width to  10246x500px to be displayed on most computers. 
+	- Sent everything to background
 
 9. Only current graph data goes out when selecting a line.
 	- Decreased description font-size
@@ -37,6 +36,8 @@ The process of design of the graph has had the following steps:
 	- Mean tags are only shown for the first graphic
 	- Dashed line for global mean.
 10. Added conclusions	
+
+11. Incremented font sizes. Removed values for the global mean and only left it in the first graph. Legend appears only for the first graph.
 
 # Feedback
 Asked 3 people to give feedback on the project:
